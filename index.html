@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ПРОГРАММА ТРЕНИРОВОК</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #000000;
+  --base: #080808;
+  --card: #101010;
+  --surface: #171717;
+  --raised: #1f1f1f;
+  --border: #2c2c2c;
+  --red: #c0392b;
+  --red-bg: #1a0505;
+  --gold: #b8960c;
+  --gold-bg: #141000;
+  --ice: #4a8fa8;
+  --ice-bg: #040e14;
+  --sage: #4a7c59;
+  --sage-bg: #040e08;
+  --amber: #a07830;
+  --amber-bg: #120c00;
+  --teal: #3a7a70;
+  --teal-bg: #040e0c;
+  --txt-hi: #e8e8e8;
+  --txt-mid: #909090;
+  --txt-lo: #4a4a4a;
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'Barlow', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--base);
+  color: var(--txt-hi);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  min-height: 100vh;
+}
+
+/* ── NAV ──────────────────────────────────────────── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8,8,8,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0;
+  height: 52px; padding: 0 20px;
+}
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 900; letter-spacing: 0.1em;
+  color: var(--txt-hi); text-transform: uppercase;
+  margin-right: 32px; white-space: nowrap;
+}
+.nav-brand span { color: var(--red); }
+.nav-tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab {
+  font-family: var(--font-display); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--txt-lo); background: transparent;
+  border: none; cursor: pointer; padding: 0 14px; height: 52px;
+  white-space: nowrap; border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.nav-tab:hover { color: var(--txt-mid); }
+.nav-tab.active { color: var(--txt-hi); border-bottom-color: var(--red); }
+
+/* ── LAYOUT ───────────────────────────────────────── */
+.main { margin-top: 52px; }
+.page { display: none; padding: 32px 24px; max-width: 960px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* ── PAGE HEADER ──────────────────────────────────── */
+.page-title {
+  font-family: var(--font-display); font-size: 36px; font-weight: 900;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--txt-hi); margin-bottom: 4px;
+}
+.page-title-bar {
+  width: 48px; height: 3px; background: var(--red); margin-bottom: 28px;
+}
+
+/* ── SECTION ──────────────────────────────────────── */
+.section {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 4px; margin-bottom: 20px; overflow: hidden;
+}
+.section-header {
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--txt-mid); background: var(--raised);
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+}
+.section-header.ice { color: var(--ice); }
+.section-header.gold { color: var(--gold); }
+.section-header.sage { color: var(--sage); }
+.section-header.red { color: var(--red); }
+
+/* ── KPI CARDS ────────────────────────────────────── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.kpi-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; padding: 16px; text-align: center;
+}
+.kpi-label { font-family: var(--font-display); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--txt-lo); margin-bottom: 8px; }
+.kpi-value { font-family: var(--font-display); font-size: 32px; font-weight: 900;
+  color: var(--txt-hi); line-height: 1; }
+.kpi-value.has-value { color: var(--ice); }
+.kpi-sub { font-size: 11px; color: var(--txt-lo); margin-top: 4px; }
+
+/* ── DATA TABLE ───────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  font-family: var(--font-display); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--txt-mid); background: var(--surface);
+  padding: 10px 12px; text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.data-table th:first-child { text-align: left; }
+.data-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  color: var(--txt-hi); font-size: 13px; text-align: center;
+  vertical-align: middle;
+}
+.data-table td:first-child { text-align: left; font-weight: 600; }
+.data-table tr:nth-child(even) td { background: var(--surface); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table .delta { color: var(--sage); font-weight: 700; font-family: var(--font-mono); font-size: 12px; }
+.data-table .delta.neg { color: var(--red); }
+.data-table .input-cell {
+  background: var(--ice-bg) !important;
+  color: var(--ice); font-family: var(--font-mono); font-weight: 700;
+  font-size: 13px; text-align: center; cursor: pointer;
+}
+.data-table .input-cell:hover { background: #061828 !important; }
+
+/* ── INLINE INPUT ─────────────────────────────────── */
+.inline-input {
+  background: transparent; border: none; outline: none;
+  color: inherit; font: inherit; width: 100%; text-align: center;
+  cursor: text;
+}
+.inline-input:focus { color: var(--ice); }
+
+/* ── FORM GRID ────────────────────────────────────── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
+.form-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px;
+  border-bottom: 1px solid var(--border); }
+.form-row:last-child { border-bottom: none; }
+.form-label { font-size: 13px; color: var(--txt-mid); min-width: 160px; }
+.form-input {
+  background: var(--ice-bg); border: 1px solid var(--ice-bg);
+  color: var(--ice); font-family: var(--font-mono); font-size: 14px;
+  font-weight: 700; padding: 8px 12px; border-radius: 3px;
+  outline: none; transition: border-color 0.15s; flex: 1; max-width: 200px;
+}
+.form-input:focus { border-color: var(--ice); }
+.form-input.gold { background: var(--gold-bg); border-color: var(--gold-bg); color: var(--gold); }
+.form-input.gold:focus { border-color: var(--gold); }
+
+/* ── CALC RESULT ──────────────────────────────────── */
+.calc-result {
+  background: var(--raised); border: 1px solid var(--border);
+  border-radius: 3px; padding: 8px 14px;
+  font-family: var(--font-mono); font-size: 14px; font-weight: 700;
+  color: var(--sage); text-align: center; min-width: 100px;
+}
+
+/* ── MK BLOCK ─────────────────────────────────────── */
+.mk-selector { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.mk-btn {
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1px solid var(--border); border-radius: 3px;
+  padding: 8px 16px; cursor: pointer; transition: all 0.15s;
+  background: var(--card); color: var(--txt-lo);
+}
+.mk-btn:hover { color: var(--txt-mid); border-color: var(--txt-lo); }
+.mk-btn.mk1.active { background: var(--ice-bg); border-color: var(--ice); color: var(--ice); }
+.mk-btn.mk2.active { background: var(--teal-bg); border-color: var(--teal); color: var(--teal); }
+.mk-btn.mk3.active { background: var(--amber-bg); border-color: var(--amber); color: var(--amber); }
+.mk-btn.mk4.active { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+
+.mk-info {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: 4px; margin-bottom: 16px;
+  font-family: var(--font-display); font-size: 13px; font-weight: 600;
+}
+.mk-info.mk1 { background: var(--ice-bg); color: var(--ice); }
+.mk-info.mk2 { background: var(--teal-bg); color: var(--teal); }
+.mk-info.mk3 { background: var(--amber-bg); color: var(--amber); }
+.mk-info.mk4 { background: var(--red-bg); color: var(--red); }
+.mk-badge {
+  font-family: var(--font-display); font-size: 11px; font-weight: 900;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+}
+.mk1 .mk-badge { background: var(--ice); color: var(--base); }
+.mk2 .mk-badge { background: var(--teal); color: var(--base); }
+.mk3 .mk-badge { background: var(--amber); color: var(--base); }
+.mk4 .mk-badge { background: var(--red); color: var(--base); }
+
+/* ── TRAINING TABLE ───────────────────────────────── */
+.training-block-header {
+  font-family: var(--font-display); font-size: 14px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--surface); color: var(--txt-hi);
+  padding: 12px 16px; border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.training-table { width: 100%; border-collapse: collapse; }
+.training-table th {
+  font-family: var(--font-display); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--txt-lo); background: var(--raised);
+  padding: 8px 10px; text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.training-table th:first-child { text-align: left; width: 35%; }
+.training-table td {
+  padding: 9px 10px; border-bottom: 1px solid var(--border);
+  font-size: 13px; text-align: center; color: var(--txt-hi);
+}
+.training-table td:first-child { text-align: left; }
+.training-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.training-table tr:last-child td { border-bottom: none; }
+.training-table .ex-name { font-weight: 600; color: var(--txt-hi); }
+.training-table .wt-cell {
+  font-family: var(--font-mono); font-weight: 700; font-size: 13px;
+}
+.training-table .wt-cell.mk1 { color: var(--ice); }
+.training-table .wt-cell.mk2 { color: var(--teal); }
+.training-table .wt-cell.mk3 { color: var(--amber); }
+.training-table .wt-cell.mk4 { color: var(--red); }
+.training-table .result-cell {
+  background: var(--sage-bg); color: var(--sage);
+  font-family: var(--font-mono); font-size: 12px;
+}
+.total-row td {
+  background: var(--gold-bg) !important;
+  color: var(--gold) !important; font-family: var(--font-mono);
+  font-weight: 700; font-size: 12px;
+}
+
+/* ── WARMUP TABLE ─────────────────────────────────── */
+.warmup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; }
+.warmup-input-row { display: flex; align-items: center; gap: 12px; padding: 16px;
+  border-bottom: 1px solid var(--border); }
+.big-input {
+  background: var(--ice-bg); border: 1px solid var(--ice);
+  color: var(--ice); font-family: var(--font-mono); font-size: 24px;
+  font-weight: 700; padding: 12px 16px; border-radius: 4px;
+  outline: none; width: 140px; text-align: center;
+}
+.big-input:focus { box-shadow: 0 0 0 2px rgba(74,143,168,0.3); }
+.warmup-table { width: 100%; border-collapse: collapse; }
+.warmup-table th {
+  font-family: var(--font-display); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--txt-lo);
+  background: var(--raised); padding: 8px 12px; text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.warmup-table td {
+  padding: 11px 12px; border-bottom: 1px solid var(--border);
+  text-align: center; font-size: 13px;
+}
+.warmup-table tr:nth-child(even) td { background: var(--surface); }
+.warmup-table tr:last-child td { border-bottom: none; }
+.warmup-weight { font-family: var(--font-mono); font-weight: 700; font-size: 15px;
+  color: var(--txt-hi); }
+.warmup-reps { color: var(--txt-mid); }
+.warmup-pct { color: var(--txt-lo); font-size: 11px; }
+
+/* ── RPE TABLE ────────────────────────────────────── */
+.rpe-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.rpe-table th {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  background: var(--surface); color: var(--txt-mid);
+  padding: 7px 6px; text-align: center; border-bottom: 1px solid var(--border);
+}
+.rpe-table td {
+  padding: 6px 5px; text-align: center; border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: 11px;
+}
+.rpe-table td:first-child { color: var(--txt-mid); font-weight: 700; background: var(--raised); }
+.rpe-100 { background: var(--red-bg) !important; color: var(--red) !important; font-weight: 700; }
+.rpe-90 { background: #1a0a00 !important; color: var(--amber) !important; }
+.rpe-85 { background: var(--gold-bg) !important; color: var(--gold) !important; }
+.rpe-80 { background: var(--teal-bg) !important; color: var(--teal) !important; }
+.rpe-lo { color: var(--txt-lo) !important; }
+
+/* ── NUTRITION ────────────────────────────────────── */
+.nutrition-kpi { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+  padding: 16px; }
+.nut-card {
+  border-radius: 4px; padding: 14px 10px; text-align: center; border: 1px solid var(--border);
+}
+.nut-card.kcal { background: var(--red-bg); border-color: var(--red); }
+.nut-card.protein { background: var(--sage-bg); border-color: var(--sage); }
+.nut-card.fat { background: var(--amber-bg); border-color: var(--amber); }
+.nut-card.carbs { background: var(--gold-bg); border-color: var(--gold); }
+.nut-card.water { background: var(--ice-bg); border-color: var(--ice); }
+.nut-value {
+  font-family: var(--font-display); font-size: 28px; font-weight: 900;
+  line-height: 1; margin-bottom: 4px;
+}
+.nut-card.kcal .nut-value { color: var(--red); }
+.nut-card.protein .nut-value { color: var(--sage); }
+.nut-card.fat .nut-value { color: var(--amber); }
+.nut-card.carbs .nut-value { color: var(--gold); }
+.nut-card.water .nut-value { color: var(--ice); }
+.nut-unit { font-size: 10px; color: var(--txt-lo); }
+
+/* ── DIARY ────────────────────────────────────────── */
+.diary-table { width: 100%; border-collapse: collapse; }
+.diary-table th {
+  font-family: var(--font-display); font-size: 9px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--txt-lo);
+  background: var(--raised); padding: 8px 10px; text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.diary-table td {
+  padding: 8px 10px; border-bottom: 1px solid var(--border);
+  font-size: 12px; text-align: center; color: var(--txt-mid);
+}
+.diary-table tr:nth-child(even) td { background: var(--surface); }
+.diary-table .editable {
+  background: var(--ice-bg); color: var(--ice);
+  font-family: var(--font-mono); font-weight: 700;
+}
+.diary-table .rm-auto {
+  background: var(--sage-bg); color: var(--sage);
+  font-family: var(--font-mono); font-size: 12px;
+}
+
+/* ── NOTICE BAR ───────────────────────────────────── */
+.notice {
+  background: var(--raised); border-left: 3px solid var(--gold);
+  padding: 12px 16px; border-radius: 0 4px 4px 0;
+  font-size: 12px; color: var(--txt-mid); margin-bottom: 16px;
+}
+
+/* ── REFERENCES TABLE ─────────────────────────────── */
+.ref-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+.ref-col { padding: 16px; border-right: 1px solid var(--border); }
+.ref-col:last-child { border-right: none; }
+.ref-col-title {
+  font-family: var(--font-display); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ref-col-title.protein { color: var(--sage); }
+.ref-col-title.fat { color: var(--amber); }
+.ref-col-title.carbs { color: var(--gold); }
+.ref-item { font-size: 12px; color: var(--txt-mid); padding: 4px 0;
+  border-bottom: 1px solid var(--border); }
+.ref-item:last-child { border-bottom: none; }
+
+/* ── SCROLLBAR ────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--base); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--txt-lo); }
+
+/* ── MOBILE ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .nutrition-kpi { grid-template-columns: repeat(3, 1fr); }
+  .ref-grid { grid-template-columns: 1fr; }
+  .warmup-grid { grid-template-columns: 1fr; }
+  .page { padding: 20px 14px; }
+  .page-title { font-size: 26px; }
+  .training-table th:nth-child(n+4),
+  .training-table td:nth-child(n+4) { display: none; }
+}
+
+@media (max-width: 480px) {
+  .nav-brand { display: none; }
+  .nut-card .nut-value { font-size: 22px; }
+  .nutrition-kpi { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">ТРЕН<span>·</span>ИРО<span>·</span>ВКА</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('overview')">Обзор</button>
+    <button class="nav-tab" onclick="showPage('mesocycle')">Мезоциклы</button>
+    <button class="nav-tab" onclick="showPage('diary')">Дневник</button>
+    <button class="nav-tab" onclick="showPage('calculator')">Калькулятор</button>
+    <button class="nav-tab" onclick="showPage('summary')">Сводные данные</button>
+    <button class="nav-tab" onclick="showPage('nutrition')">Питание</button>
+    <button class="nav-tab" onclick="showPage('client')">Клиент</button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ═══ ОБЗОР ══════════════════════════════════════════ -->
+<section class="page active" id="page-overview">
+  <div class="page-title">Обзор программы</div>
+  <div class="page-title-bar"></div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Лучший присед</div>
+      <div class="kpi-value" id="kpi-squat">—</div>
+      <div class="kpi-sub">кг · топ-сет</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Лучший жим лёжа</div>
+      <div class="kpi-value" id="kpi-bench">—</div>
+      <div class="kpi-sub">кг · топ-сет</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Лучшая становая</div>
+      <div class="kpi-value" id="kpi-dead">—</div>
+      <div class="kpi-sub">кг · топ-сет</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Вес тела</div>
+      <div class="kpi-value" id="kpi-weight">—</div>
+      <div class="kpi-sub">кг · текущий</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Силовые показатели · Прогресс</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Упражнение</th>
+          <th>Старт</th>
+          <th>МЦ 1</th>
+          <th>МЦ 2</th>
+          <th>МЦ 3</th>
+          <th>Δ</th>
+        </tr>
+      </thead>
+      <tbody id="strength-progress">
+        <tr><td>Приседания</td><td class="input-cell"><input class="inline-input" data-key="sq0" placeholder="—" oninput="updateStrength(this,'sq',0)"></td><td class="input-cell"><input class="inline-input" data-key="sq1" placeholder="—" oninput="updateStrength(this,'sq',1)"></td><td class="input-cell"><input class="inline-input" data-key="sq2" placeholder="—" oninput="updateStrength(this,'sq',2)"></td><td class="input-cell"><input class="inline-input" data-key="sq3" placeholder="—" oninput="updateStrength(this,'sq',3)"></td><td class="delta" id="dSq">—</td></tr>
+        <tr><td>Становая тяга</td><td class="input-cell"><input class="inline-input" data-key="dl0" placeholder="—" oninput="updateStrength(this,'dl',0)"></td><td class="input-cell"><input class="inline-input" data-key="dl1" placeholder="—" oninput="updateStrength(this,'dl',1)"></td><td class="input-cell"><input class="inline-input" data-key="dl2" placeholder="—" oninput="updateStrength(this,'dl',2)"></td><td class="input-cell"><input class="inline-input" data-key="dl3" placeholder="—" oninput="updateStrength(this,'dl',3)"></td><td class="delta" id="dDl">—</td></tr>
+        <tr><td>Жим лёжа</td><td class="input-cell"><input class="inline-input" data-key="bp0" placeholder="—" oninput="updateStrength(this,'bp',0)"></td><td class="input-cell"><input class="inline-input" data-key="bp1" placeholder="—" oninput="updateStrength(this,'bp',1)"></td><td class="input-cell"><input class="inline-input" data-key="bp2" placeholder="—" oninput="updateStrength(this,'bp',2)"></td><td class="input-cell"><input class="inline-input" data-key="bp3" placeholder="—" oninput="updateStrength(this,'bp',3)"></td><td class="delta" id="dBp">—</td></tr>
+        <tr><td>Тяга блока</td><td class="input-cell"><input class="inline-input" data-key="ro0" placeholder="—" oninput="updateStrength(this,'ro',0)"></td><td class="input-cell"><input class="inline-input" data-key="ro1" placeholder="—" oninput="updateStrength(this,'ro',1)"></td><td class="input-cell"><input class="inline-input" data-key="ro2" placeholder="—" oninput="updateStrength(this,'ro',2)"></td><td class="input-cell"><input class="inline-input" data-key="ro3" placeholder="—" oninput="updateStrength(this,'ro',3)"></td><td class="delta" id="dRo">—</td></tr>
+        <tr><td>Подтягивания</td><td class="input-cell"><input class="inline-input" data-key="pu0" placeholder="—" oninput="updateStrength(this,'pu',0)"></td><td class="input-cell"><input class="inline-input" data-key="pu1" placeholder="—" oninput="updateStrength(this,'pu',1)"></td><td class="input-cell"><input class="inline-input" data-key="pu2" placeholder="—" oninput="updateStrength(this,'pu',2)"></td><td class="input-cell"><input class="inline-input" data-key="pu3" placeholder="—" oninput="updateStrength(this,'pu',3)"></td><td class="delta" id="dPu">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header ice">Антропометрия · Динамика</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Параметр</th><th>Старт</th><th>Цикл 1</th><th>Цикл 2</th><th>Цикл 3</th><th>Δ</th></tr>
+      </thead>
+      <tbody id="antro-table">
+        <tr><td>Вес, кг</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wt',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wt',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wt',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wt',3)" placeholder="—"></td><td class="delta" id="dWt">—</td></tr>
+        <tr><td>Обхват груди, см</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ch',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ch',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ch',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ch',3)" placeholder="—"></td><td class="delta" id="dCh">—</td></tr>
+        <tr><td>Обхват талии, см</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wa',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wa',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wa',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wa',3)" placeholder="—"></td><td class="delta" id="dWa">—</td></tr>
+        <tr><td>Обхват руки, см</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ar',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ar',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ar',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ar',3)" placeholder="—"></td><td class="delta" id="dAr">—</td></tr>
+        <tr><td>% жира</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'fat',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'fat',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'fat',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'fat',3)" placeholder="—"></td><td class="delta" id="dFat">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ МЕЗОЦИКЛЫ ══════════════════════════════════════ -->
+<section class="page" id="page-mesocycle">
+  <div class="page-title">Мезоциклы</div>
+  <div class="page-title-bar"></div>
+
+  <div class="notice">
+    Синие ячейки — вводи вес и повт в МК1. МК2/3/4 рассчитываются по периодизации автоматически. Зелёные — фиксируй фактический результат.
+  </div>
+
+  <!-- МЦ селектор -->
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+    <button class="mk-btn mk1 active" onclick="selectMC(1)">Мезоцикл 1</button>
+    <button class="mk-btn mk2" onclick="selectMC(2)">Мезоцикл 2</button>
+    <button class="mk-btn mk3" onclick="selectMC(3)">Мезоцикл 3</button>
+  </div>
+
+  <!-- МК селектор -->
+  <div class="mk-selector">
+    <button class="mk-btn mk1 active" onclick="selectMK(1)">МК 1 · Базовый</button>
+    <button class="mk-btn mk2" onclick="selectMK(2)">МК 2 · Развивающий</button>
+    <button class="mk-btn mk3" onclick="selectMK(3)">МК 3 · Ударный</button>
+    <button class="mk-btn mk4" onclick="selectMK(4)">МК 4 · Deload</button>
+  </div>
+
+  <div class="mk-info mk1" id="mk-info">
+    <span class="mk-badge">МК 1</span>
+    <span>БАЗОВЫЙ · 100% вес · Вводи упражнения и веса</span>
+  </div>
+
+  <!-- Тренировка A -->
+  <div class="section" style="margin-bottom:16px">
+    <div class="training-block-header">Тренировка A</div>
+    <table class="training-table" id="train-a">
+      <thead>
+        <tr>
+          <th>Упражнение</th>
+          <th>Вес/RPE</th>
+          <th>Сеты</th>
+          <th>Повт</th>
+          <th>Тоннаж</th>
+          <th>Результат</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-a"></tbody>
+    </table>
+  </div>
+
+  <!-- Тренировка B -->
+  <div class="section">
+    <div class="training-block-header">Тренировка B</div>
+    <table class="training-table" id="train-b">
+      <thead>
+        <tr>
+          <th>Упражнение</th>
+          <th>Вес/RPE</th>
+          <th>Сеты</th>
+          <th>Повт</th>
+          <th>Тоннаж</th>
+          <th>Результат</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-b"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ ДНЕВНИК ══════════════════════════════════════════ -->
+<section class="page" id="page-diary">
+  <div class="page-title">Дневник</div>
+  <div class="page-title-bar"></div>
+
+  <div class="section">
+    <div class="section-header">Записи тренировок · 1RM считается автоматически</div>
+    <table class="diary-table">
+      <thead>
+        <tr>
+          <th>№</th><th>Дата</th><th>Упражнение</th>
+          <th>Вес</th><th>Сеты</th><th>Повт</th><th>RPE</th>
+          <th>1RM авто</th><th>Усталость</th><th>Заметки</th>
+        </tr>
+      </thead>
+      <tbody id="diary-body"></tbody>
+    </table>
+    <div style="padding:12px 16px;">
+      <button onclick="addDiaryRow()" style="background:var(--raised);border:1px solid var(--border);color:var(--txt-mid);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px 16px;border-radius:3px;cursor:pointer;">+ Добавить запись</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ КАЛЬКУЛЯТОР ══════════════════════════════════════ -->
+<section class="page" id="page-calculator">
+  <div class="page-title">Калькулятор</div>
+  <div class="page-title-bar"></div>
+
+  <!-- 1RM -->
+  <div class="section">
+    <div class="section-header">Расчёт максимума (1RM)</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Упражнение</th><th>Вес (кг)</th><th>Повт</th><th>1RM Эпли</th><th>1RM Brzycki</th><th>Среднее</th></tr>
+      </thead>
+      <tbody id="rm-table">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- % от 1RM -->
+  <div class="section">
+    <div class="section-header gold">Рабочие веса по % от 1RM</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Упражнение</th><th>1RM</th><th>60%</th><th>65%</th><th>70%</th><th>75%</th><th>80%</th></tr>
+      </thead>
+      <tbody id="pct-table"></tbody>
+    </table>
+  </div>
+
+  <!-- Разминка -->
+  <div class="section">
+    <div class="section-header">Разминочные подходы</div>
+    <div class="warmup-input-row">
+      <span class="form-label">Рабочий вес (кг):</span>
+      <input type="number" class="big-input" id="warmup-weight" placeholder="100" oninput="calcWarmup()">
+    </div>
+    <table class="warmup-table">
+      <thead>
+        <tr><th>Подход</th><th>Вес, кг</th><th>Повторения</th><th>% от рабочего</th></tr>
+      </thead>
+      <tbody id="warmup-body"></tbody>
+    </table>
+  </div>
+
+  <!-- RPE таблица -->
+  <div class="section">
+    <div class="section-header">Таблица RPE → % от 1RM</div>
+    <div style="overflow-x:auto;">
+      <table class="rpe-table" id="rpe-table"></table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ СВОДНЫЕ ДАННЫЕ ═══════════════════════════════════ -->
+<section class="page" id="page-summary">
+  <div class="page-title">Сводные данные</div>
+  <div class="page-title-bar"></div>
+
+  <div class="section">
+    <div class="section-header ice">Антропометрия · Вноси данные после каждого мезоцикла</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Параметр</th><th>Старт</th><th>Цикл 1</th><th>Цикл 2</th><th>Цикл 3</th><th>Δ</th><th>Цель</th></tr>
+      </thead>
+      <tbody id="summary-antro"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header gold">Силовые результаты (кг) · Лучший вес за МЦ</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Упражнение</th><th>Старт</th><th>МЦ 1</th><th>МЦ 2</th><th>МЦ 3</th><th>Δ</th><th>Цель</th></tr>
+      </thead>
+      <tbody id="summary-lifts"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Тоннаж по неделям (вводи итоги тренировок)</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>МЦ / Неделя</th><th>Трен A</th><th>Трен B</th><th>Трен C</th><th>Трен D</th><th>Итого</th></tr>
+      </thead>
+      <tbody id="summary-tonnage"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ ПИТАНИЕ ══════════════════════════════════════════ -->
+<section class="page" id="page-nutrition">
+  <div class="page-title">Питание</div>
+  <div class="page-title-bar"></div>
+
+  <div class="section">
+    <div class="section-header">Шаг 1 · Исходные данные</div>
+    <div class="form-row"><span class="form-label">Масса тела (кг)</span><input type="number" class="form-input" id="nut-weight" placeholder="80" oninput="calcNutrition()"></div>
+    <div class="form-row"><span class="form-label">Коэффициент активности</span>
+      <select class="form-input" id="nut-activ" onchange="calcNutrition()" style="cursor:pointer;">
+        <option value="28">28 · Сидячая работа</option>
+        <option value="30" selected>30 · Минимум активности</option>
+        <option value="32">32 · Средняя активность</option>
+        <option value="34">34 · Высокая активность</option>
+      </select>
+    </div>
+    <div class="form-row"><span class="form-label">Степень дефицита</span>
+      <select class="form-input" id="nut-deficit" onchange="calcNutrition()" style="cursor:pointer;">
+        <option value="0">0 · Норма / набор</option>
+        <option value="0.15">0.15 · −15% (похудение)</option>
+        <option value="0.20">0.20 · −20% (быстрее)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Шаг 2 · БЖУ</div>
+    <div class="form-row"><span class="form-label">Белок, г/кг</span><input type="number" class="form-input" id="nut-protein" value="1.7" step="0.1" oninput="calcNutrition()"></div>
+    <div class="form-row"><span class="form-label">Жиры, г/кг</span><input type="number" class="form-input" id="nut-fat" value="1.0" step="0.1" oninput="calcNutrition()"></div>
+    <div class="form-row"><span class="form-label">Вода, мл/кг</span><input type="number" class="form-input" id="nut-water" value="36" oninput="calcNutrition()"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header sage">Шаг 3 · Итоговые цифры · Обновляются автоматически</div>
+    <div class="nutrition-kpi">
+      <div class="nut-card kcal"><div class="nut-value" id="nut-kcal">—</div><div class="nut-unit">ккал/день</div></div>
+      <div class="nut-card protein"><div class="nut-value" id="nut-p-val">—</div><div class="nut-unit">г белка</div></div>
+      <div class="nut-card fat"><div class="nut-value" id="nut-f-val">—</div><div class="nut-unit">г жиров</div></div>
+      <div class="nut-card carbs"><div class="nut-value" id="nut-c-val">—</div><div class="nut-unit">г углеводов</div></div>
+      <div class="nut-card water"><div class="nut-value" id="nut-w-val">—</div><div class="nut-unit">мл воды</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Источники нутриентов</div>
+    <div class="ref-grid">
+      <div class="ref-col">
+        <div class="ref-col-title protein">Белки</div>
+        <div class="ref-item">Индейка, курица</div>
+        <div class="ref-item">Говядина, баранина</div>
+        <div class="ref-item">Форель, сёмга</div>
+        <div class="ref-item">Яйца</div>
+        <div class="ref-item">Творог, греч. йогурт</div>
+        <div class="ref-item">Морепродукты</div>
+      </div>
+      <div class="ref-col">
+        <div class="ref-col-title fat">Жиры</div>
+        <div class="ref-item">Оливковое масло</div>
+        <div class="ref-item">Масло авокадо</div>
+        <div class="ref-item">Жирная рыба</div>
+        <div class="ref-item">Орехи, семечки</div>
+        <div class="ref-item">Авокадо</div>
+      </div>
+      <div class="ref-col">
+        <div class="ref-col-title carbs">Углеводы</div>
+        <div class="ref-item">Рис, киноа, полба</div>
+        <div class="ref-item">Гречка, овсянка</div>
+        <div class="ref-item">Батат, картофель</div>
+        <div class="ref-item">Бобовые</div>
+        <div class="ref-item">Фрукты (до 20%)</div>
+        <div class="ref-item">Овощи — без ограничений</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ КЛИЕНТ ═══════════════════════════════════════════ -->
+<section class="page" id="page-client">
+  <div class="page-title">Данные клиента</div>
+  <div class="page-title-bar"></div>
+
+  <div class="section">
+    <div class="section-header">Личные данные</div>
+    <div class="form-row"><span class="form-label">Имя</span><input type="text" class="form-input" id="cl-name" placeholder="Иван Иванов" style="max-width:280px"></div>
+    <div class="form-row"><span class="form-label">Дата рождения</span><input type="date" class="form-input" id="cl-dob"></div>
+    <div class="form-row"><span class="form-label">Телефон</span><input type="tel" class="form-input" id="cl-phone" placeholder="+7 900 000 00 00" style="max-width:240px"></div>
+    <div class="form-row"><span class="form-label">Тренер</span><input type="text" class="form-input" id="cl-trainer" placeholder="Имя тренера" style="max-width:280px"></div>
+    <div class="form-row"><span class="form-label">Дата начала</span><input type="date" class="form-input" id="cl-start"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header gold">Цели программы</div>
+    <div class="form-row"><span class="form-label">Основная цель</span><input type="text" class="form-input" id="cl-goal" placeholder="Набор мышечной массы" style="max-width:320px"></div>
+    <div class="form-row"><span class="form-label">Целевой вес (кг)</span><input type="number" class="form-input" id="cl-tw" placeholder="85"></div>
+    <div class="form-row"><span class="form-label">Целевой % жира</span><input type="number" class="form-input" id="cl-tf" placeholder="12"></div>
+    <div class="form-row"><span class="form-label">Дата цели</span><input type="date" class="form-input" id="cl-tdate"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Структура программы</div>
+    <div class="form-row"><span class="form-label">Мезоциклы</span><span style="color:var(--txt-hi)">3 блока × 4 недели = 12 недель</span></div>
+    <div class="form-row"><span class="form-label">Тренировки</span><span style="color:var(--txt-hi)">4 сессии в неделю (A/B × нечёт/чёт)</span></div>
+    <div class="form-row"><span class="form-label">Периодизация</span><span style="color:var(--txt-hi)">МК1 Базовый → МК2 +5% → МК3 +10% → МК4 Deload 70%</span></div>
+    <div class="form-row"><span class="form-label">Deload</span><span style="color:var(--txt-hi)">4-я неделя каждого мезоцикла (Матвеев)</span></div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// STATE — всё хранится в памяти + localStorage
+// ═══════════════════════════════════════════════════════
+const LS_KEY = 'training_app_v1';
+let state = {
+  currentMC: 1, currentMK: 1,
+  // МЦ1/МЦ2/МЦ3 × МК1..4 × ТрА/ТрБ × строки(упр,вес,сет,повт,рез)
+  mesocycles: {},
+  diary: [],
+  antro: {}, strength: {},
+  nutrition: { weight:'', activ:30, deficit:0, protein:1.7, fat:1.0, water:36 },
+  client: {}
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(LS_KEY);
+    if (s) state = { ...state, ...JSON.parse(s) };
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════
+// МЕЗОЦИКЛЫ
+// ═══════════════════════════════════════════════════════
+const MK_CONFIG = {
+  1: { label:'МК 1', name:'БАЗОВЫЙ', cls:'mk1', coef:1.00, rAdj:0,
+       info:'БАЗОВЫЙ · 100% вес · Вводи упражнения и веса' },
+  2: { label:'МК 2', name:'РАЗВИВАЮЩИЙ', cls:'mk2', coef:1.05, rAdj:0,
+       info:'РАЗВИВАЮЩИЙ · Вес +5% · Авто' },
+  3: { label:'МК 3', name:'УДАРНЫЙ', cls:'mk3', coef:1.10, rAdj:-2,
+       info:'УДАРНЫЙ · Вес +10%, повт −2 · Авто' },
+  4: { label:'МК 4', name:'DELOAD', cls:'mk4', coef:0.70, rAdj:-3,
+       info:'DELOAD · Вес 70%, повт −3 · Восстановление по Матвееву' }
+};
+
+const ROWS_PER_BLOCK = 8; // упражнений на блок
+
+function mcKey(mc, mk, block, row, field) {
+  return `mc${mc}_mk${mk}_b${block}_r${row}_${field}`;
+}
+function getVal(key) { return state.mesocycles[key] || ''; }
+function setVal(key, v) { state.mesocycles[key] = v; saveState(); }
+
+function selectMC(mc) {
+  state.currentMC = mc;
+  document.querySelectorAll('[onclick^="selectMC"]').forEach((b,i) => {
+    b.classList.toggle('active', i+1 === mc);
+    b.classList.remove('mk1','mk2','mk3');
+    b.classList.add(['mk1','mk2','mk3'][i]);
+  });
+  renderMesocycle();
+}
+function selectMK(mk) {
+  state.currentMK = mk;
+  document.querySelectorAll('[onclick^="selectMK"]').forEach((b,i) => {
+    b.classList.toggle('active', i+1 === mk);
+  });
+  renderMesocycle();
+}
+
+function renderMesocycle() {
+  const mc = state.currentMC, mk = state.currentMK;
+  const cfg = MK_CONFIG[mk];
+  const isAuto = mk > 1;
+
+  // Обновить info bar
+  const info = document.getElementById('mk-info');
+  info.className = `mk-info ${cfg.cls}`;
+  info.innerHTML = `<span class="mk-badge">${cfg.label}</span><span>${cfg.info}</span>`;
+
+  ['a','b'].forEach((block, bi) => {
+    const tbody = document.getElementById(`tbody-${block}`);
+    tbody.innerHTML = '';
+    for (let r = 0; r < ROWS_PER_BLOCK; r++) {
+      const tr = document.createElement('tr');
+      // Упражнение
+      const exKey = mcKey(mc, 1, bi, r, 'ex');
+      const exVal = getVal(exKey);
+      const exCell = mk === 1
+        ? `<td><input class="inline-input" value="${exVal}" placeholder="Упражнение..." oninput="setVal('${exKey}',this.value);renderMesocycle()" style="color:var(--txt-hi);font-weight:600;"></td>`
+        : `<td class="ex-name">${exVal || '—'}</td>`;
+
+      // Вес
+      const wtKey1 = mcKey(mc, 1, bi, r, 'wt');
+      const stKey1 = mcKey(mc, 1, bi, r, 'st');
+      const rpKey1 = mcKey(mc, 1, bi, r, 'rp');
+      const wt1 = parseFloat(getVal(wtKey1)) || 0;
+      const st1 = getVal(stKey1);
+      const rp1 = parseFloat(getVal(rpKey1)) || 0;
+
+      let wtDisplay, stDisplay, rpDisplay;
+      if (mk === 1) {
+        wtDisplay = `<input class="inline-input wt-cell mk1" value="${wt1||''}" placeholder="кг" type="number" oninput="setVal('${wtKey1}',this.value);renderRow(${mc},${bi},${r})" style="color:var(--ice);font-family:'Space Mono',monospace;font-weight:700;">`;
+        stDisplay = `<input class="inline-input" value="${st1||''}" placeholder="3" type="number" oninput="setVal('${stKey1}',this.value);renderRow(${mc},${bi},${r})" style="color:var(--txt-mid);">`;
+        rpDisplay = `<input class="inline-input" value="${rp1||''}" placeholder="8" type="number" oninput="setVal('${rpKey1}',this.value);renderRow(${mc},${bi},${r})" style="color:var(--txt-mid);">`;
+      } else {
+        const wtAuto = wt1 ? Math.round(wt1 * cfg.coef / 2.5) * 2.5 : '';
+        const rpAuto = rp1 ? Math.max(1, rp1 + (cfg.rAdj||0)) : '';
+        wtDisplay = `<span class="wt-cell ${cfg.cls}" style="font-family:'Space Mono',monospace;font-weight:700;">${wtAuto||'—'}</span>`;
+        stDisplay = `<span style="color:var(--txt-mid)">${st1||'—'}</span>`;
+        rpDisplay = `<span style="color:var(--txt-mid)">${rpAuto||'—'}</span>`;
+      }
+
+      // Тоннаж
+      const wtFinal = mk === 1 ? wt1 : (wt1 ? Math.round(wt1*cfg.coef/2.5)*2.5 : 0);
+      const stFinal = parseFloat(mk===1?st1:st1) || 0;
+      const rpFinal = mk === 1 ? rp1 : (rp1 ? Math.max(1,rp1+(cfg.rAdj||0)) : 0);
+      const tonnage = (wtFinal * stFinal * rpFinal) || '';
+
+      // Результат
+      const resKey = mcKey(mc, mk, bi, r, 'res');
+      const resVal = getVal(resKey);
+      const resCell = `<input class="inline-input result-cell" value="${resVal}" placeholder="—" oninput="setVal('${resKey}',this.value)" style="color:var(--sage);background:var(--sage-bg);font-family:'Space Mono',monospace;">`;
+
+      tr.innerHTML = `
+        ${exCell}
+        <td>${wtDisplay}</td>
+        <td>${stDisplay}</td>
+        <td>${rpDisplay}</td>
+        <td style="color:var(--txt-lo);font-family:'Space Mono',monospace;font-size:11px;">${tonnage||'—'}</td>
+        <td style="background:var(--sage-bg)">${resCell}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+    // Итого строка
+    const tr = document.createElement('tr');
+    tr.className = 'total-row';
+    tr.innerHTML = `<td colspan="4">ИТОГО</td><td id="total-${block}-ton">—</td><td></td>`;
+    tbody.appendChild(tr);
+    updateTotal(block, bi, mc, mk, cfg);
+  });
+}
+
+function renderRow(mc, bi, r) { renderMesocycle(); }
+function updateTotal(block, bi, mc, mk, cfg) {
+  let total = 0;
+  for (let r = 0; r < ROWS_PER_BLOCK; r++) {
+    const wt1 = parseFloat(getVal(mcKey(mc,1,bi,r,'wt'))) || 0;
+    const st = parseFloat(getVal(mcKey(mc,1,bi,r,'st'))) || 0;
+    const rp = parseFloat(getVal(mcKey(mc,1,bi,r,'rp'))) || 0;
+    const wt = mk===1 ? wt1 : (wt1 ? Math.round(wt1*cfg.coef/2.5)*2.5 : 0);
+    const r2 = mk===1 ? rp : (rp ? Math.max(1,rp+(cfg.rAdj||0)) : 0);
+    total += wt * st * r2;
+  }
+  const el = document.getElementById(`total-${block}-ton`);
+  if (el) el.textContent = total > 0 ? total + ' кг' : '—';
+}
+
+// ═══════════════════════════════════════════════════════
+// КАЛЬКУЛЯТОР
+// ═══════════════════════════════════════════════════════
+const CALC_EXES = ['Приседания','Становая тяга','Жим лёжа','Жим стоя','Тяга штанги','Румынская тяга'];
+
+function initCalculator() {
+  // 1RM таблица
+  const tbody1 = document.getElementById('rm-table');
+  CALC_EXES.forEach((ex,i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${ex}</td>
+      <td class="input-cell"><input class="inline-input" id="rm-w${i}" type="number" placeholder="кг" oninput="calcRM(${i})"></td>
+      <td class="input-cell"><input class="inline-input" id="rm-r${i}" type="number" placeholder="повт" oninput="calcRM(${i})"></td>
+      <td class="calc-result" id="rm-e${i}">—</td>
+      <td class="calc-result" id="rm-b${i}" style="background:var(--raised);color:var(--txt-mid)">—</td>
+      <td class="calc-result" id="rm-avg${i}" style="background:var(--sage-bg);color:var(--sage)">—</td>
+    `;
+    tbody1.appendChild(tr);
+  });
+
+  // % таблица
+  const tbody2 = document.getElementById('pct-table');
+  CALC_EXES.forEach((ex,i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${ex}</td><td class="calc-result" id="pct-rm${i}" style="background:var(--raised);color:var(--sage)">—</td>
+      <td class="calc-result" id="pct60-${i}" style="background:var(--sage-bg);color:var(--sage)">—</td>
+      <td class="calc-result" id="pct65-${i}" style="background:var(--sage-bg);color:var(--sage)">—</td>
+      <td class="calc-result" id="pct70-${i}" style="background:var(--amber-bg);color:var(--amber)">—</td>
+      <td class="calc-result" id="pct75-${i}" style="background:var(--amber-bg);color:var(--amber)">—</td>
+      <td class="calc-result" id="pct80-${i}" style="background:var(--red-bg);color:var(--red)">—</td>`;
+    tbody2.appendChild(tr);
+  });
+
+  // Разминка
+  calcWarmup();
+
+  // RPE таблица
+  buildRPETable();
+}
+
+function calcRM(i) {
+  const w = parseFloat(document.getElementById(`rm-w${i}`).value)||0;
+  const r = parseFloat(document.getElementById(`rm-r${i}`).value)||0;
+  if (!w || !r) {
+    ['e','b','avg'].forEach(t => document.getElementById(`rm-${t}${i}`).textContent='—');
+    return;
+  }
+  const epley   = +(w*(1+r/30)).toFixed(1);
+  const brzycki = r<37 ? +(w*(36/(37-r))).toFixed(1) : '—';
+  const avg     = brzycki !== '—' ? +((epley+brzycki)/2).toFixed(1) : epley;
+
+  document.getElementById(`rm-e${i}`).textContent   = epley;
+  document.getElementById(`rm-b${i}`).textContent   = brzycki;
+  document.getElementById(`rm-avg${i}`).textContent = avg;
+
+  // Обновить % таблицу
+  document.getElementById(`pct-rm${i}`).textContent = avg;
+  [60,65,70,75,80].forEach(pct => {
+    document.getElementById(`pct${pct}-${i}`).textContent = (Math.round(avg*pct/100/2.5)*2.5).toFixed(1);
+  });
+}
+
+function calcWarmup() {
+  const w = parseFloat(document.getElementById('warmup-weight').value)||0;
+  const warmups = [
+    { pct:0.35, reps:'1–8' }, { pct:0.50, reps:'1–5' },
+    { pct:0.65, reps:'1–3' }, { pct:0.75, reps:'1–3' },
+    { pct:0.85, reps:'1–2' }, { pct:0.95, reps:'1' }
+  ];
+  const tbody = document.getElementById('warmup-body');
+  tbody.innerHTML = '';
+  warmups.forEach((wu, i) => {
+    const kg = w ? (Math.round(w*wu.pct/2.5)*2.5).toFixed(1) : '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--txt-lo)">Подход ${i+1}</td>
+      <td class="warmup-weight">${kg}</td>
+      <td class="warmup-reps">${wu.reps}</td>
+      <td class="warmup-pct">${Math.round(wu.pct*100)}%</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function buildRPETable() {
+  const RPE_DATA = {
+    10:[100,95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9],
+    9.5:[97.8,93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3],
+    9:[95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4],
+    8.5:[93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4],
+    8:[92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68],
+    7.5:[90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7],
+    7:[89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3],
+    6.5:[87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64],
+    6:[86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6],
+    5.5:[85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64,61.3],
+    5:[83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6,59.9]
+  };
+  const table = document.getElementById('rpe-table');
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr><th>RPE</th>${Array.from({length:10},(_,i)=>`<th>${i+1}</th>`).join('')}</tr>`;
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  Object.entries(RPE_DATA).forEach(([rpe,vals]) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${rpe}</td>` + vals.map(p => {
+      let cls = 'rpe-lo';
+      if (p>=95) cls='rpe-100'; else if (p>=90) cls='rpe-90'; else if (p>=85) cls='rpe-85'; else if (p>=80) cls='rpe-80';
+      return `<td class="${cls}">${p}%</td>`;
+    }).join('');
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+}
+
+// ═══════════════════════════════════════════════════════
+// ДНЕВНИК
+// ═══════════════════════════════════════════════════════
+function initDiary() {
+  state.diary.forEach(addDiaryRowFromData);
+  if (state.diary.length === 0) for(let i=0;i<5;i++) addDiaryRow();
+}
+
+function addDiaryRow(data) {
+  const tbody = document.getElementById('diary-body');
+  const idx = tbody.rows.length + 1;
+  const tr = document.createElement('tr');
+  const d = data || {};
+  tr.innerHTML = `
+    <td style="color:var(--txt-lo)">${idx}</td>
+    <td class="editable"><input class="inline-input" type="date" value="${d.date||''}"></td>
+    <td class="editable"><input class="inline-input" value="${d.ex||''}" placeholder="Упражнение"></td>
+    <td class="editable"><input class="inline-input" type="number" value="${d.wt||''}" placeholder="кг" oninput="calcDiaryRM(this)"></td>
+    <td class="editable"><input class="inline-input" type="number" value="${d.st||''}" placeholder="3"></td>
+    <td class="editable"><input class="inline-input" type="number" value="${d.rp||''}" placeholder="8" oninput="calcDiaryRM(this)"></td>
+    <td class="editable"><input class="inline-input" type="number" value="${d.rpe||''}" placeholder="7" min="1" max="10" step="0.5"></td>
+    <td class="rm-auto">—</td>
+    <td class="editable"><input class="inline-input" type="number" value="${d.fat||''}" placeholder="5" min="1" max="10"></td>
+    <td class="editable"><input class="inline-input" value="${d.note||''}" placeholder="..."></td>
+  `;
+  tbody.appendChild(tr);
+  if (data?.wt && data?.rp) calcDiaryRM(tr.querySelector('[type="number"]'));
+}
+function addDiaryRowFromData(d) { addDiaryRow(d); }
+function calcDiaryRM(input) {
+  const tr = input.closest('tr');
+  const wt = parseFloat(tr.cells[3].querySelector('input').value)||0;
+  const rp = parseFloat(tr.cells[5].querySelector('input').value)||0;
+  tr.cells[7].textContent = (wt&&rp) ? (wt*(1+rp/30)).toFixed(1) : '—';
+}
+
+// ═══════════════════════════════════════════════════════
+// СВОДНЫЕ ДАННЫЕ
+// ═══════════════════════════════════════════════════════
+const ANTRO_NAMES = ['Вес, кг','Обхват груди, см','Обхват талии, см',
+  'Обхват бёдер, см','Обхват бедра, см','Обхват руки, см','% жира'];
+const ANTRO_KEYS = ['wt','ch','wa','hp','th','ar','fat'];
+const LIFT_NAMES = ['Приседания','Становая тяга','Жим лёжа','Тяга блока',
+  'Подтягивания','Брусья','Румынская тяга','Жим гантелей','Гак-присед','Ягодичный мост'];
+const LIFT_KEYS = ['sq','dl','bp','ro','pu','dip','rdl','db','hk','gb'];
+
+function initSummary() {
+  const ta = document.getElementById('summary-antro');
+  ANTRO_NAMES.forEach((name,i) => {
+    const k = ANTRO_KEYS[i];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${name}</td>
+      ${[0,1,2,3].map(j=>`<td class="input-cell"><input class="inline-input" value="${state.antro[k+j]||''}" placeholder="—" type="number" step="0.1" oninput="updateSummaryAntro('${k}',${j},this.value)"></td>`).join('')}
+      <td class="delta" id="sa-d-${k}">—</td>
+      <td class="input-cell"><input class="inline-input" value="${state.antro[k+'goal']||''}" placeholder="—" type="number" step="0.1" oninput="state.antro['${k}goal']=this.value;saveState()"></td>`;
+    ta.appendChild(tr);
+    updateSummaryAntroRow(k);
+  });
+
+  const tl = document.getElementById('summary-lifts');
+  LIFT_NAMES.forEach((name,i) => {
+    const k = LIFT_KEYS[i];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${name}</td>
+      ${[0,1,2,3].map(j=>`<td class="input-cell"><input class="inline-input" value="${state.strength[k+j]||''}" placeholder="—" type="number" oninput="updateSummaryLift('${k}',${j},this.value)"></td>`).join('')}
+      <td class="delta" id="sl-d-${k}">—</td>
+      <td class="input-cell"><input class="inline-input" value="${state.strength[k+'goal']||''}" placeholder="—" type="number" oninput="state.strength['${k}goal']=this.value;saveState()"></td>`;
+    tl.appendChild(tr);
+    updateSummaryLiftRow(k);
+  });
+
+  const tt = document.getElementById('summary-tonnage');
+  const TON_LABELS = ['МЦ1·МК1','МЦ1·МК2','МЦ1·МК3','МЦ1·Deload',
+    'МЦ2·МК1','МЦ2·МК2','МЦ2·МК3','МЦ2·Deload',
+    'МЦ3·МК1','МЦ3·МК2','МЦ3·МК3','МЦ3·Deload'];
+  TON_LABELS.forEach((lbl,i) => {
+    const isDL = (i%4===3);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="color:${isDL?'var(--red)':'var(--txt-mid)'};font-weight:${isDL?'700':'400'}">${lbl}</td>
+      ${['A','B','C','D'].map(t=>`<td class="input-cell"><input class="inline-input" value="${state[`ton${i}${t}`]||''}" placeholder="—" type="number" oninput="updateTonnage(${i},'${t}',this.value)"></td>`).join('')}
+      <td class="delta" id="ton-total-${i}" style="color:${isDL?'var(--red)':'var(--gold)'}">—</td>`;
+    tt.appendChild(tr);
+    updateTonnageRow(i);
+  });
+}
+
+function updateSummaryAntro(k,j,v) { state.antro[k+j]=v; saveState(); updateSummaryAntroRow(k); }
+function updateSummaryAntroRow(k) {
+  const s = parseFloat(state.antro[k+'0'])||0, e = parseFloat(state.antro[k+'3'])||0;
+  const d = document.getElementById(`sa-d-${k}`);
+  if (d && s && e) {
+    const diff = (e-s).toFixed(1);
+    d.textContent = (diff>0?'+':'')+diff;
+    d.className = 'delta'+(diff<0?' neg':'');
+  }
+}
+function updateSummaryLift(k,j,v) { state.strength[k+j]=v; saveState(); updateSummaryLiftRow(k); }
+function updateSummaryLiftRow(k) {
+  const s = parseFloat(state.strength[k+'0'])||0, e = parseFloat(state.strength[k+'3'])||0;
+  const d = document.getElementById(`sl-d-${k}`);
+  if (d && s && e) {
+    const diff = (e-s).toFixed(1);
+    d.textContent = (diff>0?'+':'')+diff;
+    d.className = 'delta'+(diff<0?' neg':'');
+  }
+}
+function updateTonnage(i,t,v) { state[`ton${i}${t}`]=v; saveState(); updateTonnageRow(i); }
+function updateTonnageRow(i) {
+  const total = ['A','B','C','D'].reduce((acc,t)=>acc+(parseFloat(state[`ton${i}${t}`])||0),0);
+  const el = document.getElementById(`ton-total-${i}`);
+  if (el) el.textContent = total > 0 ? total : '—';
+}
+
+// ═══════════════════════════════════════════════════════
+// ОБЗОР — обновление KPI
+// ═══════════════════════════════════════════════════════
+function updateStrength(input, key, idx) {
+  if (!state.strength) state.strength = {};
+  state.strength[key+idx] = input.value;
+  saveState();
+  const vals = [0,1,2,3].map(i=>parseFloat(state.strength[key+i])||null).filter(Boolean);
+  const max = vals.length ? Math.max(...vals) : null;
+  const start = parseFloat(state.strength[key+'0'])||null;
+  const end = parseFloat(state.strength[key+'3'])||null;
+  const kpiMap = {sq:'kpi-squat',dl:'kpi-dead',bp:'kpi-bench'};
+  if (kpiMap[key]) {
+    const el = document.getElementById(kpiMap[key]);
+    if (el) { el.textContent = max || '—'; el.className = 'kpi-value'+(max?' has-value':''); }
+  }
+  const dMap = {sq:'dSq',dl:'dDl',bp:'dBp',ro:'dRo',pu:'dPu'};
+  if (dMap[key]) {
+    const el = document.getElementById(dMap[key]);
+    if (el && start && end) {
+      const diff = (end-start).toFixed(1);
+      el.textContent = (diff>0?'+':'')+diff; el.className='delta'+(diff<0?' neg':'');
+    }
+  }
+}
+
+function updateAntro(input, key, idx) {
+  if (!state.antro) state.antro = {};
+  state.antro[key+idx] = input.value;
+  saveState();
+  const start = parseFloat(state.antro[key+'0'])||null;
+  const end = parseFloat(state.antro[key+'3'])||null;
+  if (key==='wt') {
+    const el = document.getElementById('kpi-weight');
+    if (el) { el.textContent = parseFloat(state.antro['wt0'])||'—'; }
+  }
+  const dMap = {wt:'dWt',ch:'dCh',wa:'dWa',ar:'dAr',fat:'dFat'};
+  if (dMap[key]) {
+    const el = document.getElementById(dMap[key]);
+    if (el && start && end) {
+      const diff = (end-start).toFixed(1);
+      el.textContent=(diff>0?'+':'')+diff; el.className='delta'+(diff<0?' neg':'');
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// ПИТАНИЕ
+// ═══════════════════════════════════════════════════════
+function calcNutrition() {
+  const w = parseFloat(document.getElementById('nut-weight').value)||0;
+  const a = parseFloat(document.getElementById('nut-activ').value)||30;
+  const def = parseFloat(document.getElementById('nut-deficit').value)||0;
+  const p = parseFloat(document.getElementById('nut-protein').value)||1.7;
+  const f = parseFloat(document.getElementById('nut-fat').value)||1.0;
+  const wa = parseFloat(document.getElementById('nut-water').value)||36;
+
+  if (!w) { ['kcal','p-val','f-val','c-val','w-val'].forEach(k=>document.getElementById('nut-'+k).textContent='—'); return; }
+
+  const kcal = Math.round(w * a * (1-def));
+  const pG   = Math.round(w * p);
+  const fG   = Math.round(w * f);
+  const cG   = Math.max(0, Math.round((kcal - pG*4 - fG*9) / 4));
+  const wML  = Math.round(w * wa);
+
+  document.getElementById('nut-kcal').textContent  = kcal;
+  document.getElementById('nut-p-val').textContent = pG;
+  document.getElementById('nut-f-val').textContent = fG;
+  document.getElementById('nut-c-val').textContent = cG;
+  document.getElementById('nut-w-val').textContent = wML;
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+loadState();
+initCalculator();
+initDiary();
+initSummary();
+renderMesocycle();
+calcNutrition();
+
+// Восстановить KPI
+['sq','dl','bp','ro','pu'].forEach(key => {
+  [0,1,2,3].forEach(i => { if (state.strength?.[key+i]) updateStrength({value:state.strength[key+i]},key,i); });
+});
+['wt','ch','wa','ar','fat'].forEach(key => {
+  [0,1,2,3].forEach(i => { if (state.antro?.[key+i]) updateAntro({value:state.antro[key+i]},key,i); });
+});
+</script>
+</body>
+</html>
