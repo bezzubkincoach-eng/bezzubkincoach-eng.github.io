@@ -550,68 +550,63 @@ async function loadPlan(sheetId){
   const id=sheetId||S.sheetId;
   if(!id) throw new Error('ID не указан');
 
-  // Используем CSV экспорт — работает с любого домена без CORS блокировок
-  const sheetName=encodeURIComponent('ПЛАН');
-  const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
+  // opensheet.elk.sh — публичный прокси для Google Sheets, работает везде
+  const url=`https://opensheet.elk.sh/${id}/ПЛАН`;
 
-  let text;
+  let data;
   try{
-    const resp=await fetch(url,{mode:'cors',cache:'no-store'});
+    const resp=await fetch(url,{cache:'no-store'});
     if(!resp.ok) throw new Error('HTTP '+resp.status);
-    text=await resp.text();
-  }catch(e1){
-    // Если fetch заблокирован — пробуем no-cors через Image trick
-    // Последний вариант: прямой fetch без mode
-    try{
-      const resp2=await fetch(url,{cache:'no-store'});
-      if(!resp2.ok) throw new Error('HTTP '+resp2.status);
-      text=await resp2.text();
-    }catch(e2){
-      throw new Error('Не удалось загрузить таблицу. Убедись: 1) Таблица открыта «Читатель для всех» 2) Лист называется ПЛАН заглавными буквами 3) Есть интернет. Ошибка: '+e2.message);
-    }
+    data=await resp.json();
+  }catch(e){
+    throw new Error('Не удалось загрузить таблицу. Убедись: 1) Таблица открыта «Читатель для всех» 2) Лист называется ПЛАН заглавными буквами 3) Есть интернет. Ошибка: '+e.message);
   }
 
-  if(!text||text.trim().length<10) throw new Error('Таблица пуста или недоступна.');
+  if(!data||!data.length) throw new Error('Лист ПЛАН пуст или недоступен.');
 
-  // Парсим CSV
-  const lines=text.trim().split('\n').map(l=>{
-    // Убираем кавычки CSV формата
-    return l.split(',').map(cell=>{
-      cell=cell.trim();
-      if(cell.startsWith('"')&&cell.endsWith('"')) cell=cell.slice(1,-1);
-      return cell.replace(/""/g,'"').trim();
-    });
-  });
+  // opensheet возвращает массив объектов с ключами = заголовки первой строки
+  // Нам нужно найти колонки МЦ, МК, Тренировка, №, Упражнение, Вес/RPE, Сеты, Повт, Заметка
+  // Пробуем разные варианты названий колонок
+  function getCol(row, ...keys){
+    for(const k of keys){
+      for(const key of Object.keys(row)){
+        if(key.trim().toUpperCase()===k.toUpperCase()) return (row[key]||'').toString().trim();
+      }
+    }
+    return '';
+  }
 
-  if(!lines.length) throw new Error('Лист ПЛАН пуст.');
+  const rows=data;
 
-  // Используем lines напрямую как rows
-  const rows=lines;
-
-  // Парсим строки CSV — пропускаем заголовки и подсказки
+  // Парсим строки — opensheet возвращает объекты с ключами = заголовки
   S.plan={};
   let cnt=0;
   for(let i=0;i<rows.length;i++){
-    const c=rows[i]||[];
-    const v=idx=>(c[idx]||'').toString().trim();
-    const n=idx=>parseInt(v(idx))||0;
-    // МЦ должен быть числом 1-3
-    const mc=n(0);
+    const row=rows[i];
+    // Получаем значения по возможным именам колонок
+    const mcRaw=getCol(row,'МЦ','MC','мц');
+    const mkRaw=getCol(row,'МК','MK','мк');
+    const trRaw=getCol(row,'Тренировка','ТРЕНИРОВКА','Train','тренировка');
+    const numRaw=getCol(row,'№','Num','NUM','#','номер');
+    const ex=getCol(row,'Упражнение','УПРАЖНЕНИЕ','Exercise','упражнение');
+    const wt=getCol(row,'Вес/RPE','Вес','ВЕС','вес','Weight','RPE','вес/rpe');
+    const st=getCol(row,'Сеты','СЕТЫ','Sets','сеты','подходы','Подходы');
+    const rp=getCol(row,'Повт','ПОВТ','Reps','повт','повторения','Повторения');
+    const note=getCol(row,'Заметка','ЗАМЕТКА','Note','заметка','комментарий');
+
+    const mc=parseInt(mcRaw)||0;
     if(!mc||mc<1||mc>10) continue;
-    const mk=n(1);
+    const mk=parseInt(mkRaw)||0;
     if(!mk||mk<1||mk>4) continue;
-    // Тренировка А или Б (поддерживаем и латиницу A/B)
-    const trRaw=v(2).toUpperCase();
-    const tr=trRaw==='A'?'А':trRaw==='B'?'Б':trRaw;
-    if(!['А','Б'].includes(tr)) continue;
-    const row=n(3);
-    const ex=v(4);
+    const trNorm=trRaw.toUpperCase()==='A'?'А':trRaw.toUpperCase()==='B'?'Б':trRaw.toUpperCase();
+    if(!['А','Б'].includes(trNorm)) continue;
     if(!ex) continue;
-    const wt=v(5),st=v(6),rp=v(7),note=v(8);
+    const num=parseInt(numRaw)||cnt+1;
+
     if(!S.plan[mc]) S.plan[mc]={};
     if(!S.plan[mc][mk]) S.plan[mc][mk]={};
-    if(!S.plan[mc][mk][tr]) S.plan[mc][mk][tr]={};
-    S.plan[mc][mk][tr][row||cnt+1]={ex,wt,st,rp,note};
+    if(!S.plan[mc][mk][trNorm]) S.plan[mc][mk][trNorm]={};
+    S.plan[mc][mk][trNorm][num]={ex,wt,st,rp,note};
     cnt++;
   }
   S.sheetId=id;
