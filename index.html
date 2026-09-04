@@ -575,22 +575,30 @@ async function loadPlan(sheetId){
   const rows=json?.table?.rows||[];
   if(!rows.length) throw new Error('Лист ПЛАН пуст. Добавь данные.');
 
-  // Парсим строки
-  // Формат: МЦ | МК | Тренировка | № | Упражнение | Вес/RPE | Сеты | Повт | Заметка
-  const startI=isNaN(parseInt((rows[0]?.c?.[0]?.v??'')))?1:0;
+  // Парсим строки — пропускаем заголовки, подсказки, разделители
   S.plan={};
   let cnt=0;
-  for(let i=startI;i<rows.length;i++){
+  for(let i=0;i<rows.length;i++){
     const c=rows[i]?.c||[];
-    const v=idx=>(c[idx]?.v??c[idx]?.f??'').toString().trim();
+    const v=idx=>{const cell=c[idx];if(!cell)return'';return(cell.v??cell.f??'').toString().trim();};
     const n=idx=>parseInt(v(idx))||0;
-    const mc=n(0),mk=n(1),tr=v(2).toUpperCase(),row=n(3);
-    const ex=v(4),wt=v(5),st=v(6),rp=v(7),note=v(8);
-    if(!mc||!mk||!tr||!ex) continue;
+    // МЦ должен быть числом 1-3
+    const mc=n(0);
+    if(!mc||mc<1||mc>10) continue;
+    const mk=n(1);
+    if(!mk||mk<1||mk>4) continue;
+    // Тренировка А или Б (поддерживаем и латиницу A/B)
+    const trRaw=v(2).toUpperCase();
+    const tr=trRaw==='A'?'А':trRaw==='B'?'Б':trRaw;
+    if(!['А','Б'].includes(tr)) continue;
+    const row=n(3);
+    const ex=v(4);
+    if(!ex) continue;
+    const wt=v(5),st=v(6),rp=v(7),note=v(8);
     if(!S.plan[mc]) S.plan[mc]={};
     if(!S.plan[mc][mk]) S.plan[mc][mk]={};
     if(!S.plan[mc][mk][tr]) S.plan[mc][mk][tr]={};
-    S.plan[mc][mk][tr][row]={ex,wt,st,rp,note};
+    S.plan[mc][mk][tr][row||cnt+1]={ex,wt,st,rp,note};
     cnt++;
   }
   S.sheetId=id;
