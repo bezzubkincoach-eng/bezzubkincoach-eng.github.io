@@ -546,41 +546,54 @@ function launch(){
 // ═══════════════════════════════════════════════════
 // GOOGLE SHEETS SYNC (JSONP — работает с любого домена)
 // ═══════════════════════════════════════════════════
-function jsonpFetch(url){
-  return new Promise((resolve,reject)=>{
-    const cb='_gc_'+Date.now();
-    const s=document.createElement('script');
-    const t=setTimeout(()=>{cleanup();reject(new Error('Таймаут. Проверь интернет.'))},15000);
-    function cleanup(){clearTimeout(t);delete window[cb];if(s.parentNode)s.parentNode.removeChild(s)}
-    window[cb]=data=>{cleanup();resolve(data)};
-    s.onerror=()=>{cleanup();reject(new Error('Ошибка загрузки. Проверь ID таблицы и доступ.'))};
-    s.src=url+'&callback='+cb+'&_='+Date.now();
-    document.head.appendChild(s);
-  });
-}
-
 async function loadPlan(sheetId){
   const id=sheetId||S.sheetId;
   if(!id) throw new Error('ID не указан');
-  const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent('ПЛАН')}`;
-  let json;
-  try{ json=await jsonpFetch(url); }
-  catch(e){ throw new Error('Не удалось подключиться. '+e.message); }
-  if(!json||json.status==='error'){
-    const m=json?.errors?.[0]?.message||'';
-    if(m.includes('not found')||m.includes('ПЛАН'))
-      throw new Error('Лист "ПЛАН" не найден. Убедись что лист называется ПЛАН заглавными буквами.');
-    throw new Error('Ошибка Google Sheets: '+(m||'неизвестная'));
-  }
-  const rows=json?.table?.rows||[];
-  if(!rows.length) throw new Error('Лист ПЛАН пуст. Добавь данные.');
 
-  // Парсим строки — пропускаем заголовки, подсказки, разделители
+  // Используем CSV экспорт — работает с любого домена без CORS блокировок
+  const sheetName=encodeURIComponent('ПЛАН');
+  const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
+
+  let text;
+  try{
+    const resp=await fetch(url,{mode:'cors',cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    text=await resp.text();
+  }catch(e1){
+    // Если fetch заблокирован — пробуем no-cors через Image trick
+    // Последний вариант: прямой fetch без mode
+    try{
+      const resp2=await fetch(url,{cache:'no-store'});
+      if(!resp2.ok) throw new Error('HTTP '+resp2.status);
+      text=await resp2.text();
+    }catch(e2){
+      throw new Error('Не удалось загрузить таблицу. Убедись: 1) Таблица открыта «Читатель для всех» 2) Лист называется ПЛАН заглавными буквами 3) Есть интернет. Ошибка: '+e2.message);
+    }
+  }
+
+  if(!text||text.trim().length<10) throw new Error('Таблица пуста или недоступна.');
+
+  // Парсим CSV
+  const lines=text.trim().split('\n').map(l=>{
+    // Убираем кавычки CSV формата
+    return l.split(',').map(cell=>{
+      cell=cell.trim();
+      if(cell.startsWith('"')&&cell.endsWith('"')) cell=cell.slice(1,-1);
+      return cell.replace(/""/g,'"').trim();
+    });
+  });
+
+  if(!lines.length) throw new Error('Лист ПЛАН пуст.');
+
+  // Используем lines напрямую как rows
+  const rows=lines;
+
+  // Парсим строки CSV — пропускаем заголовки и подсказки
   S.plan={};
   let cnt=0;
   for(let i=0;i<rows.length;i++){
-    const c=rows[i]?.c||[];
-    const v=idx=>{const cell=c[idx];if(!cell)return'';return(cell.v??cell.f??'').toString().trim();};
+    const c=rows[i]||[];
+    const v=idx=>(c[idx]||'').toString().trim();
     const n=idx=>parseInt(v(idx))||0;
     // МЦ должен быть числом 1-3
     const mc=n(0);
