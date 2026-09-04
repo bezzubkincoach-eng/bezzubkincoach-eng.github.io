@@ -3,1247 +3,988 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ПРОГРАММА ТРЕНИРОВОК</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<title>ТРЕНИРОВКИ · ARTEM BEZZUBKIN</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --void: #000000;
-  --base: #080808;
-  --card: #101010;
-  --surface: #171717;
-  --raised: #1f1f1f;
-  --border: #2c2c2c;
-  --red: #c0392b;
-  --red-bg: #1a0505;
-  --gold: #b8960c;
-  --gold-bg: #141000;
-  --ice: #4a8fa8;
-  --ice-bg: #040e14;
-  --sage: #4a7c59;
-  --sage-bg: #040e08;
-  --amber: #a07830;
-  --amber-bg: #120c00;
-  --teal: #3a7a70;
-  --teal-bg: #040e0c;
-  --txt-hi: #e8e8e8;
-  --txt-mid: #909090;
-  --txt-lo: #4a4a4a;
-  --font-display: 'Barlow Condensed', sans-serif;
-  --font-mono: 'Space Mono', monospace;
-  --font-body: 'Barlow', sans-serif;
+:root{
+  --void:#000;--base:#080808;--card:#101010;--surface:#171717;
+  --raised:#1f1f1f;--border:#2c2c2c;
+  --red:#c0392b;--red-bg:#1a0505;
+  --gold:#b8960c;--gold-bg:#141000;
+  --ice:#4a8fa8;--ice-bg:#040e14;
+  --sage:#4a7c59;--sage-bg:#040e08;
+  --amber:#a07830;--amber-bg:#120c00;
+  --teal:#3a7a70;--teal-bg:#040e0c;
+  --hi:#e8e8e8;--mid:#909090;--lo:#4a4a4a;
+  --F:'Barlow Condensed',sans-serif;
+  --M:'Space Mono',monospace;
+  --B:'Barlow',sans-serif;
 }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--base);color:var(--hi);font-family:var(--B);font-size:14px;min-height:100vh}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ══ WELCOME SCREEN ══════════════════════════════════ */
+#welcome{position:fixed;inset:0;z-index:200;background:var(--base);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+#welcome.hidden{display:none}
+.wcard{width:100%;max-width:420px;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:auto}
+.wtop{background:var(--void);padding:28px 24px 20px;border-bottom:3px solid var(--red)}
+.wlogo{font-family:var(--F);font-size:9px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--lo);margin-bottom:8px}
+.wname{font-family:var(--F);font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.wtitle{font-family:var(--F);font-size:32px;font-weight:900;letter-spacing:.03em;text-transform:uppercase;color:var(--hi);line-height:1}
+.wtitle span{color:var(--red)}
+.wbody{padding:22px 24px}
+.wlbl{font-family:var(--F);font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--lo);margin-bottom:6px;display:block;margin-top:14px}
+.wlbl:first-child{margin-top:0}
+.winp{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--hi);font-family:var(--M);font-size:13px;padding:11px 12px;border-radius:3px;outline:none;transition:border-color .2s}
+.winp:focus{border-color:var(--ice)}
+.whint{font-size:11px;color:var(--lo);margin-top:5px;line-height:1.6}
+.wbtn{width:100%;background:var(--red);border:none;color:#fff;font-family:var(--F);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:14px;border-radius:3px;cursor:pointer;transition:background .15s;margin-top:16px}
+.wbtn:hover{background:#a93226}
+.wbtn:disabled{background:var(--raised);color:var(--lo);cursor:not-allowed}
+.wbtn.sec{background:var(--raised);color:var(--mid);border:1px solid var(--border);margin-top:8px}
+.wbtn.sec:hover{background:var(--surface)}
+.wsep{display:flex;align-items:center;gap:10px;margin:14px 0}
+.wsep span{flex:1;height:1px;background:var(--border)}
+.wsep em{font-size:11px;color:var(--lo);font-style:normal}
+.werr{display:none;margin-top:10px;padding:10px 12px;background:var(--red-bg);border:1px solid var(--red);border-radius:3px;font-size:11px;color:var(--red);line-height:1.5}
 
-body {
-  background: var(--base);
-  color: var(--txt-hi);
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.4;
-  min-height: 100vh;
-}
+/* ══ NAV ════════════════════════════════════════════ */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:rgba(8,8,8,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center}
+.brand{font-family:var(--F);font-size:15px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--hi);padding:0 12px;white-space:nowrap;flex-shrink:0;line-height:1}
+.brand small{display:block;font-size:8px;font-weight:400;letter-spacing:.15em;color:var(--lo);margin-top:1px}
+.tabs{display:flex;overflow-x:auto;flex:1;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{font-family:var(--F);font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;padding:0 11px;height:50px;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;flex-shrink:0}
+.tab:hover{color:var(--mid)}
+.tab.on{color:var(--hi);border-bottom-color:var(--red)}
+.nav-end{display:flex;align-items:center;padding-right:6px;flex-shrink:0;gap:1px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--lo);flex-shrink:0;transition:all .3s}
+.sdot.ok{background:var(--sage);box-shadow:0 0 5px var(--sage)}
+.sdot.err{background:var(--red)}
+.sdot.spin{background:var(--gold);animation:sp 1s infinite}
+@keyframes sp{0%,100%{opacity:1}50%{opacity:.15}}
+.slbl{font-family:var(--M);font-size:9px;color:var(--lo);padding:0 5px;white-space:nowrap}
+.ico{background:none;border:none;cursor:pointer;color:var(--lo);font-size:14px;padding:6px 7px;border-radius:3px;line-height:1;transition:color .15s}
+.ico:hover{color:var(--hi)}
 
-/* ── NAV ──────────────────────────────────────────── */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  background: rgba(8,8,8,0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 0;
-  height: 52px; padding: 0 20px;
-}
-.nav-brand {
-  font-family: var(--font-display);
-  font-size: 18px; font-weight: 900; letter-spacing: 0.1em;
-  color: var(--txt-hi); text-transform: uppercase;
-  margin-right: 32px; white-space: nowrap;
-}
-.nav-brand span { color: var(--red); }
-.nav-tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1; }
-.nav-tabs::-webkit-scrollbar { display: none; }
-.nav-tab {
-  font-family: var(--font-display); font-size: 12px; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--txt-lo); background: transparent;
-  border: none; cursor: pointer; padding: 0 14px; height: 52px;
-  white-space: nowrap; border-bottom: 2px solid transparent;
-  transition: all 0.15s;
-}
-.nav-tab:hover { color: var(--txt-mid); }
-.nav-tab.active { color: var(--txt-hi); border-bottom-color: var(--red); }
+/* ══ LAYOUT ════════════════════════════════════════ */
+.main{margin-top:50px;padding-bottom:40px}
+.pg{display:none;padding:20px 16px;max-width:900px;margin:0 auto}
+.pg.on{display:block}
+.ph{font-family:var(--F);font-size:26px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
+.phb{width:28px;height:3px;background:var(--red);margin-bottom:18px}
 
-/* ── LAYOUT ───────────────────────────────────────── */
-.main { margin-top: 52px; }
-.page { display: none; padding: 32px 24px; max-width: 960px; margin: 0 auto; }
-.page.active { display: block; }
+/* ══ SECTIONS ══════════════════════════════════════ */
+.s{background:var(--card);border:1px solid var(--border);border-radius:4px;margin-bottom:12px;overflow:hidden}
+.sh{font-family:var(--F);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--raised);padding:8px 13px;border-bottom:1px solid var(--border)}
+.sh.ice{color:var(--ice)}.sh.gold{color:var(--gold)}.sh.sage{color:var(--sage)}.sh.red{color:var(--red)}.sh.amber{color:var(--amber)}
 
-/* ── PAGE HEADER ──────────────────────────────────── */
-.page-title {
-  font-family: var(--font-display); font-size: 36px; font-weight: 900;
-  letter-spacing: 0.05em; text-transform: uppercase;
-  color: var(--txt-hi); margin-bottom: 4px;
-}
-.page-title-bar {
-  width: 48px; height: 3px; background: var(--red); margin-bottom: 28px;
-}
+/* ══ MK SELECTOR ═══════════════════════════════════ */
+.mk-tabs{display:flex;gap:0;border-bottom:1px solid var(--border)}
+.mk-tab{font-family:var(--F);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:none;border:none;cursor:pointer;padding:10px 13px;color:var(--lo);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.mk-tab:hover{color:var(--mid)}
+.mk-tab.mk1.on{color:var(--ice);border-bottom-color:var(--ice);background:var(--ice-bg)}
+.mk-tab.mk2.on{color:var(--teal);border-bottom-color:var(--teal);background:var(--teal-bg)}
+.mk-tab.mk3.on{color:var(--amber);border-bottom-color:var(--amber);background:var(--amber-bg)}
+.mk-tab.mk4.on{color:var(--red);border-bottom-color:var(--red);background:var(--red-bg)}
 
-/* ── SECTION ──────────────────────────────────────── */
-.section {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 4px; margin-bottom: 20px; overflow: hidden;
-}
-.section-header {
-  font-family: var(--font-display); font-size: 11px; font-weight: 700;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--txt-mid); background: var(--raised);
-  padding: 10px 16px; border-bottom: 1px solid var(--border);
-}
-.section-header.ice { color: var(--ice); }
-.section-header.gold { color: var(--gold); }
-.section-header.sage { color: var(--sage); }
-.section-header.red { color: var(--red); }
+.mk-info{display:flex;align-items:center;gap:8px;padding:8px 13px;font-family:var(--F);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)}
+.mk-info.mk1{background:var(--ice-bg);color:var(--ice)}
+.mk-info.mk2{background:var(--teal-bg);color:var(--teal)}
+.mk-info.mk3{background:var(--amber-bg);color:var(--amber)}
+.mk-info.mk4{background:var(--red-bg);color:var(--red)}
+.mk-badge{font-family:var(--F);font-size:8px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;padding:2px 6px;border-radius:2px}
+.mk1 .mk-badge{background:var(--ice);color:var(--base)}
+.mk2 .mk-badge{background:var(--teal);color:var(--base)}
+.mk3 .mk-badge{background:var(--amber);color:var(--base)}
+.mk4 .mk-badge{background:var(--red);color:#fff}
 
-/* ── KPI CARDS ────────────────────────────────────── */
-.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-.kpi-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 4px; padding: 16px; text-align: center;
-}
-.kpi-label { font-family: var(--font-display); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--txt-lo); margin-bottom: 8px; }
-.kpi-value { font-family: var(--font-display); font-size: 32px; font-weight: 900;
-  color: var(--txt-hi); line-height: 1; }
-.kpi-value.has-value { color: var(--ice); }
-.kpi-sub { font-size: 11px; color: var(--txt-lo); margin-top: 4px; }
+/* ══ TRAINING BLOCKS ════════════════════════════════ */
+.mc-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.mc-btn{font-family:var(--F);font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--border);border-radius:3px;padding:7px 13px;cursor:pointer;background:var(--card);color:var(--lo);transition:all .15s}
+.mc-btn:hover{color:var(--mid)}
+.mc-btn.on{background:var(--red-bg);border-color:var(--red);color:var(--red)}
 
-/* ── DATA TABLE ───────────────────────────────────── */
-.data-table { width: 100%; border-collapse: collapse; }
-.data-table th {
-  font-family: var(--font-display); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--txt-mid); background: var(--surface);
-  padding: 10px 12px; text-align: center;
-  border-bottom: 1px solid var(--border);
-}
-.data-table th:first-child { text-align: left; }
-.data-table td {
-  padding: 10px 12px; border-bottom: 1px solid var(--border);
-  color: var(--txt-hi); font-size: 13px; text-align: center;
-  vertical-align: middle;
-}
-.data-table td:first-child { text-align: left; font-weight: 600; }
-.data-table tr:nth-child(even) td { background: var(--surface); }
-.data-table tr:last-child td { border-bottom: none; }
-.data-table .delta { color: var(--sage); font-weight: 700; font-family: var(--font-mono); font-size: 12px; }
-.data-table .delta.neg { color: var(--red); }
-.data-table .input-cell {
-  background: var(--ice-bg) !important;
-  color: var(--ice); font-family: var(--font-mono); font-weight: 700;
-  font-size: 13px; text-align: center; cursor: pointer;
-}
-.data-table .input-cell:hover { background: #061828 !important; }
+.block-hdr{font-family:var(--F);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--surface);color:var(--hi);padding:9px 13px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.block-tag{font-family:var(--F);font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:var(--raised);color:var(--mid)}
 
-/* ── INLINE INPUT ─────────────────────────────────── */
-.inline-input {
-  background: transparent; border: none; outline: none;
-  color: inherit; font: inherit; width: 100%; text-align: center;
-  cursor: text;
-}
-.inline-input:focus { color: var(--ice); }
+.tt{width:100%;border-collapse:collapse}
+.tt th{font-family:var(--F);font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--lo);background:var(--raised);padding:7px 9px;text-align:center;border-bottom:1px solid var(--border)}
+.tt th:first-child{text-align:left;width:34%}
+.tt td{padding:8px 9px;border-bottom:1px solid var(--border);font-size:12px;text-align:center;vertical-align:middle}
+.tt tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.tt tr:last-child td{border-bottom:none}
+.ex-name{font-weight:600;color:var(--hi);text-align:left;padding:8px 9px}
+.plan-wt{font-family:var(--M);font-weight:700;font-size:13px}
+.plan-wt.mk1{color:var(--ice)}.plan-wt.mk2{color:var(--teal)}.plan-wt.mk3{color:var(--amber)}.plan-wt.mk4{color:var(--red)}
+.plan-mid{color:var(--mid);font-size:12px}
+.plan-lo{color:var(--lo);font-size:11px}
+.res-td{background:var(--sage-bg)!important}
+.res-ei{color:var(--sage);font-family:var(--M);font-size:12px;background:transparent;border:none;outline:none;width:100%;text-align:center}
+.ton-row td{background:var(--gold-bg)!important;color:var(--gold)!important;font-family:var(--M);font-weight:700;font-size:11px}
 
-/* ── FORM GRID ────────────────────────────────────── */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
-.form-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px;
-  border-bottom: 1px solid var(--border); }
-.form-row:last-child { border-bottom: none; }
-.form-label { font-size: 13px; color: var(--txt-mid); min-width: 160px; }
-.form-input {
-  background: var(--ice-bg); border: 1px solid var(--ice-bg);
-  color: var(--ice); font-family: var(--font-mono); font-size: 14px;
-  font-weight: 700; padding: 8px 12px; border-radius: 3px;
-  outline: none; transition: border-color 0.15s; flex: 1; max-width: 200px;
-}
-.form-input:focus { border-color: var(--ice); }
-.form-input.gold { background: var(--gold-bg); border-color: var(--gold-bg); color: var(--gold); }
-.form-input.gold:focus { border-color: var(--gold); }
+/* ══ TABLES ════════════════════════════════════════ */
+.t{width:100%;border-collapse:collapse}
+.t th{font-family:var(--F);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);background:var(--surface);padding:8px 10px;text-align:center;border-bottom:1px solid var(--border)}
+.t th:first-child{text-align:left}
+.t td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:13px;text-align:center;color:var(--hi)}
+.t td:first-child{text-align:left;font-weight:600}
+.t tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.t tr:last-child td{border-bottom:none}
+.delta{font-family:var(--M);font-size:11px;font-weight:700;color:var(--sage)}
+.delta.neg{color:var(--red)}
+.ei{background:transparent;border:none;outline:none;color:inherit;font:inherit;width:100%;text-align:center;cursor:text}
+.ei:focus{color:var(--ice)}
+td.inp{background:var(--ice-bg)!important;cursor:text}
 
-/* ── CALC RESULT ──────────────────────────────────── */
-.calc-result {
-  background: var(--raised); border: 1px solid var(--border);
-  border-radius: 3px; padding: 8px 14px;
-  font-family: var(--font-mono); font-size: 14px; font-weight: 700;
-  color: var(--sage); text-align: center; min-width: 100px;
-}
+/* ══ FORM ══════════════════════════════════════════ */
+.fr{display:flex;align-items:center;gap:12px;padding:10px 13px;border-bottom:1px solid var(--border)}
+.fr:last-child{border-bottom:none}
+.fl{font-size:13px;color:var(--mid);min-width:140px;flex-shrink:0}
+.fi{background:var(--ice-bg);border:1px solid transparent;color:var(--ice);font-family:var(--M);font-size:13px;font-weight:700;padding:8px 10px;border-radius:3px;outline:none;transition:border-color .15s;flex:1;max-width:220px}
+.fi:focus{border-color:var(--ice)}
+.fi.p{background:var(--surface);color:var(--hi);max-width:300px}.fi.p:focus{border-color:var(--lo)}
+.fi.wide{max-width:360px;font-size:11px}
 
-/* ── MK BLOCK ─────────────────────────────────────── */
-.mk-selector { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-.mk-btn {
-  font-family: var(--font-display); font-size: 12px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  border: 1px solid var(--border); border-radius: 3px;
-  padding: 8px 16px; cursor: pointer; transition: all 0.15s;
-  background: var(--card); color: var(--txt-lo);
-}
-.mk-btn:hover { color: var(--txt-mid); border-color: var(--txt-lo); }
-.mk-btn.mk1.active { background: var(--ice-bg); border-color: var(--ice); color: var(--ice); }
-.mk-btn.mk2.active { background: var(--teal-bg); border-color: var(--teal); color: var(--teal); }
-.mk-btn.mk3.active { background: var(--amber-bg); border-color: var(--amber); color: var(--amber); }
-.mk-btn.mk4.active { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+/* ══ KPI ═══════════════════════════════════════════ */
+.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.kc{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 8px;text-align:center}
+.kl{font-family:var(--F);font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--lo);margin-bottom:4px}
+.kv{font-family:var(--F);font-size:22px;font-weight:900;color:var(--hi);line-height:1}
+.kv.live{color:var(--ice)}
+.ks{font-size:9px;color:var(--lo);margin-top:2px}
 
-.mk-info {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 16px; border-radius: 4px; margin-bottom: 16px;
-  font-family: var(--font-display); font-size: 13px; font-weight: 600;
-}
-.mk-info.mk1 { background: var(--ice-bg); color: var(--ice); }
-.mk-info.mk2 { background: var(--teal-bg); color: var(--teal); }
-.mk-info.mk3 { background: var(--amber-bg); color: var(--amber); }
-.mk-info.mk4 { background: var(--red-bg); color: var(--red); }
-.mk-badge {
-  font-family: var(--font-display); font-size: 11px; font-weight: 900;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 2px;
-}
-.mk1 .mk-badge { background: var(--ice); color: var(--base); }
-.mk2 .mk-badge { background: var(--teal); color: var(--base); }
-.mk3 .mk-badge { background: var(--amber); color: var(--base); }
-.mk4 .mk-badge { background: var(--red); color: var(--base); }
+/* ══ NUT ═══════════════════════════════════════════ */
+.ng{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:12px}
+.nc{border-radius:4px;padding:10px 6px;text-align:center;border:1px solid var(--border)}
+.nc.kc_{background:var(--red-bg);border-color:var(--red)}
+.nc.pr{background:var(--sage-bg);border-color:var(--sage)}
+.nc.fa{background:var(--amber-bg);border-color:var(--amber)}
+.nc.cb{background:var(--gold-bg);border-color:var(--gold)}
+.nc.wa{background:var(--ice-bg);border-color:var(--ice)}
+.nv{font-family:var(--F);font-size:20px;font-weight:900;line-height:1;margin-bottom:2px}
+.nc.kc_ .nv{color:var(--red)}.nc.pr .nv{color:var(--sage)}
+.nc.fa .nv{color:var(--amber)}.nc.cb .nv{color:var(--gold)}.nc.wa .nv{color:var(--ice)}
+.nu{font-size:9px;color:var(--lo)}
 
-/* ── TRAINING TABLE ───────────────────────────────── */
-.training-block-header {
-  font-family: var(--font-display); font-size: 14px; font-weight: 700;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  background: var(--surface); color: var(--txt-hi);
-  padding: 12px 16px; border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-.training-table { width: 100%; border-collapse: collapse; }
-.training-table th {
-  font-family: var(--font-display); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--txt-lo); background: var(--raised);
-  padding: 8px 10px; text-align: center;
-  border-bottom: 1px solid var(--border);
-}
-.training-table th:first-child { text-align: left; width: 35%; }
-.training-table td {
-  padding: 9px 10px; border-bottom: 1px solid var(--border);
-  font-size: 13px; text-align: center; color: var(--txt-hi);
-}
-.training-table td:first-child { text-align: left; }
-.training-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
-.training-table tr:last-child td { border-bottom: none; }
-.training-table .ex-name { font-weight: 600; color: var(--txt-hi); }
-.training-table .wt-cell {
-  font-family: var(--font-mono); font-weight: 700; font-size: 13px;
-}
-.training-table .wt-cell.mk1 { color: var(--ice); }
-.training-table .wt-cell.mk2 { color: var(--teal); }
-.training-table .wt-cell.mk3 { color: var(--amber); }
-.training-table .wt-cell.mk4 { color: var(--red); }
-.training-table .result-cell {
-  background: var(--sage-bg); color: var(--sage);
-  font-family: var(--font-mono); font-size: 12px;
-}
-.total-row td {
-  background: var(--gold-bg) !important;
-  color: var(--gold) !important; font-family: var(--font-mono);
-  font-weight: 700; font-size: 12px;
-}
+/* ══ CALC ══════════════════════════════════════════ */
+.bigi{background:var(--ice-bg);border:1px solid var(--ice);color:var(--ice);font-family:var(--M);font-size:20px;font-weight:700;padding:9px 12px;border-radius:4px;outline:none;width:120px;text-align:center}
+.cv{font-family:var(--M);font-weight:700;font-size:13px;color:var(--sage)}
+.rt{width:100%;border-collapse:collapse;font-size:11px}
+.rt th{font-family:var(--M);font-size:9px;background:var(--surface);color:var(--mid);padding:5px 4px;text-align:center;border-bottom:1px solid var(--border)}
+.rt td{padding:5px 4px;text-align:center;border-bottom:1px solid var(--border);font-family:var(--M);font-size:10px}
+.rt td:first-child{color:var(--mid);font-weight:700;background:var(--raised)}
+.r10{background:var(--red-bg)!important;color:var(--red)!important;font-weight:700}
+.r9{background:#1a0a00!important;color:var(--amber)!important}
+.r8{background:var(--gold-bg)!important;color:var(--gold)!important}
+.r7{background:var(--teal-bg)!important;color:var(--teal)!important}
+.rlo{color:var(--lo)!important}
 
-/* ── WARMUP TABLE ─────────────────────────────────── */
-.warmup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; }
-.warmup-input-row { display: flex; align-items: center; gap: 12px; padding: 16px;
-  border-bottom: 1px solid var(--border); }
-.big-input {
-  background: var(--ice-bg); border: 1px solid var(--ice);
-  color: var(--ice); font-family: var(--font-mono); font-size: 24px;
-  font-weight: 700; padding: 12px 16px; border-radius: 4px;
-  outline: none; width: 140px; text-align: center;
-}
-.big-input:focus { box-shadow: 0 0 0 2px rgba(74,143,168,0.3); }
-.warmup-table { width: 100%; border-collapse: collapse; }
-.warmup-table th {
-  font-family: var(--font-display); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--txt-lo);
-  background: var(--raised); padding: 8px 12px; text-align: center;
-  border-bottom: 1px solid var(--border);
-}
-.warmup-table td {
-  padding: 11px 12px; border-bottom: 1px solid var(--border);
-  text-align: center; font-size: 13px;
-}
-.warmup-table tr:nth-child(even) td { background: var(--surface); }
-.warmup-table tr:last-child td { border-bottom: none; }
-.warmup-weight { font-family: var(--font-mono); font-weight: 700; font-size: 15px;
-  color: var(--txt-hi); }
-.warmup-reps { color: var(--txt-mid); }
-.warmup-pct { color: var(--txt-lo); font-size: 11px; }
+/* ══ NOTICE ════════════════════════════════════════ */
+.notice{background:var(--ice-bg);border-left:3px solid var(--ice);padding:9px 13px;border-radius:0 4px 4px 0;font-size:11px;color:var(--ice);margin-bottom:12px;line-height:1.6;display:none}
+.notice.on{display:block}
 
-/* ── RPE TABLE ────────────────────────────────────── */
-.rpe-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.rpe-table th {
-  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
-  background: var(--surface); color: var(--txt-mid);
-  padding: 7px 6px; text-align: center; border-bottom: 1px solid var(--border);
-}
-.rpe-table td {
-  padding: 6px 5px; text-align: center; border-bottom: 1px solid var(--border);
-  font-family: var(--font-mono); font-size: 11px;
-}
-.rpe-table td:first-child { color: var(--txt-mid); font-weight: 700; background: var(--raised); }
-.rpe-100 { background: var(--red-bg) !important; color: var(--red) !important; font-weight: 700; }
-.rpe-90 { background: #1a0a00 !important; color: var(--amber) !important; }
-.rpe-85 { background: var(--gold-bg) !important; color: var(--gold) !important; }
-.rpe-80 { background: var(--teal-bg) !important; color: var(--teal) !important; }
-.rpe-lo { color: var(--txt-lo) !important; }
+/* ══ SYNC PAGE ═════════════════════════════════════ */
+.scode{background:var(--raised);border:1px solid var(--border);border-radius:3px;padding:9px 13px;font-family:var(--M);font-size:11px;color:var(--ice);margin:7px 0;word-break:break-all;line-height:1.8}
+.sbtn{background:var(--red);border:none;color:#fff;font-family:var(--F);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 16px;border-radius:3px;cursor:pointer;transition:background .15s;margin-right:7px;margin-top:7px}
+.sbtn:hover{background:#a93226}
+.sbtn.sec{background:var(--raised);color:var(--mid);border:1px solid var(--border)}
+.sbtn.sec:hover{background:var(--surface)}
+.smsg{display:none;margin-top:9px;padding:9px 12px;border-radius:3px;font-size:11px;line-height:1.5}
+.add-btn{background:var(--raised);border:1px solid var(--border);color:var(--mid);font-family:var(--F);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 13px;border-radius:3px;cursor:pointer}
+.add-btn:hover{background:var(--surface)}
 
-/* ── NUTRITION ────────────────────────────────────── */
-.nutrition-kpi { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
-  padding: 16px; }
-.nut-card {
-  border-radius: 4px; padding: 14px 10px; text-align: center; border: 1px solid var(--border);
+/* ══ RESPONSIVE ════════════════════════════════════ */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--base)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media(max-width:600px){
+  .kg{grid-template-columns:repeat(2,1fr)}
+  .ng{grid-template-columns:repeat(3,1fr)}
+  .pg{padding:14px 10px 50px}
+  .ph{font-size:20px}
+  .tt th:nth-child(n+5),.tt td:nth-child(n+5){display:none}
+  .brand small{display:none}
 }
-.nut-card.kcal { background: var(--red-bg); border-color: var(--red); }
-.nut-card.protein { background: var(--sage-bg); border-color: var(--sage); }
-.nut-card.fat { background: var(--amber-bg); border-color: var(--amber); }
-.nut-card.carbs { background: var(--gold-bg); border-color: var(--gold); }
-.nut-card.water { background: var(--ice-bg); border-color: var(--ice); }
-.nut-value {
-  font-family: var(--font-display); font-size: 28px; font-weight: 900;
-  line-height: 1; margin-bottom: 4px;
-}
-.nut-card.kcal .nut-value { color: var(--red); }
-.nut-card.protein .nut-value { color: var(--sage); }
-.nut-card.fat .nut-value { color: var(--amber); }
-.nut-card.carbs .nut-value { color: var(--gold); }
-.nut-card.water .nut-value { color: var(--ice); }
-.nut-unit { font-size: 10px; color: var(--txt-lo); }
-
-/* ── DIARY ────────────────────────────────────────── */
-.diary-table { width: 100%; border-collapse: collapse; }
-.diary-table th {
-  font-family: var(--font-display); font-size: 9px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--txt-lo);
-  background: var(--raised); padding: 8px 10px; text-align: center;
-  border-bottom: 1px solid var(--border);
-}
-.diary-table td {
-  padding: 8px 10px; border-bottom: 1px solid var(--border);
-  font-size: 12px; text-align: center; color: var(--txt-mid);
-}
-.diary-table tr:nth-child(even) td { background: var(--surface); }
-.diary-table .editable {
-  background: var(--ice-bg); color: var(--ice);
-  font-family: var(--font-mono); font-weight: 700;
-}
-.diary-table .rm-auto {
-  background: var(--sage-bg); color: var(--sage);
-  font-family: var(--font-mono); font-size: 12px;
-}
-
-/* ── NOTICE BAR ───────────────────────────────────── */
-.notice {
-  background: var(--raised); border-left: 3px solid var(--gold);
-  padding: 12px 16px; border-radius: 0 4px 4px 0;
-  font-size: 12px; color: var(--txt-mid); margin-bottom: 16px;
-}
-
-/* ── REFERENCES TABLE ─────────────────────────────── */
-.ref-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
-.ref-col { padding: 16px; border-right: 1px solid var(--border); }
-.ref-col:last-child { border-right: none; }
-.ref-col-title {
-  font-family: var(--font-display); font-size: 11px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  margin-bottom: 10px;
-}
-.ref-col-title.protein { color: var(--sage); }
-.ref-col-title.fat { color: var(--amber); }
-.ref-col-title.carbs { color: var(--gold); }
-.ref-item { font-size: 12px; color: var(--txt-mid); padding: 4px 0;
-  border-bottom: 1px solid var(--border); }
-.ref-item:last-child { border-bottom: none; }
-
-/* ── SCROLLBAR ────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--base); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--txt-lo); }
-
-/* ── MOBILE ───────────────────────────────────────── */
-@media (max-width: 640px) {
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .nutrition-kpi { grid-template-columns: repeat(3, 1fr); }
-  .ref-grid { grid-template-columns: 1fr; }
-  .warmup-grid { grid-template-columns: 1fr; }
-  .page { padding: 20px 14px; }
-  .page-title { font-size: 26px; }
-  .training-table th:nth-child(n+4),
-  .training-table td:nth-child(n+4) { display: none; }
-}
-
-@media (max-width: 480px) {
-  .nav-brand { display: none; }
-  .nut-card .nut-value { font-size: 22px; }
-  .nutrition-kpi { grid-template-columns: repeat(2, 1fr); }
+@media(max-width:380px){
+  .ng{grid-template-columns:repeat(2,1fr)}
+  .kv{font-size:18px}
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- ══════════════════════════════════════════════════
+     WELCOME / LOGIN SCREEN
+═════════════════════════════════════════════════════ -->
+<div id="welcome">
+<div class="wcard">
+  <div class="wtop">
+    <div class="wlogo">Система тренировок</div>
+    <div class="wname">Артём Беззубкин · Тренер</div>
+    <div class="wtitle">ТВОЯ<span>.</span><br>ПРОГРАММА<span>.</span></div>
+  </div>
+  <div class="wbody">
+    <label class="wlbl">Твоё имя</label>
+    <input class="winp" id="w-name" placeholder="Иван Иванов" oninput="validateW()">
+
+    <label class="wlbl">ID программы от тренера</label>
+    <input class="winp" id="w-id" placeholder="Вставь ID таблицы" oninput="validateW()">
+    <div class="whint">Тренер пришлёт тебе ID вместе с этим приложением</div>
+
+    <button class="wbtn" id="w-go" onclick="connectAndStart()" disabled>
+      Загрузить программу
+    </button>
+
+    <div class="wsep"><span></span><em>или</em><span></span></div>
+
+    <button class="wbtn sec" onclick="startOffline()">
+      Открыть без синхронизации
+    </button>
+
+    <div class="werr" id="w-err"></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     NAV
+═════════════════════════════════════════════════════ -->
 <nav class="nav">
-  <div class="nav-brand">ТРЕН<span>·</span>ИРО<span>·</span>ВКА</div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('overview')">Обзор</button>
-    <button class="nav-tab" onclick="showPage('mesocycle')">Мезоциклы</button>
-    <button class="nav-tab" onclick="showPage('diary')">Дневник</button>
-    <button class="nav-tab" onclick="showPage('calculator')">Калькулятор</button>
-    <button class="nav-tab" onclick="showPage('summary')">Сводные данные</button>
-    <button class="nav-tab" onclick="showPage('nutrition')">Питание</button>
-    <button class="nav-tab" onclick="showPage('client')">Клиент</button>
+  <div class="brand">ТРЕН<span style="color:var(--red)">·</span>КА<small id="nav-name"></small></div>
+  <div class="tabs">
+    <button class="tab on"  onclick="go(this,'meso')">Программа</button>
+    <button class="tab" onclick="go(this,'progress')">Прогресс</button>
+    <button class="tab" onclick="go(this,'diary')">Дневник</button>
+    <button class="tab" onclick="go(this,'calc')">Калькулятор</button>
+    <button class="tab" onclick="go(this,'nut')">Питание</button>
+    <button class="tab" onclick="go(this,'cfg')">⚙</button>
+  </div>
+  <div class="nav-end">
+    <div class="sdot" id="sdot"></div>
+    <span class="slbl" id="slbl"></span>
+    <button class="ico" onclick="syncNow()" title="Обновить">⟳</button>
   </div>
 </nav>
 
-<main class="main">
+<div class="main">
 
-<!-- ═══ ОБЗОР ══════════════════════════════════════════ -->
-<section class="page active" id="page-overview">
-  <div class="page-title">Обзор программы</div>
-  <div class="page-title-bar"></div>
+<!-- ══ ПРОГРАММА (МЕЗОЦИКЛЫ) ════════════════════════ -->
+<div class="pg on" id="pg-meso">
+  <div class="ph">Программа тренировок</div><div class="phb"></div>
 
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-label">Лучший присед</div>
-      <div class="kpi-value" id="kpi-squat">—</div>
-      <div class="kpi-sub">кг · топ-сет</div>
+  <div class="notice on" id="plan-notice" style="display:none">
+    📋 <strong>План от тренера загружен.</strong> Вводи результаты в зелёные ячейки после каждого подхода.
+  </div>
+
+  <!-- МЦ выбор -->
+  <div class="mc-tabs" id="mc-tabs"></div>
+
+  <!-- МК выбор (недели) -->
+  <div class="s" style="overflow:hidden">
+    <div class="mk-tabs" id="mk-tabs"></div>
+    <div class="mk-info mk1" id="mk-info">
+      <span class="mk-badge">МК 1</span>
+      <span>БАЗОВЫЙ · 100% · Вводи упражнения и веса</span>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Лучший жим лёжа</div>
-      <div class="kpi-value" id="kpi-bench">—</div>
-      <div class="kpi-sub">кг · топ-сет</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Лучшая становая</div>
-      <div class="kpi-value" id="kpi-dead">—</div>
-      <div class="kpi-sub">кг · топ-сет</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Вес тела</div>
-      <div class="kpi-value" id="kpi-weight">—</div>
-      <div class="kpi-sub">кг · текущий</div>
-    </div>
-  </div>
 
-  <div class="section">
-    <div class="section-header">Силовые показатели · Прогресс</div>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Упражнение</th>
-          <th>Старт</th>
-          <th>МЦ 1</th>
-          <th>МЦ 2</th>
-          <th>МЦ 3</th>
-          <th>Δ</th>
-        </tr>
-      </thead>
-      <tbody id="strength-progress">
-        <tr><td>Приседания</td><td class="input-cell"><input class="inline-input" data-key="sq0" placeholder="—" oninput="updateStrength(this,'sq',0)"></td><td class="input-cell"><input class="inline-input" data-key="sq1" placeholder="—" oninput="updateStrength(this,'sq',1)"></td><td class="input-cell"><input class="inline-input" data-key="sq2" placeholder="—" oninput="updateStrength(this,'sq',2)"></td><td class="input-cell"><input class="inline-input" data-key="sq3" placeholder="—" oninput="updateStrength(this,'sq',3)"></td><td class="delta" id="dSq">—</td></tr>
-        <tr><td>Становая тяга</td><td class="input-cell"><input class="inline-input" data-key="dl0" placeholder="—" oninput="updateStrength(this,'dl',0)"></td><td class="input-cell"><input class="inline-input" data-key="dl1" placeholder="—" oninput="updateStrength(this,'dl',1)"></td><td class="input-cell"><input class="inline-input" data-key="dl2" placeholder="—" oninput="updateStrength(this,'dl',2)"></td><td class="input-cell"><input class="inline-input" data-key="dl3" placeholder="—" oninput="updateStrength(this,'dl',3)"></td><td class="delta" id="dDl">—</td></tr>
-        <tr><td>Жим лёжа</td><td class="input-cell"><input class="inline-input" data-key="bp0" placeholder="—" oninput="updateStrength(this,'bp',0)"></td><td class="input-cell"><input class="inline-input" data-key="bp1" placeholder="—" oninput="updateStrength(this,'bp',1)"></td><td class="input-cell"><input class="inline-input" data-key="bp2" placeholder="—" oninput="updateStrength(this,'bp',2)"></td><td class="input-cell"><input class="inline-input" data-key="bp3" placeholder="—" oninput="updateStrength(this,'bp',3)"></td><td class="delta" id="dBp">—</td></tr>
-        <tr><td>Тяга блока</td><td class="input-cell"><input class="inline-input" data-key="ro0" placeholder="—" oninput="updateStrength(this,'ro',0)"></td><td class="input-cell"><input class="inline-input" data-key="ro1" placeholder="—" oninput="updateStrength(this,'ro',1)"></td><td class="input-cell"><input class="inline-input" data-key="ro2" placeholder="—" oninput="updateStrength(this,'ro',2)"></td><td class="input-cell"><input class="inline-input" data-key="ro3" placeholder="—" oninput="updateStrength(this,'ro',3)"></td><td class="delta" id="dRo">—</td></tr>
-        <tr><td>Подтягивания</td><td class="input-cell"><input class="inline-input" data-key="pu0" placeholder="—" oninput="updateStrength(this,'pu',0)"></td><td class="input-cell"><input class="inline-input" data-key="pu1" placeholder="—" oninput="updateStrength(this,'pu',1)"></td><td class="input-cell"><input class="inline-input" data-key="pu2" placeholder="—" oninput="updateStrength(this,'pu',2)"></td><td class="input-cell"><input class="inline-input" data-key="pu3" placeholder="—" oninput="updateStrength(this,'pu',3)"></td><td class="delta" id="dPu">—</td></tr>
-      </tbody>
-    </table>
-  </div>
+    <!-- Блоки тренировок -->
+    <div id="plan-body"></div>
 
-  <div class="section">
-    <div class="section-header ice">Антропометрия · Динамика</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>Параметр</th><th>Старт</th><th>Цикл 1</th><th>Цикл 2</th><th>Цикл 3</th><th>Δ</th></tr>
-      </thead>
-      <tbody id="antro-table">
-        <tr><td>Вес, кг</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wt',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wt',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wt',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wt',3)" placeholder="—"></td><td class="delta" id="dWt">—</td></tr>
-        <tr><td>Обхват груди, см</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ch',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ch',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ch',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ch',3)" placeholder="—"></td><td class="delta" id="dCh">—</td></tr>
-        <tr><td>Обхват талии, см</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wa',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wa',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wa',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'wa',3)" placeholder="—"></td><td class="delta" id="dWa">—</td></tr>
-        <tr><td>Обхват руки, см</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ar',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ar',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ar',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'ar',3)" placeholder="—"></td><td class="delta" id="dAr">—</td></tr>
-        <tr><td>% жира</td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'fat',0)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'fat',1)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'fat',2)" placeholder="—"></td><td class="input-cell"><input class="inline-input" oninput="updateAntro(this,'fat',3)" placeholder="—"></td><td class="delta" id="dFat">—</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<!-- ═══ МЕЗОЦИКЛЫ ══════════════════════════════════════ -->
-<section class="page" id="page-mesocycle">
-  <div class="page-title">Мезоциклы</div>
-  <div class="page-title-bar"></div>
-
-  <div class="notice">
-    Синие ячейки — вводи вес и повт в МК1. МК2/3/4 рассчитываются по периодизации автоматически. Зелёные — фиксируй фактический результат.
-  </div>
-
-  <!-- МЦ селектор -->
-  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-    <button class="mk-btn mk1 active" onclick="selectMC(1)">Мезоцикл 1</button>
-    <button class="mk-btn mk2" onclick="selectMC(2)">Мезоцикл 2</button>
-    <button class="mk-btn mk3" onclick="selectMC(3)">Мезоцикл 3</button>
-  </div>
-
-  <!-- МК селектор -->
-  <div class="mk-selector">
-    <button class="mk-btn mk1 active" onclick="selectMK(1)">МК 1 · Базовый</button>
-    <button class="mk-btn mk2" onclick="selectMK(2)">МК 2 · Развивающий</button>
-    <button class="mk-btn mk3" onclick="selectMK(3)">МК 3 · Ударный</button>
-    <button class="mk-btn mk4" onclick="selectMK(4)">МК 4 · Deload</button>
-  </div>
-
-  <div class="mk-info mk1" id="mk-info">
-    <span class="mk-badge">МК 1</span>
-    <span>БАЗОВЫЙ · 100% вес · Вводи упражнения и веса</span>
-  </div>
-
-  <!-- Тренировка A -->
-  <div class="section" style="margin-bottom:16px">
-    <div class="training-block-header">Тренировка A</div>
-    <table class="training-table" id="train-a">
-      <thead>
-        <tr>
-          <th>Упражнение</th>
-          <th>Вес/RPE</th>
-          <th>Сеты</th>
-          <th>Повт</th>
-          <th>Тоннаж</th>
-          <th>Результат</th>
-        </tr>
-      </thead>
-      <tbody id="tbody-a"></tbody>
-    </table>
-  </div>
-
-  <!-- Тренировка B -->
-  <div class="section">
-    <div class="training-block-header">Тренировка B</div>
-    <table class="training-table" id="train-b">
-      <thead>
-        <tr>
-          <th>Упражнение</th>
-          <th>Вес/RPE</th>
-          <th>Сеты</th>
-          <th>Повт</th>
-          <th>Тоннаж</th>
-          <th>Результат</th>
-        </tr>
-      </thead>
-      <tbody id="tbody-b"></tbody>
-    </table>
-  </div>
-</section>
-
-<!-- ═══ ДНЕВНИК ══════════════════════════════════════════ -->
-<section class="page" id="page-diary">
-  <div class="page-title">Дневник</div>
-  <div class="page-title-bar"></div>
-
-  <div class="section">
-    <div class="section-header">Записи тренировок · 1RM считается автоматически</div>
-    <table class="diary-table">
-      <thead>
-        <tr>
-          <th>№</th><th>Дата</th><th>Упражнение</th>
-          <th>Вес</th><th>Сеты</th><th>Повт</th><th>RPE</th>
-          <th>1RM авто</th><th>Усталость</th><th>Заметки</th>
-        </tr>
-      </thead>
-      <tbody id="diary-body"></tbody>
-    </table>
-    <div style="padding:12px 16px;">
-      <button onclick="addDiaryRow()" style="background:var(--raised);border:1px solid var(--border);color:var(--txt-mid);font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:8px 16px;border-radius:3px;cursor:pointer;">+ Добавить запись</button>
+    <div id="plan-empty" style="padding:32px;text-align:center;color:var(--lo);display:none">
+      <div style="font-size:28px;margin-bottom:10px">📋</div>
+      <div style="color:var(--mid);margin-bottom:6px">Программа не загружена</div>
+      <div style="font-size:11px">Перейди в <strong style="color:var(--hi)">⚙ Настройки</strong> и введи ID таблицы тренера</div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ═══ КАЛЬКУЛЯТОР ══════════════════════════════════════ -->
-<section class="page" id="page-calculator">
-  <div class="page-title">Калькулятор</div>
-  <div class="page-title-bar"></div>
+<!-- ══ ПРОГРЕСС ══════════════════════════════════════ -->
+<div class="pg" id="pg-progress">
+  <div class="ph">Прогресс</div><div class="phb"></div>
 
-  <!-- 1RM -->
-  <div class="section">
-    <div class="section-header">Расчёт максимума (1RM)</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>Упражнение</th><th>Вес (кг)</th><th>Повт</th><th>1RM Эпли</th><th>1RM Brzycki</th><th>Среднее</th></tr>
-      </thead>
-      <tbody id="rm-table">
-      </tbody>
-    </table>
+  <div class="kg">
+    <div class="kc"><div class="kl">Присед</div><div class="kv" id="k-sq">—</div><div class="ks">кг</div></div>
+    <div class="kc"><div class="kl">Жим лёжа</div><div class="kv" id="k-bp">—</div><div class="ks">кг</div></div>
+    <div class="kc"><div class="kl">Становая</div><div class="kv" id="k-dl">—</div><div class="ks">кг</div></div>
+    <div class="kc"><div class="kl">Вес тела</div><div class="kv" id="k-wt">—</div><div class="ks">кг</div></div>
   </div>
 
-  <!-- % от 1RM -->
-  <div class="section">
-    <div class="section-header gold">Рабочие веса по % от 1RM</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>Упражнение</th><th>1RM</th><th>60%</th><th>65%</th><th>70%</th><th>75%</th><th>80%</th></tr>
-      </thead>
-      <tbody id="pct-table"></tbody>
-    </table>
+  <div class="s">
+    <div class="sh ice">Антропометрия · вноси замеры</div>
+    <table class="t"><thead><tr><th>Параметр</th><th>Старт</th><th>МЦ 1</th><th>МЦ 2</th><th>МЦ 3</th><th>Δ</th><th>Цель</th></tr></thead>
+    <tbody id="ant-body"></tbody></table>
   </div>
 
-  <!-- Разминка -->
-  <div class="section">
-    <div class="section-header">Разминочные подходы</div>
-    <div class="warmup-input-row">
-      <span class="form-label">Рабочий вес (кг):</span>
-      <input type="number" class="big-input" id="warmup-weight" placeholder="100" oninput="calcWarmup()">
+  <div class="s">
+    <div class="sh gold">Силовые результаты (кг)</div>
+    <table class="t"><thead><tr><th>Упражнение</th><th>Старт</th><th>МЦ 1</th><th>МЦ 2</th><th>МЦ 3</th><th>Δ</th><th>Цель</th></tr></thead>
+    <tbody id="str-body"></tbody></table>
+  </div>
+</div>
+
+<!-- ══ ДНЕВНИК ═══════════════════════════════════════ -->
+<div class="pg" id="pg-diary">
+  <div class="ph">Дневник</div><div class="phb"></div>
+  <div class="s">
+    <div class="sh">Записи тренировок · 1RM авто</div>
+    <div style="overflow-x:auto">
+      <table class="t">
+        <thead><tr><th>№</th><th>Дата</th><th>Упражнение</th><th>Вес</th><th>Сеты</th><th>Повт</th><th>RPE</th><th>1RM</th><th>Заметки</th></tr></thead>
+        <tbody id="d-body"></tbody>
+      </table>
     </div>
-    <table class="warmup-table">
-      <thead>
-        <tr><th>Подход</th><th>Вес, кг</th><th>Повторения</th><th>% от рабочего</th></tr>
-      </thead>
-      <tbody id="warmup-body"></tbody>
-    </table>
-  </div>
-
-  <!-- RPE таблица -->
-  <div class="section">
-    <div class="section-header">Таблица RPE → % от 1RM</div>
-    <div style="overflow-x:auto;">
-      <table class="rpe-table" id="rpe-table"></table>
+    <div style="padding:9px 13px">
+      <button class="add-btn" onclick="addDiaryRow()">+ Добавить запись</button>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ═══ СВОДНЫЕ ДАННЫЕ ═══════════════════════════════════ -->
-<section class="page" id="page-summary">
-  <div class="page-title">Сводные данные</div>
-  <div class="page-title-bar"></div>
+<!-- ══ КАЛЬКУЛЯТОР ═══════════════════════════════════ -->
+<div class="pg" id="pg-calc">
+  <div class="ph">Калькулятор</div><div class="phb"></div>
 
-  <div class="section">
-    <div class="section-header ice">Антропометрия · Вноси данные после каждого мезоцикла</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>Параметр</th><th>Старт</th><th>Цикл 1</th><th>Цикл 2</th><th>Цикл 3</th><th>Δ</th><th>Цель</th></tr>
-      </thead>
-      <tbody id="summary-antro"></tbody>
-    </table>
+  <div class="s">
+    <div class="sh">Расчёт 1RM</div>
+    <table class="t"><thead><tr><th>Упражнение</th><th>Вес</th><th>Повт</th><th>Эпли</th><th>Brzycki</th><th>Среднее</th></tr></thead>
+    <tbody id="rm-body"></tbody></table>
   </div>
 
-  <div class="section">
-    <div class="section-header gold">Силовые результаты (кг) · Лучший вес за МЦ</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>Упражнение</th><th>Старт</th><th>МЦ 1</th><th>МЦ 2</th><th>МЦ 3</th><th>Δ</th><th>Цель</th></tr>
-      </thead>
-      <tbody id="summary-lifts"></tbody>
-    </table>
+  <div class="s">
+    <div class="sh gold">% от 1RM</div>
+    <table class="t"><thead><tr><th>Упражнение</th><th>1RM</th><th>60%</th><th>65%</th><th>70%</th><th>75%</th><th>80%</th></tr></thead>
+    <tbody id="pct-body"></tbody></table>
   </div>
 
-  <div class="section">
-    <div class="section-header">Тоннаж по неделям (вводи итоги тренировок)</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>МЦ / Неделя</th><th>Трен A</th><th>Трен B</th><th>Трен C</th><th>Трен D</th><th>Итого</th></tr>
-      </thead>
-      <tbody id="summary-tonnage"></tbody>
-    </table>
-  </div>
-</section>
-
-<!-- ═══ ПИТАНИЕ ══════════════════════════════════════════ -->
-<section class="page" id="page-nutrition">
-  <div class="page-title">Питание</div>
-  <div class="page-title-bar"></div>
-
-  <div class="section">
-    <div class="section-header">Шаг 1 · Исходные данные</div>
-    <div class="form-row"><span class="form-label">Масса тела (кг)</span><input type="number" class="form-input" id="nut-weight" placeholder="80" oninput="calcNutrition()"></div>
-    <div class="form-row"><span class="form-label">Коэффициент активности</span>
-      <select class="form-input" id="nut-activ" onchange="calcNutrition()" style="cursor:pointer;">
-        <option value="28">28 · Сидячая работа</option>
-        <option value="30" selected>30 · Минимум активности</option>
-        <option value="32">32 · Средняя активность</option>
-        <option value="34">34 · Высокая активность</option>
-      </select>
-    </div>
-    <div class="form-row"><span class="form-label">Степень дефицита</span>
-      <select class="form-input" id="nut-deficit" onchange="calcNutrition()" style="cursor:pointer;">
-        <option value="0">0 · Норма / набор</option>
-        <option value="0.15">0.15 · −15% (похудение)</option>
-        <option value="0.20">0.20 · −20% (быстрее)</option>
-      </select>
-    </div>
+  <div class="s">
+    <div class="sh">Разминочные подходы</div>
+    <div class="fr"><span class="fl">Рабочий вес (кг)</span>
+      <input type="number" class="bigi" id="wu-w" placeholder="100" oninput="calcWU()"></div>
+    <table class="t"><thead><tr><th>Подход</th><th>Вес, кг</th><th>Повт</th><th>%</th></tr></thead>
+    <tbody id="wu-body"></tbody></table>
   </div>
 
-  <div class="section">
-    <div class="section-header">Шаг 2 · БЖУ</div>
-    <div class="form-row"><span class="form-label">Белок, г/кг</span><input type="number" class="form-input" id="nut-protein" value="1.7" step="0.1" oninput="calcNutrition()"></div>
-    <div class="form-row"><span class="form-label">Жиры, г/кг</span><input type="number" class="form-input" id="nut-fat" value="1.0" step="0.1" oninput="calcNutrition()"></div>
-    <div class="form-row"><span class="form-label">Вода, мл/кг</span><input type="number" class="form-input" id="nut-water" value="36" oninput="calcNutrition()"></div>
+  <div class="s">
+    <div class="sh">RPE → % от 1RM</div>
+    <div style="overflow-x:auto"><table class="rt" id="rpe-t"></table></div>
   </div>
+</div>
 
-  <div class="section">
-    <div class="section-header sage">Шаг 3 · Итоговые цифры · Обновляются автоматически</div>
-    <div class="nutrition-kpi">
-      <div class="nut-card kcal"><div class="nut-value" id="nut-kcal">—</div><div class="nut-unit">ккал/день</div></div>
-      <div class="nut-card protein"><div class="nut-value" id="nut-p-val">—</div><div class="nut-unit">г белка</div></div>
-      <div class="nut-card fat"><div class="nut-value" id="nut-f-val">—</div><div class="nut-unit">г жиров</div></div>
-      <div class="nut-card carbs"><div class="nut-value" id="nut-c-val">—</div><div class="nut-unit">г углеводов</div></div>
-      <div class="nut-card water"><div class="nut-value" id="nut-w-val">—</div><div class="nut-unit">мл воды</div></div>
+<!-- ══ ПИТАНИЕ ═══════════════════════════════════════ -->
+<div class="pg" id="pg-nut">
+  <div class="ph">Питание</div><div class="phb"></div>
+  <div class="s">
+    <div class="sh">Параметры</div>
+    <div class="fr"><span class="fl">Масса тела (кг)</span><input type="number" class="fi" id="n-w" placeholder="80" oninput="calcNut()"></div>
+    <div class="fr"><span class="fl">Коэффициент активности</span>
+      <select class="fi" id="n-a" onchange="calcNut()" style="cursor:pointer">
+        <option value="28">28 · Сидячая</option><option value="30" selected>30 · Минимум</option>
+        <option value="32">32 · Средняя</option><option value="34">34 · Высокая</option>
+      </select></div>
+    <div class="fr"><span class="fl">Дефицит</span>
+      <select class="fi" id="n-d" onchange="calcNut()" style="cursor:pointer">
+        <option value="0">0 · Норма/набор</option>
+        <option value="0.15">−15% · Похудение</option>
+        <option value="0.20">−20% · Активно</option>
+      </select></div>
+    <div class="fr"><span class="fl">Белок, г/кг</span><input type="number" class="fi" id="n-p" value="1.7" step="0.1" oninput="calcNut()"></div>
+    <div class="fr"><span class="fl">Жиры, г/кг</span><input type="number" class="fi" id="n-f" value="1.0" step="0.1" oninput="calcNut()"></div>
+    <div class="fr"><span class="fl">Вода, мл/кг</span><input type="number" class="fi" id="n-water" value="36" oninput="calcNut()"></div>
+  </div>
+  <div class="s">
+    <div class="sh sage">Итог · авто</div>
+    <div class="ng">
+      <div class="nc kc_"><div class="nv" id="n-kc">—</div><div class="nu">ккал</div></div>
+      <div class="nc pr"><div class="nv" id="n-pr">—</div><div class="nu">г белка</div></div>
+      <div class="nc fa"><div class="nv" id="n-fa">—</div><div class="nu">г жиров</div></div>
+      <div class="nc cb"><div class="nv" id="n-cb">—</div><div class="nu">г углеводов</div></div>
+      <div class="nc wa"><div class="nv" id="n-wa">—</div><div class="nu">мл воды</div></div>
     </div>
   </div>
+</div>
 
-  <div class="section">
-    <div class="section-header">Источники нутриентов</div>
-    <div class="ref-grid">
-      <div class="ref-col">
-        <div class="ref-col-title protein">Белки</div>
-        <div class="ref-item">Индейка, курица</div>
-        <div class="ref-item">Говядина, баранина</div>
-        <div class="ref-item">Форель, сёмга</div>
-        <div class="ref-item">Яйца</div>
-        <div class="ref-item">Творог, греч. йогурт</div>
-        <div class="ref-item">Морепродукты</div>
+<!-- ══ НАСТРОЙКИ ═════════════════════════════════════ -->
+<div class="pg" id="pg-cfg">
+  <div class="ph">Настройки</div><div class="phb"></div>
+
+  <div class="s">
+    <div class="sh gold">Подключение к плану тренера</div>
+    <div class="fr"><span class="fl">Твоё имя</span>
+      <input type="text" class="fi p" id="cfg-name" placeholder="Иван Иванов" oninput="S.name=this.value;save()"></div>
+    <div class="fr"><span class="fl">ID таблицы</span>
+      <input type="text" class="fi wide" id="cfg-id" placeholder="1BxiMVs0XRA5..." oninput="S.sheetId=this.value.trim();save()"></div>
+    <div style="padding:8px 13px 13px">
+      <div style="font-size:11px;color:var(--lo);line-height:1.8;margin-bottom:10px">
+        ID — длинная строка из URL Google Sheets между <code style="color:var(--mid)">/d/</code> и <code style="color:var(--mid)">/edit</code>
       </div>
-      <div class="ref-col">
-        <div class="ref-col-title fat">Жиры</div>
-        <div class="ref-item">Оливковое масло</div>
-        <div class="ref-item">Масло авокадо</div>
-        <div class="ref-item">Жирная рыба</div>
-        <div class="ref-item">Орехи, семечки</div>
-        <div class="ref-item">Авокадо</div>
-      </div>
-      <div class="ref-col">
-        <div class="ref-col-title carbs">Углеводы</div>
-        <div class="ref-item">Рис, киноа, полба</div>
-        <div class="ref-item">Гречка, овсянка</div>
-        <div class="ref-item">Батат, картофель</div>
-        <div class="ref-item">Бобовые</div>
-        <div class="ref-item">Фрукты (до 20%)</div>
-        <div class="ref-item">Овощи — без ограничений</div>
-      </div>
+      <button class="sbtn" onclick="syncNow()">⟳ Загрузить план</button>
+      <button class="sbtn sec" onclick="clearPlan()">Очистить план</button>
+      <div class="smsg" id="sync-msg"></div>
     </div>
   </div>
-</section>
 
-<!-- ═══ КЛИЕНТ ═══════════════════════════════════════════ -->
-<section class="page" id="page-client">
-  <div class="page-title">Данные клиента</div>
-  <div class="page-title-bar"></div>
-
-  <div class="section">
-    <div class="section-header">Личные данные</div>
-    <div class="form-row"><span class="form-label">Имя</span><input type="text" class="form-input" id="cl-name" placeholder="Иван Иванов" style="max-width:280px"></div>
-    <div class="form-row"><span class="form-label">Дата рождения</span><input type="date" class="form-input" id="cl-dob"></div>
-    <div class="form-row"><span class="form-label">Телефон</span><input type="tel" class="form-input" id="cl-phone" placeholder="+7 900 000 00 00" style="max-width:240px"></div>
-    <div class="form-row"><span class="form-label">Тренер</span><input type="text" class="form-input" id="cl-trainer" placeholder="Имя тренера" style="max-width:280px"></div>
-    <div class="form-row"><span class="form-label">Дата начала</span><input type="date" class="form-input" id="cl-start"></div>
+  <div class="s">
+    <div class="sh amber">Структура листа ПЛАН в Google Sheets</div>
+    <div style="padding:13px;font-size:12px;color:var(--mid);line-height:1.9">
+      Лист называется <strong style="color:var(--hi)">ПЛАН</strong> (заглавными)<br>
+      Колонки:
+      <div class="scode">МЦ | МК | Тренировка | № | Упражнение | Вес/RPE | Сеты | Повт | Заметка</div>
+      Пример данных:
+      <div class="scode">1 | 1 | А | 1 | Приседания со штангой | 80 | 3 | 8 | Темп 2-1-2<br>1 | 1 | А | 2 | Жим лёжа | 60 | 4 | 10 |<br>1 | 1 | Б | 1 | Тяга блока | 50 | 3 | 12 |<br>1 | 2 | А | 1 | Приседания со штангой | | 3 | 8 | авто +5%</div>
+      <span style="color:var(--lo)">МЦ = 1,2,3 · МК = 1,2,3,4 · Тренировка = А или Б · № = 1-8<br>МК2 вес пустой — тренер пишет только МК1, остальное считается авто</span>
+    </div>
   </div>
 
-  <div class="section">
-    <div class="section-header gold">Цели программы</div>
-    <div class="form-row"><span class="form-label">Основная цель</span><input type="text" class="form-input" id="cl-goal" placeholder="Набор мышечной массы" style="max-width:320px"></div>
-    <div class="form-row"><span class="form-label">Целевой вес (кг)</span><input type="number" class="form-input" id="cl-tw" placeholder="85"></div>
-    <div class="form-row"><span class="form-label">Целевой % жира</span><input type="number" class="form-input" id="cl-tf" placeholder="12"></div>
-    <div class="form-row"><span class="form-label">Дата цели</span><input type="date" class="form-input" id="cl-tdate"></div>
+  <div class="s">
+    <div class="sh">Периодизация по Матвееву · Авто-расчёт</div>
+    <div style="padding:13px">
+      <table class="t">
+        <thead><tr><th>Неделя</th><th>Вес</th><th>Повт</th><th>Логика</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--ice)">МК 1 · Базовый</td><td style="font-family:var(--M);color:var(--ice)">100%</td><td style="color:var(--mid)">база</td><td style="color:var(--lo);font-size:11px">Вводишь сам</td></tr>
+          <tr style="background:rgba(255,255,255,.02)"><td style="color:var(--teal)">МК 2 · Развивающий</td><td style="font-family:var(--M);color:var(--teal)">+5%</td><td style="color:var(--mid)">те же</td><td style="color:var(--lo);font-size:11px">Авто</td></tr>
+          <tr><td style="color:var(--amber)">МК 3 · Ударный</td><td style="font-family:var(--M);color:var(--amber)">+10%</td><td style="color:var(--mid)">−2</td><td style="color:var(--lo);font-size:11px">Авто</td></tr>
+          <tr style="background:rgba(255,255,255,.02)"><td style="color:var(--red)">МК 4 · Deload</td><td style="font-family:var(--M);color:var(--red)">70%</td><td style="color:var(--mid)">−3</td><td style="color:var(--lo);font-size:11px">Авто · Матвеев</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="section">
-    <div class="section-header">Структура программы</div>
-    <div class="form-row"><span class="form-label">Мезоциклы</span><span style="color:var(--txt-hi)">3 блока × 4 недели = 12 недель</span></div>
-    <div class="form-row"><span class="form-label">Тренировки</span><span style="color:var(--txt-hi)">4 сессии в неделю (A/B × нечёт/чёт)</span></div>
-    <div class="form-row"><span class="form-label">Периодизация</span><span style="color:var(--txt-hi)">МК1 Базовый → МК2 +5% → МК3 +10% → МК4 Deload 70%</span></div>
-    <div class="form-row"><span class="form-label">Deload</span><span style="color:var(--txt-hi)">4-я неделя каждого мезоцикла (Матвеев)</span></div>
+  <div class="s">
+    <div class="sh red">Сброс данных</div>
+    <div style="padding:13px">
+      <button class="sbtn" style="background:var(--red-bg);border:1px solid var(--red);color:var(--red)"
+        onclick="if(confirm('Удалить все данные?')){localStorage.removeItem(LS);location.reload()}">
+        Удалить все данные
+      </button>
+      <div style="font-size:11px;color:var(--lo);margin-top:7px">Данные хранятся в браузере этого устройства</div>
+    </div>
   </div>
-</section>
+</div>
 
-</main>
+</div><!-- /main -->
 
 <script>
-// ═══════════════════════════════════════════════════════
-// STATE — всё хранится в памяти + localStorage
-// ═══════════════════════════════════════════════════════
-const LS_KEY = 'training_app_v1';
-let state = {
-  currentMC: 1, currentMK: 1,
-  // МЦ1/МЦ2/МЦ3 × МК1..4 × ТрА/ТрБ × строки(упр,вес,сет,повт,рез)
-  mesocycles: {},
-  diary: [],
-  antro: {}, strength: {},
-  nutrition: { weight:'', activ:30, deficit:0, protein:1.7, fat:1.0, water:36 },
-  client: {}
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+const LS = 'artem_coach_v1';
+const MK_CFG = {
+  1:{cls:'mk1',coef:1.00,rAdj:0, label:'МК 1',info:'БАЗОВЫЙ · 100% · Данные из плана тренера'},
+  2:{cls:'mk2',coef:1.05,rAdj:0, label:'МК 2',info:'РАЗВИВАЮЩИЙ · Вес +5% · Авто'},
+  3:{cls:'mk3',coef:1.10,rAdj:-2,label:'МК 3',info:'УДАРНЫЙ · Вес +10%, повт −2 · Авто'},
+  4:{cls:'mk4',coef:0.70,rAdj:-3,label:'МК 4',info:'DELOAD · Вес 70%, повт −3 · Матвеев'}
 };
 
-function loadState() {
-  try {
-    const s = localStorage.getItem(LS_KEY);
-    if (s) state = { ...state, ...JSON.parse(s) };
-  } catch(e) {}
-}
-function saveState() {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e) {}
-}
-
-// ═══════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  event.target.classList.add('active');
-}
-
-// ═══════════════════════════════════════════════════════
-// МЕЗОЦИКЛЫ
-// ═══════════════════════════════════════════════════════
-const MK_CONFIG = {
-  1: { label:'МК 1', name:'БАЗОВЫЙ', cls:'mk1', coef:1.00, rAdj:0,
-       info:'БАЗОВЫЙ · 100% вес · Вводи упражнения и веса' },
-  2: { label:'МК 2', name:'РАЗВИВАЮЩИЙ', cls:'mk2', coef:1.05, rAdj:0,
-       info:'РАЗВИВАЮЩИЙ · Вес +5% · Авто' },
-  3: { label:'МК 3', name:'УДАРНЫЙ', cls:'mk3', coef:1.10, rAdj:-2,
-       info:'УДАРНЫЙ · Вес +10%, повт −2 · Авто' },
-  4: { label:'МК 4', name:'DELOAD', cls:'mk4', coef:0.70, rAdj:-3,
-       info:'DELOAD · Вес 70%, повт −3 · Восстановление по Матвееву' }
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let S = {
+  name:'', sheetId:'',
+  mc:1, mk:1,
+  plan:{},    // plan[mc][mk][train][row] = {ex,wt,st,rp,note}
+  results:{}, // results[mc_mk_train_row] = string
+  antro:{}, strength:{},
+  diary:[]
 };
+let syncTimer = null;
 
-const ROWS_PER_BLOCK = 8; // упражнений на блок
+function load(){try{const d=localStorage.getItem(LS);if(d)S={...S,...JSON.parse(d)}}catch(e){}}
+function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+function resKey(mc,mk,tr,row){return`${mc}_${mk}_${tr}_${row}`}
 
-function mcKey(mc, mk, block, row, field) {
-  return `mc${mc}_mk${mk}_b${block}_r${row}_${field}`;
+// ═══════════════════════════════════════════════════
+// WELCOME
+// ═══════════════════════════════════════════════════
+function validateW(){
+  const n=document.getElementById('w-name').value.trim();
+  const id=document.getElementById('w-id').value.trim();
+  document.getElementById('w-go').disabled=!(n&&id.length>10);
 }
-function getVal(key) { return state.mesocycles[key] || ''; }
-function setVal(key, v) { state.mesocycles[key] = v; saveState(); }
 
-function selectMC(mc) {
-  state.currentMC = mc;
-  document.querySelectorAll('[onclick^="selectMC"]').forEach((b,i) => {
-    b.classList.toggle('active', i+1 === mc);
-    b.classList.remove('mk1','mk2','mk3');
-    b.classList.add(['mk1','mk2','mk3'][i]);
+async function connectAndStart(){
+  const name=document.getElementById('w-name').value.trim();
+  const id=document.getElementById('w-id').value.trim();
+  S.name=name; S.sheetId=id; save();
+  const err=document.getElementById('w-err');
+  err.style.display='none';
+  setSd('spin','загрузка...');
+  try{
+    await loadPlan(id);
+    launch();
+  }catch(e){
+    err.style.display='block';
+    err.textContent='⚠ '+e.message;
+    setSd('err','ошибка');
+  }
+}
+
+function startOffline(){
+  S.name=document.getElementById('w-name').value.trim()||'Клиент';
+  save(); launch();
+}
+
+function launch(){
+  document.getElementById('welcome').classList.add('hidden');
+  // restore cfg fields
+  const ni=document.getElementById('cfg-name'),ii=document.getElementById('cfg-id');
+  if(ni) ni.value=S.name||'';
+  if(ii) ii.value=S.sheetId||'';
+  // nav name
+  const nn=document.getElementById('nav-name');
+  if(nn&&S.name) nn.textContent=S.name;
+  initMCMK();
+  renderMeso();
+  initCalc();
+  initProgress();
+  initDiary();
+  calcNut();
+  updateKPI();
+  if(S.sheetId) startAutoSync();
+}
+
+// ═══════════════════════════════════════════════════
+// GOOGLE SHEETS SYNC (JSONP — работает с любого домена)
+// ═══════════════════════════════════════════════════
+function jsonpFetch(url){
+  return new Promise((resolve,reject)=>{
+    const cb='_gc_'+Date.now();
+    const s=document.createElement('script');
+    const t=setTimeout(()=>{cleanup();reject(new Error('Таймаут. Проверь интернет.'))},15000);
+    function cleanup(){clearTimeout(t);delete window[cb];if(s.parentNode)s.parentNode.removeChild(s)}
+    window[cb]=data=>{cleanup();resolve(data)};
+    s.onerror=()=>{cleanup();reject(new Error('Ошибка загрузки. Проверь ID таблицы и доступ.'))};
+    s.src=url+'&callback='+cb+'&_='+Date.now();
+    document.head.appendChild(s);
   });
-  renderMesocycle();
 }
-function selectMK(mk) {
-  state.currentMK = mk;
-  document.querySelectorAll('[onclick^="selectMK"]').forEach((b,i) => {
-    b.classList.toggle('active', i+1 === mk);
+
+async function loadPlan(sheetId){
+  const id=sheetId||S.sheetId;
+  if(!id) throw new Error('ID не указан');
+  const url=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent('ПЛАН')}`;
+  let json;
+  try{ json=await jsonpFetch(url); }
+  catch(e){ throw new Error('Не удалось подключиться. '+e.message); }
+  if(!json||json.status==='error'){
+    const m=json?.errors?.[0]?.message||'';
+    if(m.includes('not found')||m.includes('ПЛАН'))
+      throw new Error('Лист "ПЛАН" не найден. Убедись что лист называется ПЛАН заглавными буквами.');
+    throw new Error('Ошибка Google Sheets: '+(m||'неизвестная'));
+  }
+  const rows=json?.table?.rows||[];
+  if(!rows.length) throw new Error('Лист ПЛАН пуст. Добавь данные.');
+
+  // Парсим строки
+  // Формат: МЦ | МК | Тренировка | № | Упражнение | Вес/RPE | Сеты | Повт | Заметка
+  const startI=isNaN(parseInt((rows[0]?.c?.[0]?.v??'')))?1:0;
+  S.plan={};
+  let cnt=0;
+  for(let i=startI;i<rows.length;i++){
+    const c=rows[i]?.c||[];
+    const v=idx=>(c[idx]?.v??c[idx]?.f??'').toString().trim();
+    const n=idx=>parseInt(v(idx))||0;
+    const mc=n(0),mk=n(1),tr=v(2).toUpperCase(),row=n(3);
+    const ex=v(4),wt=v(5),st=v(6),rp=v(7),note=v(8);
+    if(!mc||!mk||!tr||!ex) continue;
+    if(!S.plan[mc]) S.plan[mc]={};
+    if(!S.plan[mc][mk]) S.plan[mc][mk]={};
+    if(!S.plan[mc][mk][tr]) S.plan[mc][mk][tr]={};
+    S.plan[mc][mk][tr][row]={ex,wt,st,rp,note};
+    cnt++;
+  }
+  S.sheetId=id;
+  save();
+  if(cnt===0) throw new Error('Не удалось распознать данные. Проверь структуру колонок.');
+  return cnt;
+}
+
+async function syncNow(){
+  const id=(document.getElementById('cfg-id')?.value||'').trim()||S.sheetId;
+  if(!id){showMsg('Введи ID таблицы','err');return;}
+  S.sheetId=id;save();
+  setSd('spin','обновление...');
+  try{
+    const cnt=await loadPlan(id);
+    renderMeso();
+    initMCMK();
+    const t=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    setSd('ok',t);
+    showMsg(`✓ Загружено ${cnt} упражнений`,'ok');
+    document.getElementById('plan-notice').style.display='block';
+    document.getElementById('plan-notice').classList.add('on');
+  }catch(e){
+    setSd('err','ошибка');
+    showMsg('⚠ '+e.message,'err');
+  }
+}
+
+function clearPlan(){
+  S.plan={};save();
+  document.getElementById('plan-notice').style.display='none';
+  renderMeso();setSd('','');
+  showMsg('План очищен','ok');
+}
+
+function startAutoSync(){
+  if(syncTimer) clearInterval(syncTimer);
+  syncTimer=setInterval(async()=>{
+    if(!S.sheetId) return;
+    try{await loadPlan();renderMeso();setSd('ok',new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}));}
+    catch(e){setSd('err','нет связи');}
+  },120000);
+}
+
+function setSd(cls,lbl){
+  const d=document.getElementById('sdot'),l=document.getElementById('slbl');
+  if(d) d.className='sdot'+(cls?' '+cls:'');
+  if(l) l.textContent=lbl||'';
+}
+function showMsg(txt,type){
+  const el=document.getElementById('sync-msg');
+  if(!el) return;
+  el.style.display='block';
+  el.style.background=type==='err'?'var(--red-bg)':'var(--sage-bg)';
+  el.style.border=`1px solid ${type==='err'?'var(--red)':'var(--sage)'}`;
+  el.style.color=type==='err'?'var(--red)':'var(--sage)';
+  el.textContent=txt;
+}
+
+// ═══════════════════════════════════════════════════
+// MESOCYCLE RENDER
+// ═══════════════════════════════════════════════════
+function getAvailableMCs(){
+  const mcs=Object.keys(S.plan||{}).map(Number).sort();
+  return mcs.length?mcs:[1,2,3];
+}
+function getAvailableMKs(mc){
+  const mks=Object.keys((S.plan[mc]||{})).map(Number).sort();
+  return mks.length?mks:[1,2,3,4];
+}
+
+function initMCMK(){
+  const mcs=getAvailableMCs();
+  const mcRow=document.getElementById('mc-tabs');
+  mcRow.innerHTML='';
+  mcs.forEach(mc=>{
+    const b=document.createElement('button');
+    b.className='mc-btn'+(mc===S.mc?' on':'');
+    b.textContent='Мезоцикл '+mc;
+    b.onclick=()=>{S.mc=mc;S.mk=1;document.querySelectorAll('.mc-btn').forEach((x,j)=>x.classList.toggle('on',mcs[j]===mc));initMKTabs();renderMeso();};
+    mcRow.appendChild(b);
   });
-  renderMesocycle();
+  initMKTabs();
 }
 
-function renderMesocycle() {
-  const mc = state.currentMC, mk = state.currentMK;
-  const cfg = MK_CONFIG[mk];
-  const isAuto = mk > 1;
+function initMKTabs(){
+  const mks=getAvailableMKs(S.mc);
+  const mkRow=document.getElementById('mk-tabs');
+  mkRow.innerHTML='';
+  mks.forEach(mk=>{
+    const cfg=MK_CFG[mk]||MK_CFG[1];
+    const b=document.createElement('button');
+    b.className=`mk-tab ${cfg.cls}`+(mk===S.mk?' on':'');
+    b.textContent=cfg.label;
+    b.onclick=()=>{S.mk=mk;document.querySelectorAll('.mk-tab').forEach((x,j)=>x.classList.toggle('on',mks[j]===mk));renderMkInfo();renderMeso();};
+    mkRow.appendChild(b);
+  });
+  renderMkInfo();
+}
 
-  // Обновить info bar
-  const info = document.getElementById('mk-info');
-  info.className = `mk-info ${cfg.cls}`;
-  info.innerHTML = `<span class="mk-badge">${cfg.label}</span><span>${cfg.info}</span>`;
+function renderMkInfo(){
+  const cfg=MK_CFG[S.mk]||MK_CFG[1];
+  const el=document.getElementById('mk-info');
+  el.className='mk-info '+cfg.cls;
+  el.innerHTML=`<span class="mk-badge">${cfg.label}</span><span>${cfg.info}</span>`;
+}
 
-  ['a','b'].forEach((block, bi) => {
-    const tbody = document.getElementById(`tbody-${block}`);
-    tbody.innerHTML = '';
-    for (let r = 0; r < ROWS_PER_BLOCK; r++) {
-      const tr = document.createElement('tr');
-      // Упражнение
-      const exKey = mcKey(mc, 1, bi, r, 'ex');
-      const exVal = getVal(exKey);
-      const exCell = mk === 1
-        ? `<td><input class="inline-input" value="${exVal}" placeholder="Упражнение..." oninput="setVal('${exKey}',this.value);renderMesocycle()" style="color:var(--txt-hi);font-weight:600;"></td>`
-        : `<td class="ex-name">${exVal || '—'}</td>`;
+function renderMeso(){
+  const mc=S.mc,mk=S.mk,cfg=MK_CFG[mk]||MK_CFG[1];
+  const body=document.getElementById('plan-body');
+  const empty=document.getElementById('plan-empty');
+  const mcPlan=S.plan[mc];
 
-      // Вес
-      const wtKey1 = mcKey(mc, 1, bi, r, 'wt');
-      const stKey1 = mcKey(mc, 1, bi, r, 'st');
-      const rpKey1 = mcKey(mc, 1, bi, r, 'rp');
-      const wt1 = parseFloat(getVal(wtKey1)) || 0;
-      const st1 = getVal(stKey1);
-      const rp1 = parseFloat(getVal(rpKey1)) || 0;
+  if(!mcPlan||!Object.keys(mcPlan).length){
+    body.innerHTML='';empty.style.display='block';return;
+  }
+  empty.style.display='none';
+  body.innerHTML='';
 
-      let wtDisplay, stDisplay, rpDisplay;
-      if (mk === 1) {
-        wtDisplay = `<input class="inline-input wt-cell mk1" value="${wt1||''}" placeholder="кг" type="number" oninput="setVal('${wtKey1}',this.value);renderRow(${mc},${bi},${r})" style="color:var(--ice);font-family:'Space Mono',monospace;font-weight:700;">`;
-        stDisplay = `<input class="inline-input" value="${st1||''}" placeholder="3" type="number" oninput="setVal('${stKey1}',this.value);renderRow(${mc},${bi},${r})" style="color:var(--txt-mid);">`;
-        rpDisplay = `<input class="inline-input" value="${rp1||''}" placeholder="8" type="number" oninput="setVal('${rpKey1}',this.value);renderRow(${mc},${bi},${r})" style="color:var(--txt-mid);">`;
+  // Получаем тренировки из МК1 (базовый)
+  const mk1=mcPlan[1]||{};
+  const trains=[...new Set([...Object.keys(mk1),...Object.keys(mcPlan[mk]||{})])].sort();
+
+  trains.forEach(train=>{
+    // Данные из МК1 для авто-расчёта
+    const mk1rows=mk1[train]||{};
+    // Данные текущего МК (если тренер заполнил отдельно) или авто из МК1
+    const mkRows=(mcPlan[mk]&&mcPlan[mk][train])||{};
+
+    const sec=document.createElement('div');
+    sec.style.cssText='border-top:1px solid var(--border)';
+
+    const hdr=document.createElement('div');
+    hdr.className='block-hdr';
+    hdr.innerHTML=`<span>Тренировка ${train}</span><span class="block-tag">МЦ ${mc} · МК ${mk}</span>`;
+    sec.appendChild(hdr);
+
+    const table=document.createElement('table');
+    table.className='tt';
+    table.innerHTML=`<thead><tr><th>Упражнение</th><th>Вес/RPE</th><th>Сеты</th><th>Повт</th><th>Заметка</th><th>Результат ✍</th></tr></thead>`;
+    const tbody=document.createElement('tbody');
+
+    // Собираем все строки
+    const allRows={...mk1rows};
+    // Если в текущем МК есть данные — используем их, иначе берём из МК1 и считаем авто
+    const rowNums=[...new Set([...Object.keys(mk1rows),...Object.keys(mkRows)])].map(Number).sort((a,b)=>a-b);
+    if(!rowNums.length){for(let i=1;i<=8;i++) rowNums.push(i);}
+
+    let totalTon=0;
+
+    rowNums.forEach((row,ri)=>{
+      const mk1row=mk1rows[row]||{};
+      const mkRow=mkRows[row]||{};
+
+      // Упражнение — из МК1 или текущего МК
+      const ex=mk1row.ex||mkRow.ex||'';
+      if(!ex&&mk===1) return; // пустые строки только в МК1 пропускаем если нет плана
+
+      // Вес: из плана текущего МК или авто из МК1
+      const wt1=parseFloat(mk1row.wt)||0;
+      let wtDisplay,wtVal;
+      if(mkRow.wt&&!isNaN(parseFloat(mkRow.wt))){
+        // Тренер явно указал вес для этого МК
+        wtVal=parseFloat(mkRow.wt);
+        wtDisplay=wtVal.toString();
+      } else if(mk===1){
+        wtVal=wt1;
+        wtDisplay=wt1?wt1.toString():'—';
       } else {
-        const wtAuto = wt1 ? Math.round(wt1 * cfg.coef / 2.5) * 2.5 : '';
-        const rpAuto = rp1 ? Math.max(1, rp1 + (cfg.rAdj||0)) : '';
-        wtDisplay = `<span class="wt-cell ${cfg.cls}" style="font-family:'Space Mono',monospace;font-weight:700;">${wtAuto||'—'}</span>`;
-        stDisplay = `<span style="color:var(--txt-mid)">${st1||'—'}</span>`;
-        rpDisplay = `<span style="color:var(--txt-mid)">${rpAuto||'—'}</span>`;
+        // Авто по Матвееву
+        wtVal=wt1?Math.round(wt1*cfg.coef/2.5)*2.5:0;
+        wtDisplay=wtVal?wtVal.toFixed(1):'—';
       }
 
+      const st=mkRow.st||mk1row.st||'';
+      const rp1=parseFloat(mk1row.rp)||0;
+      let rpDisplay;
+      if(mkRow.rp) rpDisplay=mkRow.rp;
+      else if(mk===1) rpDisplay=mk1row.rp||'—';
+      else rpDisplay=rp1?Math.max(1,rp1+(cfg.rAdj||0)).toString():'—';
+
+      const note=mkRow.note||mk1row.note||'';
+      const rKey=resKey(mc,mk,train,row);
+      const resVal=S.results[rKey]||'';
+
       // Тоннаж
-      const wtFinal = mk === 1 ? wt1 : (wt1 ? Math.round(wt1*cfg.coef/2.5)*2.5 : 0);
-      const stFinal = parseFloat(mk===1?st1:st1) || 0;
-      const rpFinal = mk === 1 ? rp1 : (rp1 ? Math.max(1,rp1+(cfg.rAdj||0)) : 0);
-      const tonnage = (wtFinal * stFinal * rpFinal) || '';
+      const stN=parseFloat(st)||0,rpN=parseFloat(rpDisplay)||0;
+      const ton=wtVal*stN*rpN;
+      if(ton>0) totalTon+=ton;
 
-      // Результат
-      const resKey = mcKey(mc, mk, bi, r, 'res');
-      const resVal = getVal(resKey);
-      const resCell = `<input class="inline-input result-cell" value="${resVal}" placeholder="—" oninput="setVal('${resKey}',this.value)" style="color:var(--sage);background:var(--sage-bg);font-family:'Space Mono',monospace;">`;
-
-      tr.innerHTML = `
-        ${exCell}
-        <td>${wtDisplay}</td>
-        <td>${stDisplay}</td>
-        <td>${rpDisplay}</td>
-        <td style="color:var(--txt-lo);font-family:'Space Mono',monospace;font-size:11px;">${tonnage||'—'}</td>
-        <td style="background:var(--sage-bg)">${resCell}</td>
+      const tr=document.createElement('tr');
+      if(ri%2===1) tr.style.background='rgba(255,255,255,.025)';
+      tr.innerHTML=`
+        <td class="ex-name">${ex||'<span style="color:var(--lo)">—</span>'}</td>
+        <td><span class="plan-wt ${cfg.cls}">${wtDisplay}</span></td>
+        <td class="plan-mid">${st||'—'}</td>
+        <td class="plan-mid">${rpDisplay}</td>
+        <td class="plan-lo">${note}</td>
+        <td class="res-td"><input class="res-ei" value="${resVal}" placeholder="—" oninput="S.results['${rKey}']=this.value;save()"></td>
       `;
       tbody.appendChild(tr);
+    });
+
+    // Тоннаж итого
+    if(totalTon>0){
+      const tr=document.createElement('tr');
+      tr.className='ton-row';
+      tr.innerHTML=`<td colspan="5">ТОННАЖ</td><td>${totalTon.toFixed(0)} кг</td>`;
+      tbody.appendChild(tr);
     }
-    // Итого строка
-    const tr = document.createElement('tr');
-    tr.className = 'total-row';
-    tr.innerHTML = `<td colspan="4">ИТОГО</td><td id="total-${block}-ton">—</td><td></td>`;
-    tbody.appendChild(tr);
-    updateTotal(block, bi, mc, mk, cfg);
-  });
-}
 
-function renderRow(mc, bi, r) { renderMesocycle(); }
-function updateTotal(block, bi, mc, mk, cfg) {
-  let total = 0;
-  for (let r = 0; r < ROWS_PER_BLOCK; r++) {
-    const wt1 = parseFloat(getVal(mcKey(mc,1,bi,r,'wt'))) || 0;
-    const st = parseFloat(getVal(mcKey(mc,1,bi,r,'st'))) || 0;
-    const rp = parseFloat(getVal(mcKey(mc,1,bi,r,'rp'))) || 0;
-    const wt = mk===1 ? wt1 : (wt1 ? Math.round(wt1*cfg.coef/2.5)*2.5 : 0);
-    const r2 = mk===1 ? rp : (rp ? Math.max(1,rp+(cfg.rAdj||0)) : 0);
-    total += wt * st * r2;
-  }
-  const el = document.getElementById(`total-${block}-ton`);
-  if (el) el.textContent = total > 0 ? total + ' кг' : '—';
-}
-
-// ═══════════════════════════════════════════════════════
-// КАЛЬКУЛЯТОР
-// ═══════════════════════════════════════════════════════
-const CALC_EXES = ['Приседания','Становая тяга','Жим лёжа','Жим стоя','Тяга штанги','Румынская тяга'];
-
-function initCalculator() {
-  // 1RM таблица
-  const tbody1 = document.getElementById('rm-table');
-  CALC_EXES.forEach((ex,i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${ex}</td>
-      <td class="input-cell"><input class="inline-input" id="rm-w${i}" type="number" placeholder="кг" oninput="calcRM(${i})"></td>
-      <td class="input-cell"><input class="inline-input" id="rm-r${i}" type="number" placeholder="повт" oninput="calcRM(${i})"></td>
-      <td class="calc-result" id="rm-e${i}">—</td>
-      <td class="calc-result" id="rm-b${i}" style="background:var(--raised);color:var(--txt-mid)">—</td>
-      <td class="calc-result" id="rm-avg${i}" style="background:var(--sage-bg);color:var(--sage)">—</td>
-    `;
-    tbody1.appendChild(tr);
+    table.appendChild(tbody);
+    sec.appendChild(table);
+    body.appendChild(sec);
   });
 
-  // % таблица
-  const tbody2 = document.getElementById('pct-table');
-  CALC_EXES.forEach((ex,i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${ex}</td><td class="calc-result" id="pct-rm${i}" style="background:var(--raised);color:var(--sage)">—</td>
-      <td class="calc-result" id="pct60-${i}" style="background:var(--sage-bg);color:var(--sage)">—</td>
-      <td class="calc-result" id="pct65-${i}" style="background:var(--sage-bg);color:var(--sage)">—</td>
-      <td class="calc-result" id="pct70-${i}" style="background:var(--amber-bg);color:var(--amber)">—</td>
-      <td class="calc-result" id="pct75-${i}" style="background:var(--amber-bg);color:var(--amber)">—</td>
-      <td class="calc-result" id="pct80-${i}" style="background:var(--red-bg);color:var(--red)">—</td>`;
-    tbody2.appendChild(tr);
-  });
-
-  // Разминка
-  calcWarmup();
-
-  // RPE таблица
-  buildRPETable();
-}
-
-function calcRM(i) {
-  const w = parseFloat(document.getElementById(`rm-w${i}`).value)||0;
-  const r = parseFloat(document.getElementById(`rm-r${i}`).value)||0;
-  if (!w || !r) {
-    ['e','b','avg'].forEach(t => document.getElementById(`rm-${t}${i}`).textContent='—');
-    return;
-  }
-  const epley   = +(w*(1+r/30)).toFixed(1);
-  const brzycki = r<37 ? +(w*(36/(37-r))).toFixed(1) : '—';
-  const avg     = brzycki !== '—' ? +((epley+brzycki)/2).toFixed(1) : epley;
-
-  document.getElementById(`rm-e${i}`).textContent   = epley;
-  document.getElementById(`rm-b${i}`).textContent   = brzycki;
-  document.getElementById(`rm-avg${i}`).textContent = avg;
-
-  // Обновить % таблицу
-  document.getElementById(`pct-rm${i}`).textContent = avg;
-  [60,65,70,75,80].forEach(pct => {
-    document.getElementById(`pct${pct}-${i}`).textContent = (Math.round(avg*pct/100/2.5)*2.5).toFixed(1);
-  });
-}
-
-function calcWarmup() {
-  const w = parseFloat(document.getElementById('warmup-weight').value)||0;
-  const warmups = [
-    { pct:0.35, reps:'1–8' }, { pct:0.50, reps:'1–5' },
-    { pct:0.65, reps:'1–3' }, { pct:0.75, reps:'1–3' },
-    { pct:0.85, reps:'1–2' }, { pct:0.95, reps:'1' }
-  ];
-  const tbody = document.getElementById('warmup-body');
-  tbody.innerHTML = '';
-  warmups.forEach((wu, i) => {
-    const kg = w ? (Math.round(w*wu.pct/2.5)*2.5).toFixed(1) : '—';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="color:var(--txt-lo)">Подход ${i+1}</td>
-      <td class="warmup-weight">${kg}</td>
-      <td class="warmup-reps">${wu.reps}</td>
-      <td class="warmup-pct">${Math.round(wu.pct*100)}%</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function buildRPETable() {
-  const RPE_DATA = {
-    10:[100,95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9],
-    9.5:[97.8,93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3],
-    9:[95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4],
-    8.5:[93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4],
-    8:[92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68],
-    7.5:[90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7],
-    7:[89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3],
-    6.5:[87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64],
-    6:[86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6],
-    5.5:[85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64,61.3],
-    5:[83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6,59.9]
-  };
-  const table = document.getElementById('rpe-table');
-  const thead = document.createElement('thead');
-  thead.innerHTML = `<tr><th>RPE</th>${Array.from({length:10},(_,i)=>`<th>${i+1}</th>`).join('')}</tr>`;
-  table.appendChild(thead);
-  const tbody = document.createElement('tbody');
-  Object.entries(RPE_DATA).forEach(([rpe,vals]) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${rpe}</td>` + vals.map(p => {
-      let cls = 'rpe-lo';
-      if (p>=95) cls='rpe-100'; else if (p>=90) cls='rpe-90'; else if (p>=85) cls='rpe-85'; else if (p>=80) cls='rpe-80';
-      return `<td class="${cls}">${p}%</td>`;
-    }).join('');
-    tbody.appendChild(tr);
-  });
-  table.appendChild(tbody);
-}
-
-// ═══════════════════════════════════════════════════════
-// ДНЕВНИК
-// ═══════════════════════════════════════════════════════
-function initDiary() {
-  state.diary.forEach(addDiaryRowFromData);
-  if (state.diary.length === 0) for(let i=0;i<5;i++) addDiaryRow();
-}
-
-function addDiaryRow(data) {
-  const tbody = document.getElementById('diary-body');
-  const idx = tbody.rows.length + 1;
-  const tr = document.createElement('tr');
-  const d = data || {};
-  tr.innerHTML = `
-    <td style="color:var(--txt-lo)">${idx}</td>
-    <td class="editable"><input class="inline-input" type="date" value="${d.date||''}"></td>
-    <td class="editable"><input class="inline-input" value="${d.ex||''}" placeholder="Упражнение"></td>
-    <td class="editable"><input class="inline-input" type="number" value="${d.wt||''}" placeholder="кг" oninput="calcDiaryRM(this)"></td>
-    <td class="editable"><input class="inline-input" type="number" value="${d.st||''}" placeholder="3"></td>
-    <td class="editable"><input class="inline-input" type="number" value="${d.rp||''}" placeholder="8" oninput="calcDiaryRM(this)"></td>
-    <td class="editable"><input class="inline-input" type="number" value="${d.rpe||''}" placeholder="7" min="1" max="10" step="0.5"></td>
-    <td class="rm-auto">—</td>
-    <td class="editable"><input class="inline-input" type="number" value="${d.fat||''}" placeholder="5" min="1" max="10"></td>
-    <td class="editable"><input class="inline-input" value="${d.note||''}" placeholder="..."></td>
-  `;
-  tbody.appendChild(tr);
-  if (data?.wt && data?.rp) calcDiaryRM(tr.querySelector('[type="number"]'));
-}
-function addDiaryRowFromData(d) { addDiaryRow(d); }
-function calcDiaryRM(input) {
-  const tr = input.closest('tr');
-  const wt = parseFloat(tr.cells[3].querySelector('input').value)||0;
-  const rp = parseFloat(tr.cells[5].querySelector('input').value)||0;
-  tr.cells[7].textContent = (wt&&rp) ? (wt*(1+rp/30)).toFixed(1) : '—';
-}
-
-// ═══════════════════════════════════════════════════════
-// СВОДНЫЕ ДАННЫЕ
-// ═══════════════════════════════════════════════════════
-const ANTRO_NAMES = ['Вес, кг','Обхват груди, см','Обхват талии, см',
-  'Обхват бёдер, см','Обхват бедра, см','Обхват руки, см','% жира'];
-const ANTRO_KEYS = ['wt','ch','wa','hp','th','ar','fat'];
-const LIFT_NAMES = ['Приседания','Становая тяга','Жим лёжа','Тяга блока',
-  'Подтягивания','Брусья','Румынская тяга','Жим гантелей','Гак-присед','Ягодичный мост'];
-const LIFT_KEYS = ['sq','dl','bp','ro','pu','dip','rdl','db','hk','gb'];
-
-function initSummary() {
-  const ta = document.getElementById('summary-antro');
-  ANTRO_NAMES.forEach((name,i) => {
-    const k = ANTRO_KEYS[i];
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${name}</td>
-      ${[0,1,2,3].map(j=>`<td class="input-cell"><input class="inline-input" value="${state.antro[k+j]||''}" placeholder="—" type="number" step="0.1" oninput="updateSummaryAntro('${k}',${j},this.value)"></td>`).join('')}
-      <td class="delta" id="sa-d-${k}">—</td>
-      <td class="input-cell"><input class="inline-input" value="${state.antro[k+'goal']||''}" placeholder="—" type="number" step="0.1" oninput="state.antro['${k}goal']=this.value;saveState()"></td>`;
-    ta.appendChild(tr);
-    updateSummaryAntroRow(k);
-  });
-
-  const tl = document.getElementById('summary-lifts');
-  LIFT_NAMES.forEach((name,i) => {
-    const k = LIFT_KEYS[i];
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${name}</td>
-      ${[0,1,2,3].map(j=>`<td class="input-cell"><input class="inline-input" value="${state.strength[k+j]||''}" placeholder="—" type="number" oninput="updateSummaryLift('${k}',${j},this.value)"></td>`).join('')}
-      <td class="delta" id="sl-d-${k}">—</td>
-      <td class="input-cell"><input class="inline-input" value="${state.strength[k+'goal']||''}" placeholder="—" type="number" oninput="state.strength['${k}goal']=this.value;saveState()"></td>`;
-    tl.appendChild(tr);
-    updateSummaryLiftRow(k);
-  });
-
-  const tt = document.getElementById('summary-tonnage');
-  const TON_LABELS = ['МЦ1·МК1','МЦ1·МК2','МЦ1·МК3','МЦ1·Deload',
-    'МЦ2·МК1','МЦ2·МК2','МЦ2·МК3','МЦ2·Deload',
-    'МЦ3·МК1','МЦ3·МК2','МЦ3·МК3','МЦ3·Deload'];
-  TON_LABELS.forEach((lbl,i) => {
-    const isDL = (i%4===3);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="color:${isDL?'var(--red)':'var(--txt-mid)'};font-weight:${isDL?'700':'400'}">${lbl}</td>
-      ${['A','B','C','D'].map(t=>`<td class="input-cell"><input class="inline-input" value="${state[`ton${i}${t}`]||''}" placeholder="—" type="number" oninput="updateTonnage(${i},'${t}',this.value)"></td>`).join('')}
-      <td class="delta" id="ton-total-${i}" style="color:${isDL?'var(--red)':'var(--gold)'}">—</td>`;
-    tt.appendChild(tr);
-    updateTonnageRow(i);
-  });
-}
-
-function updateSummaryAntro(k,j,v) { state.antro[k+j]=v; saveState(); updateSummaryAntroRow(k); }
-function updateSummaryAntroRow(k) {
-  const s = parseFloat(state.antro[k+'0'])||0, e = parseFloat(state.antro[k+'3'])||0;
-  const d = document.getElementById(`sa-d-${k}`);
-  if (d && s && e) {
-    const diff = (e-s).toFixed(1);
-    d.textContent = (diff>0?'+':'')+diff;
-    d.className = 'delta'+(diff<0?' neg':'');
-  }
-}
-function updateSummaryLift(k,j,v) { state.strength[k+j]=v; saveState(); updateSummaryLiftRow(k); }
-function updateSummaryLiftRow(k) {
-  const s = parseFloat(state.strength[k+'0'])||0, e = parseFloat(state.strength[k+'3'])||0;
-  const d = document.getElementById(`sl-d-${k}`);
-  if (d && s && e) {
-    const diff = (e-s).toFixed(1);
-    d.textContent = (diff>0?'+':'')+diff;
-    d.className = 'delta'+(diff<0?' neg':'');
-  }
-}
-function updateTonnage(i,t,v) { state[`ton${i}${t}`]=v; saveState(); updateTonnageRow(i); }
-function updateTonnageRow(i) {
-  const total = ['A','B','C','D'].reduce((acc,t)=>acc+(parseFloat(state[`ton${i}${t}`])||0),0);
-  const el = document.getElementById(`ton-total-${i}`);
-  if (el) el.textContent = total > 0 ? total : '—';
-}
-
-// ═══════════════════════════════════════════════════════
-// ОБЗОР — обновление KPI
-// ═══════════════════════════════════════════════════════
-function updateStrength(input, key, idx) {
-  if (!state.strength) state.strength = {};
-  state.strength[key+idx] = input.value;
-  saveState();
-  const vals = [0,1,2,3].map(i=>parseFloat(state.strength[key+i])||null).filter(Boolean);
-  const max = vals.length ? Math.max(...vals) : null;
-  const start = parseFloat(state.strength[key+'0'])||null;
-  const end = parseFloat(state.strength[key+'3'])||null;
-  const kpiMap = {sq:'kpi-squat',dl:'kpi-dead',bp:'kpi-bench'};
-  if (kpiMap[key]) {
-    const el = document.getElementById(kpiMap[key]);
-    if (el) { el.textContent = max || '—'; el.className = 'kpi-value'+(max?' has-value':''); }
-  }
-  const dMap = {sq:'dSq',dl:'dDl',bp:'dBp',ro:'dRo',pu:'dPu'};
-  if (dMap[key]) {
-    const el = document.getElementById(dMap[key]);
-    if (el && start && end) {
-      const diff = (end-start).toFixed(1);
-      el.textContent = (diff>0?'+':'')+diff; el.className='delta'+(diff<0?' neg':'');
-    }
+  // Показать notice если есть план
+  if(Object.keys(S.plan).length>0){
+    document.getElementById('plan-notice').style.display='block';
+    document.getElementById('plan-notice').classList.add('on');
   }
 }
 
-function updateAntro(input, key, idx) {
-  if (!state.antro) state.antro = {};
-  state.antro[key+idx] = input.value;
-  saveState();
-  const start = parseFloat(state.antro[key+'0'])||null;
-  const end = parseFloat(state.antro[key+'3'])||null;
-  if (key==='wt') {
-    const el = document.getElementById('kpi-weight');
-    if (el) { el.textContent = parseFloat(state.antro['wt0'])||'—'; }
-  }
-  const dMap = {wt:'dWt',ch:'dCh',wa:'dWa',ar:'dAr',fat:'dFat'};
-  if (dMap[key]) {
-    const el = document.getElementById(dMap[key]);
-    if (el && start && end) {
-      const diff = (end-start).toFixed(1);
-      el.textContent=(diff>0?'+':'')+diff; el.className='delta'+(diff<0?' neg':'');
-    }
-  }
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function go(btn,id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('pg-'+id).classList.add('on');
+  window.scrollTo(0,0);
 }
 
-// ═══════════════════════════════════════════════════════
-// ПИТАНИЕ
-// ═══════════════════════════════════════════════════════
-function calcNutrition() {
-  const w = parseFloat(document.getElementById('nut-weight').value)||0;
-  const a = parseFloat(document.getElementById('nut-activ').value)||30;
-  const def = parseFloat(document.getElementById('nut-deficit').value)||0;
-  const p = parseFloat(document.getElementById('nut-protein').value)||1.7;
-  const f = parseFloat(document.getElementById('nut-fat').value)||1.0;
-  const wa = parseFloat(document.getElementById('nut-water').value)||36;
-
-  if (!w) { ['kcal','p-val','f-val','c-val','w-val'].forEach(k=>document.getElementById('nut-'+k).textContent='—'); return; }
-
-  const kcal = Math.round(w * a * (1-def));
-  const pG   = Math.round(w * p);
-  const fG   = Math.round(w * f);
-  const cG   = Math.max(0, Math.round((kcal - pG*4 - fG*9) / 4));
-  const wML  = Math.round(w * wa);
-
-  document.getElementById('nut-kcal').textContent  = kcal;
-  document.getElementById('nut-p-val').textContent = pG;
-  document.getElementById('nut-f-val').textContent = fG;
-  document.getElementById('nut-c-val').textContent = cG;
-  document.getElementById('nut-w-val').textContent = wML;
+// ═══════════════════════════════════════════════════
+// CALCULATOR
+// ═══════════════════════════════════════════════════
+const CALC_EX=['Приседания','Становая тяга','Жим лёжа','Жим стоя','Тяга штанги','Румынская тяга'];
+function initCalc(){
+  const r1=document.getElementById('rm-body'),r2=document.getElementById('pct-body');
+  if(r1.rows.length) return;
+  CALC_EX.forEach((ex,i)=>{
+    const tr1=document.createElement('tr');
+    if(i%2) tr1.style.background='rgba(255,255,255,.025)';
+    tr1.innerHTML=`<td>${ex}</td><td class="inp"><input class="ei" type="number" id="rw${i}" placeholder="кг" oninput="cRM(${i})" style="color:var(--ice);font-family:var(--M);font-weight:700"></td><td class="inp"><input class="ei" type="number" id="rr${i}" placeholder="повт" oninput="cRM(${i})" style="color:var(--ice);font-family:var(--M);font-weight:700"></td><td><span class="cv" id="re${i}">—</span></td><td><span id="rb${i}" style="font-family:var(--M);font-weight:700;font-size:13px;color:var(--mid)">—</span></td><td><span id="ra${i}" style="font-family:var(--M);font-weight:700;font-size:13px;color:var(--sage)">—</span></td>`;
+    r1.appendChild(tr1);
+    const tr2=document.createElement('tr');
+    if(i%2) tr2.style.background='rgba(255,255,255,.025)';
+    tr2.innerHTML=`<td>${ex}</td><td><span id="p0-${i}" style="color:var(--sage);font-family:var(--M)">—</span></td>${[60,65,70,75,80].map((p,j)=>`<td><span id="p${p}-${i}" style="font-family:var(--M);color:${j<2?'var(--sage)':j<4?'var(--amber)':'var(--red)'}">—</span></td>`).join('')}`;
+    r2.appendChild(tr2);
+  });
+  calcWU();buildRPE();
+}
+function cRM(i){
+  const w=parseFloat(document.getElementById('rw'+i)?.value)||0;
+  const r=parseFloat(document.getElementById('rr'+i)?.value)||0;
+  if(!w||!r){['e','b','a'].forEach(t=>{const el=document.getElementById('r'+t+i);if(el)el.textContent='—'});return;}
+  const e=+(w*(1+r/30)).toFixed(1);
+  const b=r<37?+(w*(36/(37-r))).toFixed(1):'—';
+  const a=b!=='—'?+((e+(+b))/2).toFixed(1):e;
+  if(document.getElementById('re'+i))document.getElementById('re'+i).textContent=e;
+  if(document.getElementById('rb'+i))document.getElementById('rb'+i).textContent=b;
+  if(document.getElementById('ra'+i))document.getElementById('ra'+i).textContent=a;
+  if(document.getElementById('p0-'+i))document.getElementById('p0-'+i).textContent=a;
+  [60,65,70,75,80].forEach(p=>{const el=document.getElementById(`p${p}-${i}`);if(el)el.textContent=(Math.round(a*p/100/2.5)*2.5).toFixed(1)});
+}
+function calcWU(){
+  const w=parseFloat(document.getElementById('wu-w')?.value)||0;
+  const tb=document.getElementById('wu-body');if(!tb)return;
+  tb.innerHTML='';
+  [[.35,'1–8'],[.5,'1–5'],[.65,'1–3'],[.75,'1–3'],[.85,'1–2'],[.95,'1']].forEach(([p,rp],i)=>{
+    const kg=w?(Math.round(w*p/2.5)*2.5).toFixed(1):'—';
+    const tr=document.createElement('tr');
+    if(i%2)tr.style.background='rgba(255,255,255,.025)';
+    tr.innerHTML=`<td style="color:var(--lo)">Подход ${i+1}</td><td style="font-family:var(--M);font-weight:700;font-size:14px;color:var(--hi)">${kg}</td><td style="color:var(--mid)">${rp}</td><td style="color:var(--lo)">${Math.round(p*100)}%</td>`;
+    tb.appendChild(tr);
+  });
+}
+function buildRPE(){
+  const D={10:[100,95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9],9.5:[97.8,93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3],9:[95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4],8.5:[93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4],8:[92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68],7.5:[90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7],7:[89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3],6.5:[87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64],6:[86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6],5.5:[85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64,61.3],5:[83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6,59.9]};
+  const t=document.getElementById('rpe-t');if(!t)return;
+  t.innerHTML=`<thead><tr><th>RPE</th>${Array.from({length:10},(_,i)=>`<th>${i+1}</th>`).join('')}</tr></thead>`;
+  const tb=document.createElement('tbody');
+  Object.entries(D).forEach(([rpe,vals])=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${rpe}</td>`+vals.map(p=>{const c=p>=95?'r10':p>=90?'r9':p>=85?'r8':p>=80?'r7':'rlo';return`<td class="${c}">${p}%</td>`}).join('');
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb);
 }
 
-// ═══════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════
-loadState();
-initCalculator();
-initDiary();
-initSummary();
-renderMesocycle();
-calcNutrition();
+// ═══════════════════════════════════════════════════
+// DIARY
+// ═══════════════════════════════════════════════════
+function initDiary(){
+  const tb=document.getElementById('d-body');
+  if(S.diary?.length) S.diary.forEach(d=>addDiaryRow(d));
+  for(let i=0;i<3;i++) addDiaryRow();
+}
+function addDiaryRow(d){
+  const tb=document.getElementById('d-body');
+  const idx=tb.rows.length+1;
+  const dd=d||{};
+  const tr=document.createElement('tr');
+  if(idx%2===0)tr.style.background='rgba(255,255,255,.025)';
+  tr.innerHTML=`<td style="color:var(--lo)">${idx}</td><td class="inp"><input class="ei" type="date" value="${dd.date||''}" style="color:var(--hi)"></td><td class="inp"><input class="ei" value="${dd.ex||''}" placeholder="Упражнение" style="color:var(--hi)"></td><td class="inp"><input class="ei" type="number" value="${dd.wt||''}" placeholder="кг" oninput="calcDRM(this)" style="color:var(--ice);font-family:var(--M);font-weight:700"></td><td class="inp"><input class="ei" type="number" value="${dd.st||''}" placeholder="3" style="color:var(--mid)"></td><td class="inp"><input class="ei" type="number" value="${dd.rp||''}" placeholder="8" oninput="calcDRM(this)" style="color:var(--mid)"></td><td class="inp"><input class="ei" type="number" value="${dd.rpe||''}" placeholder="7" step="0.5" style="color:var(--mid)"></td><td style="font-family:var(--M);font-size:12px;color:var(--sage)">—</td><td class="inp"><input class="ei" value="${dd.note||''}" placeholder="..." style="color:var(--lo)"></td>`;
+  tb.appendChild(tr);
+}
+function calcDRM(inp){
+  const tr=inp.closest('tr');
+  const w=parseFloat(tr.cells[3].querySelector('input')?.value)||0;
+  const r=parseFloat(tr.cells[5].querySelector('input')?.value)||0;
+  tr.cells[7].textContent=(w&&r)?(w*(1+r/30)).toFixed(1):'—';
+}
 
-// Восстановить KPI
-['sq','dl','bp','ro','pu'].forEach(key => {
-  [0,1,2,3].forEach(i => { if (state.strength?.[key+i]) updateStrength({value:state.strength[key+i]},key,i); });
-});
-['wt','ch','wa','ar','fat'].forEach(key => {
-  [0,1,2,3].forEach(i => { if (state.antro?.[key+i]) updateAntro({value:state.antro[key+i]},key,i); });
-});
+// ═══════════════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════════════
+const AN=['Вес, кг','Обхват груди, см','Обхват талии, см','Обхват бёдер, см','Обхват руки, см','% жира'];
+const AK=['wt','ch','wa','hp','ar','fat'];
+const LN=['Приседания','Становая тяга','Жим лёжа','Тяга блока','Подтягивания','Брусья','Румынская тяга'];
+const LK=['sq','dl','bp','ro','pu','dip','rdl'];
+
+function initProgress(){
+  const ant=document.getElementById('ant-body'),str=document.getElementById('str-body');
+  if(ant.rows.length) return;
+  AN.forEach((name,i)=>{
+    const k=AK[i];
+    const tr=document.createElement('tr');
+    if(i%2)tr.style.background='rgba(255,255,255,.025)';
+    tr.innerHTML=`<td>${name}</td>${[0,1,2,3].map(j=>`<td class="inp"><input class="ei" value="${S.antro[k+j]||''}" type="number" step="0.1" placeholder="—" oninput="S.antro['${k}${j}']=this.value;save();rAD('${k}');updateKPI()" style="color:var(--ice);font-family:var(--M);font-weight:700"></td>`).join('')}<td class="delta" id="ad-${k}">—</td><td class="inp"><input class="ei" value="${S.antro[k+'g']||''}" type="number" step="0.1" placeholder="—" oninput="S.antro['${k}g']=this.value;save()" style="color:var(--mid)"></td>`;
+    ant.appendChild(tr);rAD(k);
+  });
+  LN.forEach((name,i)=>{
+    const k=LK[i];
+    const tr=document.createElement('tr');
+    if(i%2)tr.style.background='rgba(255,255,255,.025)';
+    tr.innerHTML=`<td>${name}</td>${[0,1,2,3].map(j=>`<td class="inp"><input class="ei" value="${S.strength[k+j]||''}" type="number" placeholder="—" oninput="S.strength['${k}${j}']=this.value;save();rSD('${k}');updateKPI()" style="color:var(--ice);font-family:var(--M);font-weight:700"></td>`).join('')}<td class="delta" id="sd-${k}">—</td><td class="inp"><input class="ei" value="${S.strength[k+'g']||''}" type="number" placeholder="—" oninput="S.strength['${k}g']=this.value;save()" style="color:var(--mid)"></td>`;
+    str.appendChild(tr);rSD(k);
+  });
+}
+function rAD(k){const s=+S.antro[k+0]||0,e=+S.antro[k+3]||0;const el=document.getElementById('ad-'+k);if(el&&s&&e){const d=(e-s).toFixed(1);el.textContent=(d>0?'+':'')+d;el.className='delta'+(d<0?' neg':'');}}
+function rSD(k){const s=+S.strength[k+0]||0,e=+S.strength[k+3]||0;const el=document.getElementById('sd-'+k);if(el&&s&&e){const d=(e-s).toFixed(1);el.textContent=(d>0?'+':'')+d;el.className='delta'+(d<0?' neg':'');}}
+function updateKPI(){
+  [['sq','k-sq'],['dl','k-dl'],['bp','k-bp']].forEach(([k,id])=>{
+    const vals=[0,1,2,3].map(i=>+S.strength[k+i]||0).filter(Boolean);
+    const el=document.getElementById(id);
+    if(el){el.textContent=vals.length?Math.max(...vals):'—';el.className='kv'+(vals.length?' live':'');}
+  });
+  const wt=+S.antro['wt0']||0;
+  const el=document.getElementById('k-wt');
+  if(el){el.textContent=wt||'—';el.className='kv'+(wt?' live':'');}
+}
+
+// ═══════════════════════════════════════════════════
+// NUTRITION
+// ═══════════════════════════════════════════════════
+function calcNut(){
+  const w=+(document.getElementById('n-w')?.value)||0;
+  const a=+(document.getElementById('n-a')?.value)||30;
+  const d=+(document.getElementById('n-d')?.value)||0;
+  const p=+(document.getElementById('n-p')?.value)||1.7;
+  const f=+(document.getElementById('n-f')?.value)||1.0;
+  const wa=+(document.getElementById('n-water')?.value)||36;
+  if(!w){['kc','pr','fa','cb','wa'].forEach(k=>{const el=document.getElementById('n-'+k);if(el)el.textContent='—'});return;}
+  const kc=Math.round(w*a*(1-d));
+  const pr=Math.round(w*p);
+  const fa=Math.round(w*f);
+  const cb=Math.max(0,Math.round((kc-pr*4-fa*9)/4));
+  const wml=Math.round(w*wa);
+  Object.entries({kc,pr,fa,cb,wa:wml}).forEach(([k,v])=>{const el=document.getElementById('n-'+k);if(el)el.textContent=v});
+}
+
+// ═══════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════
+load();
+
+if(S.name||S.sheetId){
+  // Уже был вход раньше — запускаем сразу
+  document.getElementById('w-name').value=S.name||'';
+  document.getElementById('w-id').value=S.sheetId||'';
+  launch();
+  if(S.sheetId){
+    setSd('spin','загрузка...');
+    loadPlan().then(()=>{
+      renderMeso();initMCMK();
+      setSd('ok',new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}));
+      startAutoSync();
+    }).catch(()=>setSd('err','нет связи'));
+  }
+} else {
+  validateW();
+}
 </script>
 </body>
 </html>
