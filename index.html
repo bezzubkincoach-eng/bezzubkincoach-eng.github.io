@@ -1,991 +1,422 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ТРЕНИРОВКИ · ARTEM BEZZUBKIN</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f4f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121214" media="(prefers-color-scheme: dark)">
+<title>Артём Беззубкин</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --void:#000;--base:#080808;--card:#101010;--surface:#171717;
-  --raised:#1f1f1f;--border:#2c2c2c;
-  --red:#c0392b;--red-bg:#1a0505;
-  --gold:#b8960c;--gold-bg:#141000;
-  --ice:#4a8fa8;--ice-bg:#040e14;
-  --sage:#4a7c59;--sage-bg:#040e08;
-  --amber:#a07830;--amber-bg:#120c00;
-  --teal:#3a7a70;--teal-bg:#040e0c;
-  --hi:#e8e8e8;--mid:#909090;--lo:#4a4a4a;
-  --F:'Barlow Condensed',sans-serif;
-  --M:'Space Mono',monospace;
-  --B:'Barlow',sans-serif;
+  --bg:#f5f4f1;--card:#fff;--ink:#18181b;--mute:#6f6f76;--faint:#a3a3a9;--line:#e6e4df;
+  --acc:#d6402e;--acc-ink:#fff;--acc-soft:#fbe9e6;--ok:#2f8f5b;
+  --r:16px;--shadow:0 1px 2px rgba(20,20,20,.04),0 2px 8px rgba(20,20,20,.04);
+  color-scheme:light;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--base);color:var(--hi);font-family:var(--B);font-size:14px;min-height:100vh}
-
-/* ══ WELCOME SCREEN ══════════════════════════════════ */
-#welcome{position:fixed;inset:0;z-index:200;background:var(--base);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
-#welcome.hidden{display:none}
-.wcard{width:100%;max-width:420px;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:auto}
-.wtop{background:var(--void);padding:28px 24px 20px;border-bottom:3px solid var(--red)}
-.wlogo{font-family:var(--F);font-size:9px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--lo);margin-bottom:8px}
-.wname{font-family:var(--F);font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
-.wtitle{font-family:var(--F);font-size:32px;font-weight:900;letter-spacing:.03em;text-transform:uppercase;color:var(--hi);line-height:1}
-.wtitle span{color:var(--red)}
-.wbody{padding:22px 24px}
-.wlbl{font-family:var(--F);font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--lo);margin-bottom:6px;display:block;margin-top:14px}
-.wlbl:first-child{margin-top:0}
-.winp{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--hi);font-family:var(--M);font-size:13px;padding:11px 12px;border-radius:3px;outline:none;transition:border-color .2s}
-.winp:focus{border-color:var(--ice)}
-.whint{font-size:11px;color:var(--lo);margin-top:5px;line-height:1.6}
-.wbtn{width:100%;background:var(--red);border:none;color:#fff;font-family:var(--F);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:14px;border-radius:3px;cursor:pointer;transition:background .15s;margin-top:16px}
-.wbtn:hover{background:#a93226}
-.wbtn:disabled{background:var(--raised);color:var(--lo);cursor:not-allowed}
-.wbtn.sec{background:var(--raised);color:var(--mid);border:1px solid var(--border);margin-top:8px}
-.wbtn.sec:hover{background:var(--surface)}
-.wsep{display:flex;align-items:center;gap:10px;margin:14px 0}
-.wsep span{flex:1;height:1px;background:var(--border)}
-.wsep em{font-size:11px;color:var(--lo);font-style:normal}
-.werr{display:none;margin-top:10px;padding:10px 12px;background:var(--red-bg);border:1px solid var(--red);border-radius:3px;font-size:11px;color:var(--red);line-height:1.5}
-
-/* ══ NAV ════════════════════════════════════════════ */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;height:50px;background:rgba(8,8,8,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center}
-.brand{font-family:var(--F);font-size:15px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--hi);padding:0 12px;white-space:nowrap;flex-shrink:0;line-height:1}
-.brand small{display:block;font-size:8px;font-weight:400;letter-spacing:.15em;color:var(--lo);margin-top:1px}
-.tabs{display:flex;overflow-x:auto;flex:1;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{font-family:var(--F);font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--lo);background:none;border:none;cursor:pointer;padding:0 11px;height:50px;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;flex-shrink:0}
-.tab:hover{color:var(--mid)}
-.tab.on{color:var(--hi);border-bottom-color:var(--red)}
-.nav-end{display:flex;align-items:center;padding-right:6px;flex-shrink:0;gap:1px}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--lo);flex-shrink:0;transition:all .3s}
-.sdot.ok{background:var(--sage);box-shadow:0 0 5px var(--sage)}
-.sdot.err{background:var(--red)}
-.sdot.spin{background:var(--gold);animation:sp 1s infinite}
-@keyframes sp{0%,100%{opacity:1}50%{opacity:.15}}
-.slbl{font-family:var(--M);font-size:9px;color:var(--lo);padding:0 5px;white-space:nowrap}
-.ico{background:none;border:none;cursor:pointer;color:var(--lo);font-size:14px;padding:6px 7px;border-radius:3px;line-height:1;transition:color .15s}
-.ico:hover{color:var(--hi)}
-
-/* ══ LAYOUT ════════════════════════════════════════ */
-.main{margin-top:50px;padding-bottom:40px}
-.pg{display:none;padding:20px 16px;max-width:900px;margin:0 auto}
-.pg.on{display:block}
-.ph{font-family:var(--F);font-size:26px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
-.phb{width:28px;height:3px;background:var(--red);margin-bottom:18px}
-
-/* ══ SECTIONS ══════════════════════════════════════ */
-.s{background:var(--card);border:1px solid var(--border);border-radius:4px;margin-bottom:12px;overflow:hidden}
-.sh{font-family:var(--F);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);background:var(--raised);padding:8px 13px;border-bottom:1px solid var(--border)}
-.sh.ice{color:var(--ice)}.sh.gold{color:var(--gold)}.sh.sage{color:var(--sage)}.sh.red{color:var(--red)}.sh.amber{color:var(--amber)}
-
-/* ══ MK SELECTOR ═══════════════════════════════════ */
-.mk-tabs{display:flex;gap:0;border-bottom:1px solid var(--border)}
-.mk-tab{font-family:var(--F);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:none;border:none;cursor:pointer;padding:10px 13px;color:var(--lo);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
-.mk-tab:hover{color:var(--mid)}
-.mk-tab.mk1.on{color:var(--ice);border-bottom-color:var(--ice);background:var(--ice-bg)}
-.mk-tab.mk2.on{color:var(--teal);border-bottom-color:var(--teal);background:var(--teal-bg)}
-.mk-tab.mk3.on{color:var(--amber);border-bottom-color:var(--amber);background:var(--amber-bg)}
-.mk-tab.mk4.on{color:var(--red);border-bottom-color:var(--red);background:var(--red-bg)}
-
-.mk-info{display:flex;align-items:center;gap:8px;padding:8px 13px;font-family:var(--F);font-size:11px;font-weight:600;border-bottom:1px solid var(--border)}
-.mk-info.mk1{background:var(--ice-bg);color:var(--ice)}
-.mk-info.mk2{background:var(--teal-bg);color:var(--teal)}
-.mk-info.mk3{background:var(--amber-bg);color:var(--amber)}
-.mk-info.mk4{background:var(--red-bg);color:var(--red)}
-.mk-badge{font-family:var(--F);font-size:8px;font-weight:900;letter-spacing:.15em;text-transform:uppercase;padding:2px 6px;border-radius:2px}
-.mk1 .mk-badge{background:var(--ice);color:var(--base)}
-.mk2 .mk-badge{background:var(--teal);color:var(--base)}
-.mk3 .mk-badge{background:var(--amber);color:var(--base)}
-.mk4 .mk-badge{background:var(--red);color:#fff}
-
-/* ══ TRAINING BLOCKS ════════════════════════════════ */
-.mc-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.mc-btn{font-family:var(--F);font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--border);border-radius:3px;padding:7px 13px;cursor:pointer;background:var(--card);color:var(--lo);transition:all .15s}
-.mc-btn:hover{color:var(--mid)}
-.mc-btn.on{background:var(--red-bg);border-color:var(--red);color:var(--red)}
-
-.block-hdr{font-family:var(--F);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--surface);color:var(--hi);padding:9px 13px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.block-tag{font-family:var(--F);font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:var(--raised);color:var(--mid)}
-
-.tt{width:100%;border-collapse:collapse}
-.tt th{font-family:var(--F);font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--lo);background:var(--raised);padding:7px 9px;text-align:center;border-bottom:1px solid var(--border)}
-.tt th:first-child{text-align:left;width:34%}
-.tt td{padding:8px 9px;border-bottom:1px solid var(--border);font-size:12px;text-align:center;vertical-align:middle}
-.tt tr:nth-child(even) td{background:rgba(255,255,255,.02)}
-.tt tr:last-child td{border-bottom:none}
-.ex-note{display:none;font-size:10px;color:var(--lo);font-weight:400;margin-top:2px}
-.ex-name{font-weight:600;color:var(--hi);text-align:left;padding:8px 9px}
-.plan-wt{font-family:var(--M);font-weight:700;font-size:13px}
-.plan-wt.mk1{color:var(--ice)}.plan-wt.mk2{color:var(--teal)}.plan-wt.mk3{color:var(--amber)}.plan-wt.mk4{color:var(--red)}
-.plan-mid{color:var(--mid);font-size:12px}
-.plan-lo{color:var(--lo);font-size:11px}
-.res-td{background:var(--sage-bg)!important}
-.res-ei{color:var(--sage);font-family:var(--M);font-size:12px;background:transparent;border:none;outline:none;width:100%;text-align:center}
-.ton-row td{background:var(--gold-bg)!important;color:var(--gold)!important;font-family:var(--M);font-weight:700;font-size:11px}
-
-/* ══ TABLES ════════════════════════════════════════ */
-.t{width:100%;border-collapse:collapse}
-.t th{font-family:var(--F);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);background:var(--surface);padding:8px 10px;text-align:center;border-bottom:1px solid var(--border)}
-.t th:first-child{text-align:left}
-.t td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:13px;text-align:center;color:var(--hi)}
-.t td:first-child{text-align:left;font-weight:600}
-.t tr:nth-child(even) td{background:rgba(255,255,255,.02)}
-.t tr:last-child td{border-bottom:none}
-.delta{font-family:var(--M);font-size:11px;font-weight:700;color:var(--sage)}
-.delta.neg{color:var(--red)}
-.ei{background:transparent;border:none;outline:none;color:inherit;font:inherit;width:100%;text-align:center;cursor:text}
-.ei:focus{color:var(--ice)}
-td.inp{background:var(--ice-bg)!important;cursor:text}
-
-/* ══ FORM ══════════════════════════════════════════ */
-.fr{display:flex;align-items:center;gap:12px;padding:10px 13px;border-bottom:1px solid var(--border)}
-.fr:last-child{border-bottom:none}
-.fl{font-size:13px;color:var(--mid);min-width:140px;flex-shrink:0}
-.fi{background:var(--ice-bg);border:1px solid transparent;color:var(--ice);font-family:var(--M);font-size:13px;font-weight:700;padding:8px 10px;border-radius:3px;outline:none;transition:border-color .15s;flex:1;max-width:220px}
-.fi:focus{border-color:var(--ice)}
-.fi.p{background:var(--surface);color:var(--hi);max-width:300px}.fi.p:focus{border-color:var(--lo)}
-.fi.wide{max-width:360px;font-size:11px}
-
-/* ══ KPI ═══════════════════════════════════════════ */
-.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.kc{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 8px;text-align:center}
-.kl{font-family:var(--F);font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--lo);margin-bottom:4px}
-.kv{font-family:var(--F);font-size:22px;font-weight:900;color:var(--hi);line-height:1}
-.kv.live{color:var(--ice)}
-.ks{font-size:9px;color:var(--lo);margin-top:2px}
-
-/* ══ NUT ═══════════════════════════════════════════ */
-.ng{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:12px}
-.nc{border-radius:4px;padding:10px 6px;text-align:center;border:1px solid var(--border)}
-.nc.kc_{background:var(--red-bg);border-color:var(--red)}
-.nc.pr{background:var(--sage-bg);border-color:var(--sage)}
-.nc.fa{background:var(--amber-bg);border-color:var(--amber)}
-.nc.cb{background:var(--gold-bg);border-color:var(--gold)}
-.nc.wa{background:var(--ice-bg);border-color:var(--ice)}
-.nv{font-family:var(--F);font-size:20px;font-weight:900;line-height:1;margin-bottom:2px}
-.nc.kc_ .nv{color:var(--red)}.nc.pr .nv{color:var(--sage)}
-.nc.fa .nv{color:var(--amber)}.nc.cb .nv{color:var(--gold)}.nc.wa .nv{color:var(--ice)}
-.nu{font-size:9px;color:var(--lo)}
-
-/* ══ CALC ══════════════════════════════════════════ */
-.bigi{background:var(--ice-bg);border:1px solid var(--ice);color:var(--ice);font-family:var(--M);font-size:20px;font-weight:700;padding:9px 12px;border-radius:4px;outline:none;width:120px;text-align:center}
-.cv{font-family:var(--M);font-weight:700;font-size:13px;color:var(--sage)}
-.rt{width:100%;border-collapse:collapse;font-size:11px}
-.rt th{font-family:var(--M);font-size:9px;background:var(--surface);color:var(--mid);padding:5px 4px;text-align:center;border-bottom:1px solid var(--border)}
-.rt td{padding:5px 4px;text-align:center;border-bottom:1px solid var(--border);font-family:var(--M);font-size:10px}
-.rt td:first-child{color:var(--mid);font-weight:700;background:var(--raised)}
-.r10{background:var(--red-bg)!important;color:var(--red)!important;font-weight:700}
-.r9{background:#1a0a00!important;color:var(--amber)!important}
-.r8{background:var(--gold-bg)!important;color:var(--gold)!important}
-.r7{background:var(--teal-bg)!important;color:var(--teal)!important}
-.rlo{color:var(--lo)!important}
-
-/* ══ NOTICE ════════════════════════════════════════ */
-.notice{background:var(--ice-bg);border-left:3px solid var(--ice);padding:9px 13px;border-radius:0 4px 4px 0;font-size:11px;color:var(--ice);margin-bottom:12px;line-height:1.6;display:none}
-.notice.on{display:block}
-
-/* ══ SYNC PAGE ═════════════════════════════════════ */
-.scode{background:var(--raised);border:1px solid var(--border);border-radius:3px;padding:9px 13px;font-family:var(--M);font-size:11px;color:var(--ice);margin:7px 0;word-break:break-all;line-height:1.8}
-.sbtn{background:var(--red);border:none;color:#fff;font-family:var(--F);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 16px;border-radius:3px;cursor:pointer;transition:background .15s;margin-right:7px;margin-top:7px}
-.sbtn:hover{background:#a93226}
-.sbtn.sec{background:var(--raised);color:var(--mid);border:1px solid var(--border)}
-.sbtn.sec:hover{background:var(--surface)}
-.smsg{display:none;margin-top:9px;padding:9px 12px;border-radius:3px;font-size:11px;line-height:1.5}
-.add-btn{background:var(--raised);border:1px solid var(--border);color:var(--mid);font-family:var(--F);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 13px;border-radius:3px;cursor:pointer}
-.add-btn:hover{background:var(--surface)}
-
-/* ══ RESPONSIVE ════════════════════════════════════ */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:var(--base)}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-@media(max-width:600px){
-  .kg{grid-template-columns:repeat(2,1fr)}
-  .ng{grid-template-columns:repeat(3,1fr)}
-  .pg{padding:14px 10px 50px}
-  .ph{font-size:20px}
-  .tt th:nth-child(5),.tt td:nth-child(5){display:none}
-  .tt .ex-note{display:block}
-  .tt .res-ei{min-width:56px}
-  .brand small{display:none}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#121214;--card:#1c1c1f;--ink:#f1f1f2;--mute:#9a9aa1;--faint:#5f5f66;--line:#2a2a2e;
+    --acc:#ff5a44;--acc-ink:#fff;--acc-soft:#3a1d19;--ok:#4cc488;--shadow:none;color-scheme:dark}
 }
-@media(max-width:380px){
-  .ng{grid-template-columns:repeat(2,1fr)}
-  .kv{font-size:18px}
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 "Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+
+/* top */
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 6px}
+.brand{font-weight:600;font-size:15px;letter-spacing:-.01em}
+.who{font-size:14px;color:var(--mute)}
+
+/* hero */
+.hero{padding:14px 0 18px}
+.meta{color:var(--mute);font-size:15px}
+h1{font-size:30px;line-height:1.15;letter-spacing:-.02em;margin:2px 0 0;font-weight:700}
+.tag{display:inline-block;vertical-align:middle;margin-left:8px;font-size:13px;font-weight:500;color:var(--acc);
+  background:var(--acc-soft);border-radius:999px;padding:3px 10px;letter-spacing:0}
+.prog{display:flex;align-items:center;gap:12px;margin-top:16px}
+.bar{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .3s}
+.count{font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* exercise cards */
+.list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.name{font-weight:600;font-size:17px;line-height:1.3}
+.plan{margin-top:3px;font-size:15px;font-variant-numeric:tabular-nums}
+.sub{margin-top:2px;font-size:14px;color:var(--mute)}
+.sets{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.set{min-width:64px;height:40px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);
+  font-size:15px;font-weight:500;color:var(--mute);font-variant-numeric:tabular-nums;transition:background .15s,border-color .15s}
+.set:active{transform:scale(.97)}
+.set.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.set.on::before{content:'✓ ';font-weight:600}
+
+.btn{display:block;width:100%;height:52px;border-radius:14px;font-weight:600;font-size:16px}
+.btn.pri{background:var(--ink);color:var(--bg)}
+.btn.sec{background:var(--card);box-shadow:var(--shadow)}
+.btn:disabled{opacity:.4}
+.foot{margin-top:18px;display:grid;gap:10px}
+.done-note{display:flex;align-items:center;gap:8px;color:var(--ok);font-weight:500;margin-top:10px}
+
+/* program */
+.seg{display:flex;gap:6px;background:var(--card);padding:4px;border-radius:12px;box-shadow:var(--shadow);margin:6px 0 18px}
+.seg button{flex:1;height:36px;border-radius:9px;font-size:15px;font-weight:500;color:var(--mute)}
+.seg button.on{background:var(--ink);color:var(--bg)}
+.week{margin:0 0 18px}
+.week h2{font-size:15px;font-weight:600;color:var(--mute);margin:0 0 8px;padding-left:4px}
+.rows{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 16px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row .t{flex:1;min-width:0}
+.row .t b{font-weight:600}
+.row .t small{display:block;color:var(--mute);font-size:14px}
+.row .s{font-size:14px;color:var(--mute);white-space:nowrap}
+.row .s.ok{color:var(--ok)}
+.row .s.now{color:var(--acc);font-weight:500}
+.chev{color:var(--faint)}
+
+/* gate */
+.gate{min-height:80vh;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.gate h1{font-size:34px}
+.field{width:100%;height:52px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);padding:0 16px;font-size:16px;outline:none}
+.field:focus{border-color:var(--ink)}
+.err{color:var(--acc);font-size:15px;min-height:22px}
+.skel{height:84px;border-radius:var(--r);background:var(--card);opacity:.6;animation:pulse 1.2s infinite ease-in-out}
+@keyframes pulse{50%{opacity:.3}}
+
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:5}
+.nav .in{max-width:560px;margin:0 auto;display:flex}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:500;color:var(--faint);padding:6px 0}
+.nav button.on{color:var(--ink)}
+.nav svg{width:24px;height:24px}
+
+/* rest timer */
+.rest{position:fixed;left:12px;right:12px;bottom:calc(72px + env(safe-area-inset-bottom));max-width:536px;margin:0 auto;z-index:6;
+  background:var(--ink);color:var(--bg);border-radius:18px;padding:12px 12px 12px 18px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 8px 30px rgba(0,0,0,.18);overflow:hidden}
+.rest .tm{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.rest .of{font-size:14px;opacity:.6;flex:1}
+.rest button{height:36px;padding:0 12px;border-radius:10px;background:color-mix(in srgb,var(--bg) 16%,transparent);font-size:14px;font-weight:500}
+.rest .line{position:absolute;left:0;bottom:0;height:3px;background:var(--acc);transition:width 1s linear}
+.rest.over .tm{color:var(--acc)}
+body.resting .wrap{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
+
+/* edit sheet */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:20px 16px calc(16px + env(safe-area-inset-bottom))}
+.sheet h3{margin:0 0 16px;font-size:18px;font-weight:600}
+.step{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+.step span{color:var(--mute)}
+.step .c{display:flex;align-items:center;gap:8px}
+.step button{width:44px;height:44px;border-radius:12px;background:var(--bg);font-size:22px;line-height:1}
+.step input{width:84px;height:44px;text-align:center;border:0;border-radius:12px;background:var(--bg);font-size:18px;font-weight:600;outline:none;font-variant-numeric:tabular-nums}
+.sheet .foot{grid-template-columns:1fr 1fr;margin-top:16px}
 </style>
 </head>
 <body>
-
-<!-- ══════════════════════════════════════════════════
-     WELCOME / LOGIN SCREEN
-═════════════════════════════════════════════════════ -->
-<div id="welcome">
-<div class="wcard">
-  <div class="wtop">
-    <div class="wlogo">Система тренировок</div>
-    <div class="wname">Артём Беззубкин · Тренер</div>
-    <div class="wtitle">ТВОЯ<span>.</span><br>ПРОГРАММА<span>.</span></div>
-  </div>
-  <div class="wbody">
-    <label class="wlbl">Твоё имя (необязательно)</label>
-    <input class="winp" id="w-name" placeholder="Иван Иванов" oninput="validateW()">
-
-    <label class="wlbl">Ссылка на программу от тренера</label>
-    <input class="winp" id="w-id" placeholder="Вставь ссылку на таблицу" oninput="validateW()">
-    <div class="whint">Обычно тренер присылает готовую ссылку — тогда это окно не нужно</div>
-
-    <button class="wbtn" id="w-go" onclick="connectAndStart()" disabled>
-      Загрузить программу
-    </button>
-
-    <div class="wsep"><span></span><em>или</em><span></span></div>
-
-    <button class="wbtn sec" onclick="startOffline()">
-      Открыть без синхронизации
-    </button>
-
-    <div class="werr" id="w-err"></div>
-  </div>
-</div>
-</div>
-
-<!-- ══════════════════════════════════════════════════
-     NAV
-═════════════════════════════════════════════════════ -->
-<nav class="nav">
-  <div class="brand">ТРЕН<span style="color:var(--red)">·</span>КА<small id="nav-name"></small></div>
-  <div class="tabs">
-    <button class="tab on"  onclick="go(this,'meso')">Программа</button>
-    <button class="tab" onclick="go(this,'progress')">Прогресс</button>
-    <button class="tab" onclick="go(this,'diary')">Дневник</button>
-    <button class="tab" onclick="go(this,'calc')">Калькулятор</button>
-    <button class="tab" onclick="go(this,'nut')">Питание</button>
-    <button class="tab" onclick="go(this,'cfg')">⚙</button>
-  </div>
-  <div class="nav-end">
-    <div class="sdot" id="sdot"></div>
-    <span class="slbl" id="slbl"></span>
-    <button class="ico" onclick="syncNow()" title="Обновить">⟳</button>
-  </div>
-</nav>
-
-<div class="main">
-
-<!-- ══ ПРОГРАММА (МЕЗОЦИКЛЫ) ════════════════════════ -->
-<div class="pg on" id="pg-meso">
-  <div class="ph">Программа тренировок</div><div class="phb"></div>
-
-  <div class="notice on" id="plan-notice" style="display:none">
-    📋 <strong>План от тренера загружен.</strong> Вводи результаты в зелёные ячейки после каждого подхода.
-  </div>
-
-  <!-- МЦ выбор -->
-  <div class="mc-tabs" id="mc-tabs"></div>
-
-  <!-- МК выбор (недели) -->
-  <div class="s" style="overflow:hidden">
-    <div class="mk-tabs" id="mk-tabs"></div>
-    <div class="mk-info mk1" id="mk-info">
-      <span class="mk-badge">МК 1</span>
-      <span>БАЗОВЫЙ · 100% · Вводи упражнения и веса</span>
-    </div>
-
-    <!-- Блоки тренировок -->
-    <div id="plan-body"></div>
-
-    <div id="plan-empty" style="padding:32px;text-align:center;color:var(--lo);display:none">
-      <div style="font-size:28px;margin-bottom:10px">📋</div>
-      <div style="color:var(--mid);margin-bottom:6px">Программа не загружена</div>
-      <div style="font-size:11px">Перейди в <strong style="color:var(--hi)">⚙ Настройки</strong> и введи ID таблицы тренера</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ ПРОГРЕСС ══════════════════════════════════════ -->
-<div class="pg" id="pg-progress">
-  <div class="ph">Прогресс</div><div class="phb"></div>
-
-  <div class="kg">
-    <div class="kc"><div class="kl">Присед</div><div class="kv" id="k-sq">—</div><div class="ks">кг</div></div>
-    <div class="kc"><div class="kl">Жим лёжа</div><div class="kv" id="k-bp">—</div><div class="ks">кг</div></div>
-    <div class="kc"><div class="kl">Становая</div><div class="kv" id="k-dl">—</div><div class="ks">кг</div></div>
-    <div class="kc"><div class="kl">Вес тела</div><div class="kv" id="k-wt">—</div><div class="ks">кг</div></div>
-  </div>
-
-  <div class="s">
-    <div class="sh ice">Антропометрия · вноси замеры</div>
-    <table class="t"><thead><tr><th>Параметр</th><th>Старт</th><th>МЦ 1</th><th>МЦ 2</th><th>МЦ 3</th><th>Δ</th><th>Цель</th></tr></thead>
-    <tbody id="ant-body"></tbody></table>
-  </div>
-
-  <div class="s">
-    <div class="sh gold">Силовые результаты (кг)</div>
-    <table class="t"><thead><tr><th>Упражнение</th><th>Старт</th><th>МЦ 1</th><th>МЦ 2</th><th>МЦ 3</th><th>Δ</th><th>Цель</th></tr></thead>
-    <tbody id="str-body"></tbody></table>
-  </div>
-</div>
-
-<!-- ══ ДНЕВНИК ═══════════════════════════════════════ -->
-<div class="pg" id="pg-diary">
-  <div class="ph">Дневник</div><div class="phb"></div>
-  <div class="s">
-    <div class="sh">Записи тренировок · 1RM авто</div>
-    <div style="overflow-x:auto">
-      <table class="t">
-        <thead><tr><th>№</th><th>Дата</th><th>Упражнение</th><th>Вес</th><th>Сеты</th><th>Повт</th><th>RPE</th><th>1RM</th><th>Заметки</th></tr></thead>
-        <tbody id="d-body"></tbody>
-      </table>
-    </div>
-    <div style="padding:9px 13px">
-      <button class="add-btn" onclick="addDiaryRow()">+ Добавить запись</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ КАЛЬКУЛЯТОР ═══════════════════════════════════ -->
-<div class="pg" id="pg-calc">
-  <div class="ph">Калькулятор</div><div class="phb"></div>
-
-  <div class="s">
-    <div class="sh">Расчёт 1RM</div>
-    <table class="t"><thead><tr><th>Упражнение</th><th>Вес</th><th>Повт</th><th>Эпли</th><th>Brzycki</th><th>Среднее</th></tr></thead>
-    <tbody id="rm-body"></tbody></table>
-  </div>
-
-  <div class="s">
-    <div class="sh gold">% от 1RM</div>
-    <table class="t"><thead><tr><th>Упражнение</th><th>1RM</th><th>60%</th><th>65%</th><th>70%</th><th>75%</th><th>80%</th></tr></thead>
-    <tbody id="pct-body"></tbody></table>
-  </div>
-
-  <div class="s">
-    <div class="sh">Разминочные подходы</div>
-    <div class="fr"><span class="fl">Рабочий вес (кг)</span>
-      <input type="number" class="bigi" id="wu-w" placeholder="100" oninput="calcWU()"></div>
-    <table class="t"><thead><tr><th>Подход</th><th>Вес, кг</th><th>Повт</th><th>%</th></tr></thead>
-    <tbody id="wu-body"></tbody></table>
-  </div>
-
-  <div class="s">
-    <div class="sh">RPE → % от 1RM</div>
-    <div style="overflow-x:auto"><table class="rt" id="rpe-t"></table></div>
-  </div>
-</div>
-
-<!-- ══ ПИТАНИЕ ═══════════════════════════════════════ -->
-<div class="pg" id="pg-nut">
-  <div class="ph">Питание</div><div class="phb"></div>
-  <div class="s">
-    <div class="sh">Параметры</div>
-    <div class="fr"><span class="fl">Масса тела (кг)</span><input type="number" class="fi" id="n-w" placeholder="80" oninput="calcNut()"></div>
-    <div class="fr"><span class="fl">Коэффициент активности</span>
-      <select class="fi" id="n-a" onchange="calcNut()" style="cursor:pointer">
-        <option value="28">28 · Сидячая</option><option value="30" selected>30 · Минимум</option>
-        <option value="32">32 · Средняя</option><option value="34">34 · Высокая</option>
-      </select></div>
-    <div class="fr"><span class="fl">Дефицит</span>
-      <select class="fi" id="n-d" onchange="calcNut()" style="cursor:pointer">
-        <option value="0">0 · Норма/набор</option>
-        <option value="0.15">−15% · Похудение</option>
-        <option value="0.20">−20% · Активно</option>
-      </select></div>
-    <div class="fr"><span class="fl">Белок, г/кг</span><input type="number" class="fi" id="n-p" value="1.7" step="0.1" oninput="calcNut()"></div>
-    <div class="fr"><span class="fl">Жиры, г/кг</span><input type="number" class="fi" id="n-f" value="1.0" step="0.1" oninput="calcNut()"></div>
-    <div class="fr"><span class="fl">Вода, мл/кг</span><input type="number" class="fi" id="n-water" value="36" oninput="calcNut()"></div>
-  </div>
-  <div class="s">
-    <div class="sh sage">Итог · авто</div>
-    <div class="ng">
-      <div class="nc kc_"><div class="nv" id="n-kc">—</div><div class="nu">ккал</div></div>
-      <div class="nc pr"><div class="nv" id="n-pr">—</div><div class="nu">г белка</div></div>
-      <div class="nc fa"><div class="nv" id="n-fa">—</div><div class="nu">г жиров</div></div>
-      <div class="nc cb"><div class="nv" id="n-cb">—</div><div class="nu">г углеводов</div></div>
-      <div class="nc wa"><div class="nv" id="n-wa">—</div><div class="nu">мл воды</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ НАСТРОЙКИ ═════════════════════════════════════ -->
-<div class="pg" id="pg-cfg">
-  <div class="ph">Настройки</div><div class="phb"></div>
-
-  <div class="s">
-    <div class="sh gold">Подключение к плану тренера</div>
-    <div class="fr"><span class="fl">Твоё имя</span>
-      <input type="text" class="fi p" id="cfg-name" placeholder="Иван Иванов" oninput="S.name=this.value;save()"></div>
-    <div class="fr"><span class="fl">Таблица</span>
-      <input type="text" class="fi wide" id="cfg-id" placeholder="https://docs.google.com/spreadsheets/d/..." oninput="S.sheetId=sheetIdFrom(this.value);save()"></div>
-    <div style="padding:8px 13px 13px">
-      <div style="font-size:11px;color:var(--lo);line-height:1.8;margin-bottom:10px">
-        Ссылка на Google-таблицу от тренера. Таблица должна быть открыта: Настройки доступа → «Все, у кого есть ссылка» → Читатель
-      </div>
-      <button class="sbtn" onclick="syncNow()">⟳ Загрузить план</button>
-      <button class="sbtn sec" onclick="clearPlan()">Очистить план</button>
-      <div class="smsg" id="sync-msg"></div>
-    </div>
-  </div>
-
-  <div class="s">
-    <div class="sh amber">Откуда берётся план</div>
-    <div style="padding:13px;font-size:12px;color:var(--mid);line-height:1.9">
-      Из листов <strong style="color:var(--hi)">МЕЗОЦИКЛ 1–3</strong> таблицы тренера. Все веса, повторы и разгрузку считает сама таблица —
-      приложение показывает ровно то, что в ней написано. План обновляется сам каждые 2 минуты.
-    </div>
-  </div>
-
-  <div class="s">
-    <div class="sh red">Сброс данных</div>
-    <div style="padding:13px">
-      <button class="sbtn" style="background:var(--red-bg);border:1px solid var(--red);color:var(--red)"
-        onclick="if(confirm('Удалить все данные?')){localStorage.removeItem(LS);location.reload()}">
-        Удалить все данные
-      </button>
-      <div style="font-size:11px;color:var(--lo);margin-top:7px">Данные хранятся в браузере этого устройства</div>
-    </div>
-  </div>
-</div>
-
-</div><!-- /main -->
+<div id="app"></div>
 
 <script src="xlsx.full.min.js"></script>
 <script>
-// ═══════════════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════════════
-const LS = 'artem_coach_v1';
-const MK_CFG = {
-  1:{cls:'mk1',coef:1.00,rAdj:0, label:'МК 1',info:'БАЗОВЫЙ · 100% · Данные из плана тренера'},
-  2:{cls:'mk2',coef:1.05,rAdj:0, label:'МК 2',info:'РАЗВИВАЮЩИЙ · Вес +5% · Авто'},
-  3:{cls:'mk3',coef:1.10,rAdj:-2,label:'МК 3',info:'УДАРНЫЙ · Вес +10%, повт −2 · Авто'},
-  4:{cls:'mk4',coef:0.70,rAdj:-3,label:'МК 4',info:'DELOAD · Вес 70%, повт −3 · Матвеев'}
-};
-
-// ═══════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════
-let S = {
-  name:'', sheetId:'',
-  mc:1, mk:1,
-  plan:{},    // plan[mc][mk][train][row] = {ex,wt,st,rp,note}
-  results:{}, // results[mc_mk_train_row] = string
-  antro:{}, strength:{},
-  diary:[]
-};
-let syncTimer = null;
-
-function load(){try{const d=localStorage.getItem(LS);if(d)S={...S,...JSON.parse(d)}}catch(e){}}
-function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
-function resKey(mc,mk,tr,row){return`${mc}_${mk}_${tr}_${row}`}
-
-// ═══════════════════════════════════════════════════
-// WELCOME
-// ═══════════════════════════════════════════════════
-function validateW(){
-  const n=document.getElementById('w-name').value.trim();
-  const id=document.getElementById('w-id').value.trim();
-  document.getElementById('w-go').disabled=!(sheetIdFrom(id).length>20);
-}
-
-async function connectAndStart(){
-  const name=document.getElementById('w-name').value.trim();
-  const id=document.getElementById('w-id').value.trim();
-  S.name=name; S.sheetId=id; save();
-  const err=document.getElementById('w-err');
-  err.style.display='none';
-  setSd('spin','загрузка...');
-  try{
-    await loadPlan(id);
-    launch();
-  }catch(e){
-    err.style.display='block';
-    err.textContent='⚠ '+e.message;
-    setSd('err','ошибка');
-  }
-}
-
-function startOffline(){
-  S.name=document.getElementById('w-name').value.trim()||'Клиент';
-  save(); launch();
-}
-
-function launch(){
-  document.getElementById('welcome').classList.add('hidden');
-  // restore cfg fields
-  const ni=document.getElementById('cfg-name'),ii=document.getElementById('cfg-id');
-  if(ni) ni.value=S.name||'';
-  if(ii) ii.value=S.sheetId||'';
-  // nav name
-  const nn=document.getElementById('nav-name');
-  if(nn&&S.name) nn.textContent=S.name;
-  initMCMK();
-  renderMeso();
-  initCalc();
-  initProgress();
-  initDiary();
-  calcNut();
-  updateKPI();
-  if(S.sheetId) startAutoSync();
-}
-
-// ═══════════════════════════════════════════════════
-// GOOGLE SHEETS SYNC — читает таблицу тренера как есть (листы МЕЗОЦИКЛ 1–3)
-// ═══════════════════════════════════════════════════
-function sheetIdFrom(v){
-  v=(v||'').trim();
-  const m=v.match(/\/d\/([a-zA-Z0-9_-]{20,})/)||v.match(/[?&#]id=([a-zA-Z0-9_-]{20,})/);
-  return m?m[1]:v.replace(/[^a-zA-Z0-9_-]/g,'');
-}
+const KEY='bz_app_v2';
+const SYNC='https://script.google.com/macros/s/AKfycby6yPBCpwfNIpM34tRwMVEdwmlI7iTVmdzg-w2GnH1vM2RlgpUwZvUmYkaoYlgp3o9r/exec';
+let S={id:'',plan:null,log:{},cur:'',tab:'today',rest:null};
+try{Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s);
+const h=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{const m=String(v??'').replace(',','.').match(/-?\d+(\.\d+)?/);return m?+m[0]:NaN};
+const fmt=n=>Number.isFinite(n)?String(Math.round(n*100)/100).replace('.',','):'';
 const cell=v=>(v==null?'':String(v)).trim();
 
-// "ТРЕНИРОВКА A  ·  НЕЧЁТНАЯ НЕДЕЛЯ" -> "А · нечётная"
+// ── загрузка таблицы ───────────────────────────────
+function idFrom(v){
+  v=(v||'').trim();
+  const m=v.match(/\/d\/([a-zA-Z0-9_-]{20,})/)||v.match(/[?&#]id=([a-zA-Z0-9_-]{20,})/);
+  return m?m[1]:(/^[a-zA-Z0-9_-]{25,}$/.test(v)?v:'');
+}
 function trName(t){
   t=cell(t).toUpperCase().replace(/^ТРЕНИРОВКА\s*/,'');
-  if(!t) return '';
-  let [letter,...rest]=t.split('·').map(x=>x.trim());
-  letter=letter.replace(/^A$/,'А').replace(/^B$/,'Б').replace(/^C$/,'В').replace(/^D$/,'Г');
+  if(!t) return null;
+  let [l,...rest]=t.split('·').map(x=>x.trim());
+  l=({A:'А',B:'Б',C:'В',D:'Г'})[l]||l;
   const kind=rest.join(' ').toLowerCase().replace(/\s*неделя\s*/,'').trim();
-  return kind?`${letter} · ${kind}`:letter;
+  return {letter:l,kind};
 }
-
-// Лист МЕЗОЦИКЛ: блоки «НЕДЕЛЯ n» → «ТРЕНИРОВКА …» (левый блок B–I, правый K–R) → строки до «ИТОГО»
 function parseMeso(grid){
-  const plan={},info={};
-  let wk=0,L='',R='',inRows=false,n=0;
+  const weeks={};let wk=0,L=null,R=null,on=false;
   for(const r of grid){
-    const b=cell(r[1]),up=b.toUpperCase();
-    const m=up.match(/^НЕДЕЛЯ\s*(\d+)/);
-    if(m){wk=+m[1];inRows=false;info[wk]=b.replace(/\s+/g,' ');continue}
-    if(up.startsWith('ТРЕНИРОВКА')){L=trName(b);R=trName(r[10]);inRows=false;continue}
-    if(up==='УПРАЖНЕНИЕ'){inRows=true;n=0;continue}
-    if(up==='ИТОГО'){inRows=false;continue}
-    if(!inRows||!wk) continue;
-    n++;
-    [[L,1],[R,10]].forEach(([tr,c])=>{
-      const ex=cell(r[c]);
-      if(!tr||!ex) return;
-      const rest=cell(r[c+4]),note=cell(r[c+5]);
-      ((plan[wk]??={})[tr]??={})[n]={
-        ex,wt:/^0+([.,]0*)?$/.test(cell(r[c+1]))?'':cell(r[c+1]),st:cell(r[c+2]),rp:cell(r[c+3]),
-        note:[rest&&('отдых '+rest),note].filter(Boolean).join(' · ')
-      };
+    const b=cell(r[1]),up=b.toUpperCase(),m=up.match(/^НЕДЕЛЯ\s*(\d+)/);
+    if(m){wk=+m[1];on=false;weeks[wk]={n:wk,label:/РАЗГРУЗ|DELOAD/.test(up)?'Разгрузка':'',w:{}};continue}
+    if(up.startsWith('ТРЕНИРОВКА')){L=trName(b);R=trName(r[10]);on=false;continue}
+    if(up==='УПРАЖНЕНИЕ'){on=true;continue}
+    if(up==='ИТОГО'){on=false;continue}
+    if(!on||!wk) continue;
+    [[L,1],[R,10]].forEach(([t,c])=>{
+      const name=cell(r[c]);
+      if(!t||!name) return;
+      const k=t.letter+'|'+t.kind;
+      const w=weeks[wk].w[k]??={letter:t.letter,kind:t.kind,ex:[]};
+      let wt=cell(r[c+1]);if(/^0+([.,]0*)?$/.test(wt)) wt='';
+      w.ex.push({name,wt,st:cell(r[c+2]),rp:cell(r[c+3]),rest:cell(r[c+4]),note:cell(r[c+5])});
     });
   }
-  return {plan,info};
+  const kindOrder=k=>k.startsWith('нечёт')||k.startsWith('нечет')?0:k.startsWith('чёт')||k.startsWith('чет')?1:2;
+  return Object.values(weeks).map(W=>{
+    const list=Object.values(W.w).sort((a,b)=>kindOrder(a.kind)-kindOrder(b.kind)||a.letter.localeCompare(b.letter,'ru'));
+    const sameLetter=l=>list.filter(x=>x.letter===l).length>1;
+    list.forEach(x=>x.sub=sameLetter(x.letter)?x.kind:'');
+    return {n:W.n,label:W.label,workouts:list};
+  }).filter(W=>W.workouts.length);
 }
-
-function clientName(grid){
-  for(const r of grid){
-    const i=r.findIndex(v=>cell(v).toLowerCase()==='имя');
-    if(i>=0){const v=r.slice(i+1).map(cell).find(Boolean);if(v) return v;}
-  }
-  return '';
-}
-
-async function loadPlan(sheetId){
-  const id=sheetIdFrom(sheetId||S.sheetId);
-  if(!id) throw new Error('Нет ссылки на таблицу');
-  const NOT_OPEN='Таблица не открылась. Тренеру: в таблице нажми «Настройки доступа» → «Все, у кого есть ссылка» → Читатель.';
-
-  let buf;
-  try{
-    const resp=await fetch(`https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`,{cache:'no-store'});
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
-    buf=await resp.arrayBuffer();
-  }catch(e){
-    throw new Error(navigator.onLine===false?'Нет интернета':NOT_OPEN);
-  }
-  const head=new Uint8Array(buf.slice(0,2));
-  if(head[0]!==0x50||head[1]!==0x4B) throw new Error(NOT_OPEN); // не xlsx — значит Google вернул страницу входа
-
+async function fetchPlan(id){
+  const r=await fetch(`https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`,{cache:'no-store'});
+  if(!r.ok) throw 0;
+  const buf=await r.arrayBuffer(),b=new Uint8Array(buf.slice(0,2));
+  if(b[0]!==0x50||b[1]!==0x4B) throw 0;
   const wb=XLSX.read(buf,{type:'array'});
-  // всегда читаем от A1: у выгрузки Google диапазон листа может начинаться со столбца B
-  const grid=name=>{
-    const ws=wb.Sheets[name],range=XLSX.utils.decode_range(ws['!ref']||'A1');
-    range.s.r=0;range.s.c=0;
-    return XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:'',blankrows:true,range});
-  };
-
-  const plan={},weekInfo={};
-  let cnt=0;
-  wb.SheetNames.forEach(name=>{
-    const m=name.toUpperCase().match(/^МЕЗОЦИКЛ\s*(\d+)/);
+  const grid=n=>{const ws=wb.Sheets[n],g=XLSX.utils.decode_range(ws['!ref']||'A1');g.s.r=0;g.s.c=0;
+    return XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:'',blankrows:true,range:g})};
+  const blocks=[];
+  wb.SheetNames.forEach(n=>{
+    const m=n.toUpperCase().match(/^МЕЗОЦИКЛ\s*(\d+)/);
     if(!m) return;
-    const mc=+m[1],res=parseMeso(grid(name));
-    if(!Object.keys(res.plan).length) return;
-    plan[mc]=res.plan; weekInfo[mc]=res.info;
-    Object.values(res.plan).forEach(w=>Object.values(w).forEach(t=>cnt+=Object.keys(t).length));
+    const weeks=parseMeso(grid(n));
+    if(weeks.length) blocks.push({n:+m[1],weeks});
   });
-  if(!cnt) throw new Error('В таблице нет заполненных упражнений (листы «МЕЗОЦИКЛ 1–3», колонка УПРАЖНЕНИЕ).');
-
-  const kl=wb.SheetNames.find(n=>n.toUpperCase()==='КЛИЕНТ');
-  const nm=kl?clientName(grid(kl)):'';
-  if(nm&&!S.name){S.name=nm;const nn=document.getElementById('nav-name');if(nn) nn.textContent=nm;}
-
-  if(S.sheetId!==id){S.results={};}
-  S.plan=plan; S.weekInfo=weekInfo; S.sheetId=id;
-  if(!S.plan[S.mc]) S.mc=+Object.keys(plan)[0];
-  if(!S.plan[S.mc][S.mk]) S.mk=+Object.keys(S.plan[S.mc])[0];
-  save();
-  return cnt;
+  blocks.sort((a,b)=>a.n-b.n);
+  let client='';
+  const k=wb.SheetNames.find(n=>n.toUpperCase()==='КЛИЕНТ');
+  if(k) for(const r of grid(k)){const i=r.findIndex(v=>cell(v).toLowerCase()==='имя');
+    if(i>=0){const v=r.slice(i+1).map(cell).find(Boolean);if(v){client=v;break}}}
+  return {blocks,client};
 }
 
-async function syncNow(){
-  const id=(document.getElementById('cfg-id')?.value||'').trim()||S.sheetId;
-  if(!id){showMsg('Введи ID таблицы','err');return;}
-  S.sheetId=id;save();
-  setSd('spin','обновление...');
-  try{
-    const cnt=await loadPlan(id);
-    renderMeso();
-    initMCMK();
-    const t=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-    setSd('ok',t);
-    showMsg(`✓ Загружено ${cnt} упражнений`,'ok');
-    document.getElementById('plan-notice').style.display='block';
-    document.getElementById('plan-notice').classList.add('on');
-  }catch(e){
-    setSd('err','ошибка');
-    showMsg('⚠ '+e.message,'err');
+// ── модель ─────────────────────────────────────────
+function flat(){
+  const out=[];
+  (S.plan?.blocks||[]).forEach(B=>B.weeks.forEach(W=>W.workouts.forEach(w=>
+    out.push({id:`${B.n}.${W.n}.${w.letter}.${w.kind}`,B,W,w}))));
+  return out;
+}
+const isDone=id=>!!S.log[id]?.done;
+function current(){
+  const all=flat();
+  return all.find(x=>x.id===S.cur)||all.find(x=>!isDone(x.id))||all[all.length-1];
+}
+const title=w=>'Тренировка '+w.letter;
+const sub=w=>w.sub||'';
+function setsOf(e){const n=Math.round(num(e.st));return n>0&&n<20?n:1}
+function planText(e){
+  const reps=e.rp||'';
+  const sr=e.st&&reps?`${e.st} × ${reps}`:(reps?`${reps} повт.`:(e.st?`${e.st} подх.`:''));
+  const w=e.wt?(Number.isFinite(num(e.wt))&&/^[\d.,\s]+$/.test(e.wt)?`${fmt(num(e.wt))} кг`:e.wt):'';
+  return [sr,w].filter(Boolean).join(' · ');
+}
+function pillText(w,r){return (w!==''&&w!=null?`${fmt(+w)} × `:'× ')+(r??'')}
+function restSec(t){
+  t=(t||'').toLowerCase();if(!t) return 0;
+  let m=t.match(/(\d+)\s*[:.]\s*(\d{2})/);if(m) return +m[1]*60+ +m[2];
+  m=t.match(/(\d+(?:[.,]\d+)?)\s*м/);if(m) return Math.round(num(m[1])*60);
+  m=t.match(/(\d+)\s*с/);if(m) return +m[1];
+  const n=num(t);return Number.isFinite(n)?(n<=10?Math.round(n*60):Math.round(n)):0;
+}
+
+// ── отрисовка ──────────────────────────────────────
+const ICON={
+  today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>',
+  plan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>'
+};
+function shell(inner){
+  const name=S.plan?.client||'';
+  return `<div class="wrap"><div class="top"><span class="brand">Артём Беззубкин</span>${name?`<span class="who">${h(name)}</span>`:''}</div>${inner}</div>
+  <nav class="nav"><div class="in">
+    <button data-tab="today" class="${S.tab==='today'?'on':''}">${ICON.today}Сегодня</button>
+    <button data-tab="plan" class="${S.tab==='plan'?'on':''}">${ICON.plan}Программа</button>
+  </div></nav><div id="restbox"></div>`;
+}
+function render(){
+  const app=$('#app');
+  if(!S.id){app.innerHTML=gate();bindGate();return}
+  if(!S.plan){app.innerHTML=shell('<div class="hero"><div class="skel" style="height:60px;width:60%"></div></div><div class="list"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>');return}
+  app.innerHTML=shell(S.tab==='plan'?program():today());
+  bind();restTick();
+}
+function gate(err){
+  return `<div class="wrap"><div class="gate">
+    <div class="brand">Артём Беззубкин</div>
+    <h1>Программа тренировок</h1>
+    <input class="field" id="link" placeholder="Ссылка на программу" autocomplete="off" inputmode="url">
+    <button class="btn pri" id="open">Открыть</button>
+    <div class="err" id="gerr">${err?h(err):''}</div>
+  </div></div>`;
+}
+function today(){
+  const c=current();
+  if(!c) return `<div class="hero"><h1>Программа пока пустая</h1></div>`;
+  const {B,W,w,id}=c,log=S.log[id]||{},sets=log.sets||{};
+  let total=0,done=0;
+  w.ex.forEach((e,i)=>{const n=setsOf(e);total+=n;for(let k=0;k<n;k++) if(sets[i]?.[k]) done++});
+  const multi=(S.plan.blocks.length>1);
+  const cards=w.ex.map((e,i)=>{
+    const n=setsOf(e),pw=Number.isFinite(num(e.wt))&&/^[\d.,\s]+$/.test(e.wt)?num(e.wt):'',pr=num(e.rp);
+    const pills=Array.from({length:n},(_,k)=>{
+      const s=sets[i]?.[k];
+      return `<button class="set ${s?'on':''}" data-ex="${i}" data-set="${k}">${s?pillText(s.w,s.r):pillText(pw,Number.isFinite(pr)?pr:'')}</button>`;
+    }).join('');
+    const subl=[e.rest&&('отдых '+e.rest),e.note].filter(Boolean).map(h).join(' · ');
+    return `<li class="card"><div class="name">${h(e.name)}</div>
+      <div class="plan">${h(planText(e))}</div>${subl?`<div class="sub">${subl}</div>`:''}
+      <div class="sets">${pills}</div></li>`;
+  }).join('');
+  const all=flat(),idx=all.findIndex(x=>x.id===id),next=all.slice(idx+1).find(x=>!isDone(x.id));
+  const foot=log.done
+    ?`<div class="done-note">✓ Выполнено ${h(log.done)}</div>${next?`<button class="btn pri" id="next">Следующая: ${h(title(next.w))}</button>`:''}`
+    :`<button class="btn pri" id="finish" ${done?'':'disabled'}>Завершить тренировку</button>`;
+  return `<section class="hero">
+      <div class="meta">${multi?`Блок ${B.n} · `:''}Неделя ${W.n}${sub(w)?` · ${h(sub(w))}`:''}</div>
+      <h1>${h(title(w))}${W.label?`<span class="tag">${h(W.label)}</span>`:''}</h1>
+      <div class="prog"><div class="bar"><i style="width:${total?done/total*100:0}%"></i></div><div class="count">${done} из ${total}</div></div>
+    </section>
+    <ol class="list">${cards}</ol>
+    <div class="foot">${foot}</div>`;
+}
+function program(){
+  const blocks=S.plan.blocks;
+  if(!blocks.length) return `<div class="hero"><h1>Программа пока пустая</h1></div>`;
+  const cur=current();
+  const bsel=S.block&&blocks.find(b=>b.n===S.block)?S.block:(cur?.B.n||blocks[0].n);
+  const B=blocks.find(b=>b.n===bsel);
+  const seg=blocks.length>1?`<div class="seg">${blocks.map(b=>`<button data-block="${b.n}" class="${b.n===bsel?'on':''}">Блок ${b.n}</button>`).join('')}</div>`:'';
+  const weeks=B.weeks.map(W=>`<section class="week"><h2>Неделя ${W.n}${W.label?` · ${h(W.label.toLowerCase())}`:''}</h2><div class="rows">${
+    W.workouts.map(w=>{
+      const id=`${B.n}.${W.n}.${w.letter}.${w.kind}`,d=S.log[id]?.done,now=cur&&cur.id===id&&!d;
+      return `<button class="row" data-go="${h(id)}"><span class="t"><b>${h(title(w))}</b>${sub(w)?` <span class="meta">· ${h(sub(w))}</span>`:''}
+        <small>${w.ex.length} ${plural(w.ex.length,'упражнение','упражнения','упражнений')}</small></span>
+        <span class="s ${d?'ok':now?'now':''}">${d?'✓ '+h(d):now?'сейчас':''}</span><span class="chev">›</span></button>`;
+    }).join('')}</div></section>`).join('');
+  return `<section class="hero"><h1>Программа</h1></section>${seg}${weeks}`;
+}
+const plural=(n,a,b,c)=>{n%=100;if(n>10&&n<20) return c;n%=10;return n===1?a:n>1&&n<5?b:c};
+
+// ── отправка результатов в таблицу ─────────────────
+function queue(c){
+  if(!SYNC||!S.log[c.id]?.done) return;
+  const sets=S.log[c.id].sets||{};
+  (S.out??={})[c.id]={id:S.id,block:c.B.n,week:c.W.n,letter:c.w.letter,kind:c.w.kind,
+    items:c.w.ex.map((e,i)=>{const t=(sets[i]||[]).filter(Boolean).map(x=>x.w!==''&&x.w!=null?`${fmt(+x.w)}×${x.r}`:`×${x.r}`).join(', ');
+      return {name:e.name,text:t?`${t} · ${S.log[c.id].done}`:''}})};
+  save();flush();
+}
+let flushing=false;
+async function flush(){
+  if(!SYNC||flushing||!S.out) return;
+  flushing=true;
+  for(const [k,p] of Object.entries(S.out)){
+    if(p.id!==S.id){delete S.out[k];continue}
+    try{const r=await fetch(SYNC,{method:'POST',body:JSON.stringify(p)});const j=await r.json();if(j.ok){delete S.out[k];save()}}catch(e){break}
   }
+  flushing=false;
 }
 
-function clearPlan(){
-  S.plan={};save();
-  document.getElementById('plan-notice').style.display='none';
-  renderMeso();setSd('','');
-  showMsg('План очищен','ok');
+// ── действия ───────────────────────────────────────
+function bind(){
+  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;save();render();scrollTo(0,0)});
+  document.querySelectorAll('[data-block]').forEach(b=>b.onclick=()=>{S.block=+b.dataset.block;render()});
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{S.cur=b.dataset.go;S.tab='today';save();render();scrollTo(0,0)});
+  document.querySelectorAll('.set').forEach(b=>b.onclick=()=>tapSet(+b.dataset.ex,+b.dataset.set));
+  const f=$('#finish');if(f) f.onclick=()=>{const c=current();(S.log[c.id]??={}).done=new Date().toLocaleDateString('ru',{day:'numeric',month:'short'}).replace('.','');S.rest=null;save();render();queue(c)};
+  const n=$('#next');if(n) n.onclick=()=>{const all=flat(),i=all.findIndex(x=>x.id===current().id);const nx=all.slice(i+1).find(x=>!isDone(x.id));if(nx){S.cur=nx.id;save();render();scrollTo(0,0)}};
 }
-
-function startAutoSync(){
-  if(syncTimer) clearInterval(syncTimer);
-  syncTimer=setInterval(async()=>{
-    if(!S.sheetId) return;
-    try{await loadPlan();renderMeso();setSd('ok',new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}));}
-    catch(e){setSd('err','нет связи');}
-  },120000);
+function tapSet(i,k){
+  const c=current(),e=c.w.ex[i],log=S.log[c.id]??={},sets=log.sets??={},row=sets[i]??=[];
+  if(row[k]){edit(i,k);return}
+  const pw=Number.isFinite(num(e.wt))&&/^[\d.,\s]+$/.test(e.wt)?num(e.wt):'';
+  const prev=row.slice(0,k).reverse().find(Boolean);
+  row[k]=prev?{...prev}:{w:pw,r:Number.isFinite(num(e.rp))?num(e.rp):''};
+  S.cur=c.id;
+  const t=restSec(e.rest);S.rest={start:Date.now(),target:t,buzzed:false};
+  save();render();queue(c);
 }
-
-function setSd(cls,lbl){
-  const d=document.getElementById('sdot'),l=document.getElementById('slbl');
-  if(d) d.className='sdot'+(cls?' '+cls:'');
-  if(l) l.textContent=lbl||'';
-}
-function showMsg(txt,type){
-  const el=document.getElementById('sync-msg');
-  if(!el) return;
-  el.style.display='block';
-  el.style.background=type==='err'?'var(--red-bg)':'var(--sage-bg)';
-  el.style.border=`1px solid ${type==='err'?'var(--red)':'var(--sage)'}`;
-  el.style.color=type==='err'?'var(--red)':'var(--sage)';
-  el.textContent=txt;
-}
-
-// ═══════════════════════════════════════════════════
-// MESOCYCLE RENDER
-// ═══════════════════════════════════════════════════
-function getAvailableMCs(){
-  const mcs=Object.keys(S.plan||{}).map(Number).sort();
-  return mcs.length?mcs:[1,2,3];
-}
-function getAvailableMKs(mc){
-  const mks=Object.keys((S.plan[mc]||{})).map(Number).sort();
-  return mks.length?mks:[1,2,3,4];
-}
-
-function initMCMK(){
-  const mcs=getAvailableMCs();
-  const mcRow=document.getElementById('mc-tabs');
-  mcRow.innerHTML='';
-  mcs.forEach(mc=>{
-    const b=document.createElement('button');
-    b.className='mc-btn'+(mc===S.mc?' on':'');
-    b.textContent='Мезоцикл '+mc;
-    b.onclick=()=>{S.mc=mc;S.mk=1;document.querySelectorAll('.mc-btn').forEach((x,j)=>x.classList.toggle('on',mcs[j]===mc));initMKTabs();renderMeso();};
-    mcRow.appendChild(b);
+function edit(i,k){
+  const c=current(),e=c.w.ex[i],s=S.log[c.id].sets[i][k];
+  const box=document.createElement('div');box.className='scrim';
+  box.innerHTML=`<div class="sheet"><h3>${h(e.name)} · подход ${k+1}</h3>
+    <div class="step"><span>Вес, кг</span><div class="c"><button data-d="w:-2.5">−</button><input id="ew" inputmode="decimal" value="${h(s.w===''?'':fmt(+s.w))}"><button data-d="w:2.5">+</button></div></div>
+    <div class="step"><span>Повторы</span><div class="c"><button data-d="r:-1">−</button><input id="er" inputmode="numeric" value="${h(s.r)}"><button data-d="r:1">+</button></div></div>
+    <div class="foot"><button class="btn sec" id="eclr">Не выполнен</button><button class="btn pri" id="eok">Готово</button></div></div>`;
+  document.body.appendChild(box);
+  const close=()=>box.remove();
+  box.onclick=ev=>{if(ev.target===box) close()};
+  box.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{
+    const [f,d]=b.dataset.d.split(':'),inp=box.querySelector(f==='w'?'#ew':'#er');
+    const v=num(inp.value);inp.value=fmt(Math.max(0,(Number.isFinite(v)?v:0)+ +d));
   });
-  initMKTabs();
+  box.querySelector('#eclr').onclick=()=>{S.log[c.id].sets[i][k]=null;save();close();render();queue(c)};
+  box.querySelector('#eok').onclick=()=>{
+    const w=num(box.querySelector('#ew').value),r=num(box.querySelector('#er').value);
+    S.log[c.id].sets[i][k]={w:Number.isFinite(w)?w:'',r:Number.isFinite(r)?r:''};save();close();render();queue(c);
+  };
 }
 
-function initMKTabs(){
-  const mks=getAvailableMKs(S.mc);
-  const mkRow=document.getElementById('mk-tabs');
-  mkRow.innerHTML='';
-  mks.forEach(mk=>{
-    const cfg=MK_CFG[mk]||MK_CFG[1];
-    const b=document.createElement('button');
-    b.className=`mk-tab ${cfg.cls}`+(mk===S.mk?' on':'');
-    b.textContent='Неделя '+mk;
-    b.onclick=()=>{S.mk=mk;document.querySelectorAll('.mk-tab').forEach((x,j)=>x.classList.toggle('on',mks[j]===mk));renderMkInfo();renderMeso();};
-    mkRow.appendChild(b);
-  });
-  renderMkInfo();
+// ── таймер отдыха ──────────────────────────────────
+let tick=null;
+function restTick(){
+  clearInterval(tick);
+  const box=$('#restbox');if(!box) return;
+  const draw=()=>{
+    document.body.classList.toggle('resting',!!S.rest);
+    if(!S.rest){box.innerHTML='';clearInterval(tick);return}
+    const el=Math.floor((Date.now()-S.rest.start)/1000),t=S.rest.target;
+    if(el>3600){S.rest=null;save();box.innerHTML='';document.body.classList.remove('resting');return}
+    const mm=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+    const over=t&&el>=t;
+    if(over&&!S.rest.buzzed){S.rest.buzzed=true;save();try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+    box.innerHTML=`<div class="rest ${over?'over':''}"><span class="tm">${mm(el)}</span><span class="of">${t?'отдых '+mm(t):'отдых'}</span>
+      ${t?'<button id="r30">+30 с</button>':''}<button id="rx">✕</button>${t?`<i class="line" style="width:${Math.min(100,el/t*100)}%"></i>`:''}</div>`;
+    const a=$('#r30');if(a) a.onclick=()=>{S.rest.target+=30;S.rest.buzzed=false;save();draw()};
+    $('#rx').onclick=()=>{S.rest=null;save();draw()};
+  };
+  draw();tick=setInterval(draw,1000);
 }
 
-function renderMkInfo(){
-  const cfg=MK_CFG[S.mk]||MK_CFG[1];
-  const el=document.getElementById('mk-info');
-  el.className='mk-info '+cfg.cls;
-  const wi=((S.weekInfo&&S.weekInfo[S.mc]&&S.weekInfo[S.mc][S.mk])||'').replace(/^НЕДЕЛЯ\s*\d+\s*·\s*/i,'');
-  el.innerHTML=`<span class="mk-badge">Неделя ${S.mk}</span><span>${wi||cfg.info}</span>`;
+// ── запуск ─────────────────────────────────────────
+function bindGate(){
+  const go=async()=>{
+    const id=idFrom($('#link').value);
+    if(!id){$('#gerr').textContent='Неверная ссылка';return}
+    $('#open').disabled=true;
+    try{await load(id,true)}catch(e){$('#gerr').textContent='Не удалось открыть программу';$('#open').disabled=false}
+  };
+  $('#open').onclick=go;$('#link').onkeydown=e=>{if(e.key==='Enter') go()};
 }
-
-function renderMeso(){
-  const mc=S.mc,mk=S.mk,cfg=MK_CFG[mk]||MK_CFG[1];
-  const body=document.getElementById('plan-body');
-  const empty=document.getElementById('plan-empty');
-  const mcPlan=S.plan[mc];
-
-  if(!mcPlan||!Object.keys(mcPlan).length){
-    body.innerHTML='';empty.style.display='block';return;
+async function load(id,strict){
+  const fresh=await fetchPlan(id).catch(e=>{if(strict||!S.plan) throw e;return null});
+  if(!fresh) return;
+  if(id!==S.id){S.log={};S.cur='';S.rest=null;S.block=0}
+  S.id=id;S.plan=fresh;save();
+  if(!$('.scrim')) render();
+}
+(function boot(){
+  const q=idFrom(location.search+location.hash);
+  if(q&&q!==S.id){S.id=q;S.plan=null;S.log={};S.cur='';S.rest=null}
+  if(q) history.replaceState(null,'',location.pathname+'?id='+q);
+  render();
+  if(S.id){
+    load(S.id).catch(()=>{if(!S.plan){S.id='';$('#app').innerHTML=gate('Не удалось открыть программу');bindGate()}});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.id){load(S.id).catch(()=>{});flush()}});
+    addEventListener('online',flush);flush();
   }
-  empty.style.display='none';
-  body.innerHTML='';
-
-  const weekPlan=mcPlan[mk]||{};
-  const trains=Object.keys(weekPlan).sort();
-
-  trains.forEach(train=>{
-    const mkRows=weekPlan[train]||{};
-
-    const sec=document.createElement('div');
-    sec.style.cssText='border-top:1px solid var(--border)';
-
-    const hdr=document.createElement('div');
-    hdr.className='block-hdr';
-    hdr.innerHTML=`<span>Тренировка ${train}</span><span class="block-tag">МЦ ${mc} · Неделя ${mk}</span>`;
-    sec.appendChild(hdr);
-
-    const table=document.createElement('table');
-    table.className='tt';
-    table.innerHTML=`<thead><tr><th>Упражнение</th><th>Вес/RPE</th><th>Сеты</th><th>Повт</th><th>Заметка</th><th>Результат ✍</th></tr></thead>`;
-    const tbody=document.createElement('tbody');
-
-    const rowNums=Object.keys(mkRows).map(Number).sort((a,b)=>a-b);
-    let totalTon=0;
-
-    rowNums.forEach((row,ri)=>{
-      const r=mkRows[row];
-      const ex=r.ex;
-      const num=v=>parseFloat(String(v).replace(',','.'))||0;
-      const wtDisplay=r.wt||'—',wtVal=num(r.wt);
-      const st=r.st||'',rpDisplay=r.rp||'—';
-      const note=r.note||'';
-      const rKey=resKey(mc,mk,train,row);
-      const resVal=S.results[rKey]||'';
-
-      const ton=wtVal*num(st)*num(rpDisplay);
-      if(ton>0) totalTon+=ton;
-
-      const tr=document.createElement('tr');
-      if(ri%2===1) tr.style.background='rgba(255,255,255,.025)';
-      tr.innerHTML=`
-        <td class="ex-name">${ex||'<span style="color:var(--lo)">—</span>'}${note?`<span class="ex-note">${note}</span>`:''}</td>
-        <td><span class="plan-wt ${cfg.cls}">${wtDisplay}</span></td>
-        <td class="plan-mid">${st||'—'}</td>
-        <td class="plan-mid">${rpDisplay}</td>
-        <td class="plan-lo">${note}</td>
-        <td class="res-td"><input class="res-ei" value="${resVal}" placeholder="—" oninput="S.results['${rKey}']=this.value;save()"></td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    // Тоннаж итого
-    if(totalTon>0){
-      const tr=document.createElement('tr');
-      tr.className='ton-row';
-      tr.innerHTML=`<td colspan="5">ТОННАЖ</td><td>${totalTon.toFixed(0)} кг</td>`;
-      tbody.appendChild(tr);
-    }
-
-    table.appendChild(tbody);
-    sec.appendChild(table);
-    body.appendChild(sec);
-  });
-
-  // Показать notice если есть план
-  if(Object.keys(S.plan).length>0){
-    document.getElementById('plan-notice').style.display='block';
-    document.getElementById('plan-notice').classList.add('on');
-  }
-}
-
-// ═══════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════
-function go(btn,id){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  btn.classList.add('on');
-  document.getElementById('pg-'+id).classList.add('on');
-  window.scrollTo(0,0);
-}
-
-// ═══════════════════════════════════════════════════
-// CALCULATOR
-// ═══════════════════════════════════════════════════
-const CALC_EX=['Приседания','Становая тяга','Жим лёжа','Жим стоя','Тяга штанги','Румынская тяга'];
-function initCalc(){
-  const r1=document.getElementById('rm-body'),r2=document.getElementById('pct-body');
-  if(r1.rows.length) return;
-  CALC_EX.forEach((ex,i)=>{
-    const tr1=document.createElement('tr');
-    if(i%2) tr1.style.background='rgba(255,255,255,.025)';
-    tr1.innerHTML=`<td>${ex}</td><td class="inp"><input class="ei" type="number" id="rw${i}" placeholder="кг" oninput="cRM(${i})" style="color:var(--ice);font-family:var(--M);font-weight:700"></td><td class="inp"><input class="ei" type="number" id="rr${i}" placeholder="повт" oninput="cRM(${i})" style="color:var(--ice);font-family:var(--M);font-weight:700"></td><td><span class="cv" id="re${i}">—</span></td><td><span id="rb${i}" style="font-family:var(--M);font-weight:700;font-size:13px;color:var(--mid)">—</span></td><td><span id="ra${i}" style="font-family:var(--M);font-weight:700;font-size:13px;color:var(--sage)">—</span></td>`;
-    r1.appendChild(tr1);
-    const tr2=document.createElement('tr');
-    if(i%2) tr2.style.background='rgba(255,255,255,.025)';
-    tr2.innerHTML=`<td>${ex}</td><td><span id="p0-${i}" style="color:var(--sage);font-family:var(--M)">—</span></td>${[60,65,70,75,80].map((p,j)=>`<td><span id="p${p}-${i}" style="font-family:var(--M);color:${j<2?'var(--sage)':j<4?'var(--amber)':'var(--red)'}">—</span></td>`).join('')}`;
-    r2.appendChild(tr2);
-  });
-  calcWU();buildRPE();
-}
-function cRM(i){
-  const w=parseFloat(document.getElementById('rw'+i)?.value)||0;
-  const r=parseFloat(document.getElementById('rr'+i)?.value)||0;
-  if(!w||!r){['e','b','a'].forEach(t=>{const el=document.getElementById('r'+t+i);if(el)el.textContent='—'});return;}
-  const e=+(w*(1+r/30)).toFixed(1);
-  const b=r<37?+(w*(36/(37-r))).toFixed(1):'—';
-  const a=b!=='—'?+((e+(+b))/2).toFixed(1):e;
-  if(document.getElementById('re'+i))document.getElementById('re'+i).textContent=e;
-  if(document.getElementById('rb'+i))document.getElementById('rb'+i).textContent=b;
-  if(document.getElementById('ra'+i))document.getElementById('ra'+i).textContent=a;
-  if(document.getElementById('p0-'+i))document.getElementById('p0-'+i).textContent=a;
-  [60,65,70,75,80].forEach(p=>{const el=document.getElementById(`p${p}-${i}`);if(el)el.textContent=(Math.round(a*p/100/2.5)*2.5).toFixed(1)});
-}
-function calcWU(){
-  const w=parseFloat(document.getElementById('wu-w')?.value)||0;
-  const tb=document.getElementById('wu-body');if(!tb)return;
-  tb.innerHTML='';
-  [[.35,'1–8'],[.5,'1–5'],[.65,'1–3'],[.75,'1–3'],[.85,'1–2'],[.95,'1']].forEach(([p,rp],i)=>{
-    const kg=w?(Math.round(w*p/2.5)*2.5).toFixed(1):'—';
-    const tr=document.createElement('tr');
-    if(i%2)tr.style.background='rgba(255,255,255,.025)';
-    tr.innerHTML=`<td style="color:var(--lo)">Подход ${i+1}</td><td style="font-family:var(--M);font-weight:700;font-size:14px;color:var(--hi)">${kg}</td><td style="color:var(--mid)">${rp}</td><td style="color:var(--lo)">${Math.round(p*100)}%</td>`;
-    tb.appendChild(tr);
-  });
-}
-function buildRPE(){
-  const D={10:[100,95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9],9.5:[97.8,93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3],9:[95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4],8.5:[93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4],8:[92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68],7.5:[90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7],7:[89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3],6.5:[87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64],6:[86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6],5.5:[85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64,61.3],5:[83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6,59.9]};
-  const t=document.getElementById('rpe-t');if(!t)return;
-  t.innerHTML=`<thead><tr><th>RPE</th>${Array.from({length:10},(_,i)=>`<th>${i+1}</th>`).join('')}</tr></thead>`;
-  const tb=document.createElement('tbody');
-  Object.entries(D).forEach(([rpe,vals])=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${rpe}</td>`+vals.map(p=>{const c=p>=95?'r10':p>=90?'r9':p>=85?'r8':p>=80?'r7':'rlo';return`<td class="${c}">${p}%</td>`}).join('');
-    tb.appendChild(tr);
-  });
-  t.appendChild(tb);
-}
-
-// ═══════════════════════════════════════════════════
-// DIARY
-// ═══════════════════════════════════════════════════
-function initDiary(){
-  const tb=document.getElementById('d-body');
-  if(S.diary?.length) S.diary.forEach(d=>addDiaryRow(d));
-  for(let i=0;i<3;i++) addDiaryRow();
-}
-function addDiaryRow(d){
-  const tb=document.getElementById('d-body');
-  const idx=tb.rows.length+1;
-  const dd=d||{};
-  const tr=document.createElement('tr');
-  if(idx%2===0)tr.style.background='rgba(255,255,255,.025)';
-  tr.innerHTML=`<td style="color:var(--lo)">${idx}</td><td class="inp"><input class="ei" type="date" value="${dd.date||''}" style="color:var(--hi)"></td><td class="inp"><input class="ei" value="${dd.ex||''}" placeholder="Упражнение" style="color:var(--hi)"></td><td class="inp"><input class="ei" type="number" value="${dd.wt||''}" placeholder="кг" oninput="calcDRM(this)" style="color:var(--ice);font-family:var(--M);font-weight:700"></td><td class="inp"><input class="ei" type="number" value="${dd.st||''}" placeholder="3" style="color:var(--mid)"></td><td class="inp"><input class="ei" type="number" value="${dd.rp||''}" placeholder="8" oninput="calcDRM(this)" style="color:var(--mid)"></td><td class="inp"><input class="ei" type="number" value="${dd.rpe||''}" placeholder="7" step="0.5" style="color:var(--mid)"></td><td style="font-family:var(--M);font-size:12px;color:var(--sage)">—</td><td class="inp"><input class="ei" value="${dd.note||''}" placeholder="..." style="color:var(--lo)"></td>`;
-  tb.appendChild(tr);
-}
-function calcDRM(inp){
-  const tr=inp.closest('tr');
-  const w=parseFloat(tr.cells[3].querySelector('input')?.value)||0;
-  const r=parseFloat(tr.cells[5].querySelector('input')?.value)||0;
-  tr.cells[7].textContent=(w&&r)?(w*(1+r/30)).toFixed(1):'—';
-}
-
-// ═══════════════════════════════════════════════════
-// PROGRESS
-// ═══════════════════════════════════════════════════
-const AN=['Вес, кг','Обхват груди, см','Обхват талии, см','Обхват бёдер, см','Обхват руки, см','% жира'];
-const AK=['wt','ch','wa','hp','ar','fat'];
-const LN=['Приседания','Становая тяга','Жим лёжа','Тяга блока','Подтягивания','Брусья','Румынская тяга'];
-const LK=['sq','dl','bp','ro','pu','dip','rdl'];
-
-function initProgress(){
-  const ant=document.getElementById('ant-body'),str=document.getElementById('str-body');
-  if(ant.rows.length) return;
-  AN.forEach((name,i)=>{
-    const k=AK[i];
-    const tr=document.createElement('tr');
-    if(i%2)tr.style.background='rgba(255,255,255,.025)';
-    tr.innerHTML=`<td>${name}</td>${[0,1,2,3].map(j=>`<td class="inp"><input class="ei" value="${S.antro[k+j]||''}" type="number" step="0.1" placeholder="—" oninput="S.antro['${k}${j}']=this.value;save();rAD('${k}');updateKPI()" style="color:var(--ice);font-family:var(--M);font-weight:700"></td>`).join('')}<td class="delta" id="ad-${k}">—</td><td class="inp"><input class="ei" value="${S.antro[k+'g']||''}" type="number" step="0.1" placeholder="—" oninput="S.antro['${k}g']=this.value;save()" style="color:var(--mid)"></td>`;
-    ant.appendChild(tr);rAD(k);
-  });
-  LN.forEach((name,i)=>{
-    const k=LK[i];
-    const tr=document.createElement('tr');
-    if(i%2)tr.style.background='rgba(255,255,255,.025)';
-    tr.innerHTML=`<td>${name}</td>${[0,1,2,3].map(j=>`<td class="inp"><input class="ei" value="${S.strength[k+j]||''}" type="number" placeholder="—" oninput="S.strength['${k}${j}']=this.value;save();rSD('${k}');updateKPI()" style="color:var(--ice);font-family:var(--M);font-weight:700"></td>`).join('')}<td class="delta" id="sd-${k}">—</td><td class="inp"><input class="ei" value="${S.strength[k+'g']||''}" type="number" placeholder="—" oninput="S.strength['${k}g']=this.value;save()" style="color:var(--mid)"></td>`;
-    str.appendChild(tr);rSD(k);
-  });
-}
-function rAD(k){const s=+S.antro[k+0]||0,e=+S.antro[k+3]||0;const el=document.getElementById('ad-'+k);if(el&&s&&e){const d=(e-s).toFixed(1);el.textContent=(d>0?'+':'')+d;el.className='delta'+(d<0?' neg':'');}}
-function rSD(k){const s=+S.strength[k+0]||0,e=+S.strength[k+3]||0;const el=document.getElementById('sd-'+k);if(el&&s&&e){const d=(e-s).toFixed(1);el.textContent=(d>0?'+':'')+d;el.className='delta'+(d<0?' neg':'');}}
-function updateKPI(){
-  [['sq','k-sq'],['dl','k-dl'],['bp','k-bp']].forEach(([k,id])=>{
-    const vals=[0,1,2,3].map(i=>+S.strength[k+i]||0).filter(Boolean);
-    const el=document.getElementById(id);
-    if(el){el.textContent=vals.length?Math.max(...vals):'—';el.className='kv'+(vals.length?' live':'');}
-  });
-  const wt=+S.antro['wt0']||0;
-  const el=document.getElementById('k-wt');
-  if(el){el.textContent=wt||'—';el.className='kv'+(wt?' live':'');}
-}
-
-// ═══════════════════════════════════════════════════
-// NUTRITION
-// ═══════════════════════════════════════════════════
-function calcNut(){
-  const w=+(document.getElementById('n-w')?.value)||0;
-  const a=+(document.getElementById('n-a')?.value)||30;
-  const d=+(document.getElementById('n-d')?.value)||0;
-  const p=+(document.getElementById('n-p')?.value)||1.7;
-  const f=+(document.getElementById('n-f')?.value)||1.0;
-  const wa=+(document.getElementById('n-water')?.value)||36;
-  if(!w){['kc','pr','fa','cb','wa'].forEach(k=>{const el=document.getElementById('n-'+k);if(el)el.textContent='—'});return;}
-  const kc=Math.round(w*a*(1-d));
-  const pr=Math.round(w*p);
-  const fa=Math.round(w*f);
-  const cb=Math.max(0,Math.round((kc-pr*4-fa*9)/4));
-  const wml=Math.round(w*wa);
-  Object.entries({kc,pr,fa,cb,wa:wml}).forEach(([k,v])=>{const el=document.getElementById('n-'+k);if(el)el.textContent=v});
-}
-
-// ═══════════════════════════════════════════════════
-// BOOT
-// ═══════════════════════════════════════════════════
-load();
-{
-  const q=new URLSearchParams(location.search).get('id')||(location.hash.match(/id=([^&]+)/)||[])[1];
-  const id=q&&sheetIdFrom(q);
-  if(id&&id!==S.sheetId){S.sheetId=id;S.plan={};S.results={};S.mc=1;S.mk=1;save();}
-}
-
-if(S.name||S.sheetId){
-  // Уже был вход раньше — запускаем сразу
-  document.getElementById('w-name').value=S.name||'';
-  document.getElementById('w-id').value=S.sheetId||'';
-  launch();
-  if(S.sheetId){
-    setSd('spin','загрузка...');
-    loadPlan().then(()=>{
-      renderMeso();initMCMK();
-      setSd('ok',new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}));
-      startAutoSync();
-    }).catch(()=>setSd('err','нет связи'));
-  }
-} else {
-  validateW();
-}
+})();
 </script>
 </body>
 </html>

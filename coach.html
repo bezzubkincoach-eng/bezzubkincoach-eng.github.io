@@ -4,42 +4,37 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ссылка для клиента</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0d0d0f;--card:#17171b;--line:#2a2a30;--hi:#f2f2f2;--mid:#a8a8b0;--lo:#6c6c75;--red:#e5383b;--ok:#2ec4b6}
+:root{--bg:#f5f4f1;--card:#fff;--ink:#18181b;--mute:#6f6f76;--line:#e6e4df;--acc:#d6402e;--shadow:0 1px 2px rgba(20,20,20,.04),0 2px 8px rgba(20,20,20,.04);color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#121214;--card:#1c1c1f;--ink:#f1f1f2;--mute:#9a9aa1;--line:#2a2a2e;--acc:#ff5a44;--shadow:none;color-scheme:dark}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--hi);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:24px 16px}
-.w{max-width:560px;margin:0 auto}
-h1{font-size:22px;margin:0 0 4px}
-p{color:var(--mid);margin:0 0 18px}
-ol{color:var(--mid);padding-left:20px;margin:0 0 22px}
-ol b{color:var(--hi)}
-label{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--lo);margin:0 0 6px}
-input{width:100%;background:var(--card);border:1px solid var(--line);color:var(--hi);border-radius:10px;padding:13px 14px;font-size:15px}
-input:focus{outline:none;border-color:var(--red)}
-.out{display:none;margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
-.link{word-break:break-all;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--ok);margin-bottom:12px}
-button,a.btn{display:inline-block;background:var(--red);color:#fff;border:0;border-radius:10px;padding:11px 16px;font-size:15px;cursor:pointer;text-decoration:none;margin:0 8px 8px 0}
-a.btn{background:transparent;border:1px solid var(--line);color:var(--hi)}
-.err{color:var(--red);margin-top:10px;display:none}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.w{max-width:520px;margin:0 auto;padding:18px 16px 40px}
+.brand{font-weight:600;font-size:15px}
+h1{font-size:30px;line-height:1.15;letter-spacing:-.02em;margin:28px 0 18px}
+input{width:100%;height:52px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:inherit;padding:0 16px;font:inherit;outline:none}
+input:focus{border-color:var(--ink)}
+.err{color:var(--acc);font-size:15px;margin-top:10px;display:none}
+.out{display:none;margin-top:14px;background:var(--card);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.link{word-break:break-all;font-size:14px;color:var(--mute);margin-bottom:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button,a.btn{height:48px;border-radius:12px;border:0;font:inherit;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none}
+button{background:var(--ink);color:var(--bg)}
+a.btn{background:var(--bg);color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="w">
+  <div class="brand">Артём Беззубкин</div>
   <h1>Ссылка для клиента</h1>
-  <p></p>
-  <ol>
-    <li>Открой шаблон таблицы → <b>Файл → Создать копию</b>, назови по имени клиента.</li>
-    <li>В копии нажми <b>Настройки доступа → «Все, у кого есть ссылка» → Читатель</b>.</li>
-    <li>Скопируй адрес таблицы из браузера и вставь сюда ↓</li>
-  </ol>
-  <label for="src">Ссылка на таблицу клиента</label>
-  <input id="src" placeholder="https://docs.google.com/spreadsheets/d/…" autocomplete="off">
-  <div class="err" id="err">Это не похоже на ссылку Google-таблицы.</div>
+  <input id="src" placeholder="Ссылка на Google-таблицу" autocomplete="off">
+  <div class="err" id="err">Неверная ссылка</div>
   <div class="out" id="out">
-    <label>Отправь клиенту</label>
     <div class="link" id="link"></div>
-    <button id="copy">Скопировать</button>
-    <a class="btn" id="open" target="_blank" rel="noopener">Проверить</a>
+    <div class="row"><button id="copy">Скопировать</button><a class="btn" id="open" target="_blank" rel="noopener">Открыть</a></div>
   </div>
 </div>
 <script>
@@ -57,7 +52,7 @@ src.addEventListener('input',()=>{
 document.getElementById('copy').onclick=async e=>{
   const t=document.getElementById('link').textContent;
   try{await navigator.clipboard.writeText(t)}catch(_){const r=document.createRange();r.selectNode(document.getElementById('link'));getSelection().removeAllRanges();getSelection().addRange(r);document.execCommand('copy')}
-  e.target.textContent='Скопировано ✓';setTimeout(()=>e.target.textContent='Скопировать',1500);
+  e.target.textContent='Скопировано';setTimeout(()=>e.target.textContent='Скопировать',1500);
 };
 </script>
 </body>
