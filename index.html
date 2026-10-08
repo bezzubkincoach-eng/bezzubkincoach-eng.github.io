@@ -6,6 +6,19 @@
 <meta name="theme-color" content="#f5f4f1" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121214" media="(prefers-color-scheme: dark)">
 <title>Артём Беззубкин</title>
+<meta name="description" content="Программа тренировок">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Артём Беззубкин">
+<meta property="og:description" content="Программа тренировок">
+<meta property="og:image" content="https://bezzubkincoach-eng.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Тренировки">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,7 +37,7 @@
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:16px/1.45 "Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   -webkit-font-smoothing:antialiased;min-height:100vh}
-button,input{font:inherit;color:inherit}
+button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none;padding:0}
 .wrap{max-width:560px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
 
@@ -120,6 +133,15 @@ body.resting .wrap{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
 .step button{width:44px;height:44px;border-radius:12px;background:var(--bg);font-size:22px;line-height:1}
 .step input{width:84px;height:44px;text-align:center;border:0;border-radius:12px;background:var(--bg);font-size:18px;font-weight:600;outline:none;font-variant-numeric:tabular-nums}
 .sheet .foot{grid-template-columns:1fr 1fr;margin-top:16px}
+.cnote{display:block;margin-top:10px;font-size:14px;color:var(--mute);text-align:left}
+.cnote.empty{color:var(--faint)}
+.box{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);margin-top:18px}
+.box .k{font-size:14px;color:var(--mute);margin-bottom:10px}
+.rpe{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.rpe button{height:40px;border-radius:10px;border:1.5px solid var(--line);font-size:15px;font-weight:500;color:var(--mute);font-variant-numeric:tabular-nums}
+.rpe button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+textarea.field{height:auto;min-height:84px;padding:12px 14px;resize:vertical;line-height:1.4;margin-top:12px;display:block}
+.undo{margin-left:auto;font-size:14px;color:var(--mute);text-decoration:underline;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -222,6 +244,7 @@ function planText(e){
   const w=e.wt?(Number.isFinite(num(e.wt))&&/^[\d.,\s]+$/.test(e.wt)?`${fmt(num(e.wt))} кг`:e.wt):'';
   return [sr,w].filter(Boolean).join(' · ');
 }
+const mmss=s=>`${Math.floor(s/60)}:${String(Math.round(s)%60).padStart(2,'0')}`;
 function pillText(w,r){return (w!==''&&w!=null?`${fmt(+w)} × `:'× ')+(r??'')}
 function restSec(t){
   t=(t||'').toLowerCase();if(!t) return 0;
@@ -276,11 +299,15 @@ function today(){
     const subl=[e.rest&&('отдых '+e.rest),e.note].filter(Boolean).map(h).join(' · ');
     return `<li class="card"><div class="name">${h(e.name)}</div>
       <div class="plan">${h(planText(e))}</div>${subl?`<div class="sub">${subl}</div>`:''}
-      <div class="sets">${pills}</div></li>`;
+      <div class="sets">${pills}</div>
+      <button class="cnote ${log.notes?.[i]?'':'empty'}" data-note="${i}">${log.notes?.[i]?'«'+h(log.notes[i])+'»':'+ Комментарий'}</button></li>`;
   }).join('');
   const all=flat(),idx=all.findIndex(x=>x.id===id),next=all.slice(idx+1).find(x=>!isDone(x.id));
+  const box=`<div class="box"><div class="k">Тяжесть тренировки</div>
+      <div class="rpe">${Array.from({length:10},(_,k)=>`<button data-rpe="${k+1}" class="${log.rpe===k+1?'on':''}">${k+1}</button>`).join('')}</div>
+      <textarea class="field" id="wnote" rows="3" placeholder="Комментарий к тренировке">${h(log.wnote||'')}</textarea></div>`;
   const foot=log.done
-    ?`<div class="done-note">✓ Выполнено ${h(log.done)}</div>${next?`<button class="btn pri" id="next">Следующая: ${h(title(next.w))}</button>`:''}`
+    ?`<div class="done-note">✓ Выполнено ${h(log.done)}<button class="undo" id="undo">Отменить</button></div>${next?`<button class="btn pri" id="next">Следующая: ${h(title(next.w))}</button>`:''}`
     :`<button class="btn pri" id="finish" ${done?'':'disabled'}>Завершить тренировку</button>`;
   return `<section class="hero">
       <div class="meta">${multi?`Блок ${B.n} · `:''}Неделя ${W.n}${sub(w)?` · ${h(sub(w))}`:''}</div>
@@ -288,6 +315,7 @@ function today(){
       <div class="prog"><div class="bar"><i style="width:${total?done/total*100:0}%"></i></div><div class="count">${done} из ${total}</div></div>
     </section>
     <ol class="list">${cards}</ol>
+    ${box}
     <div class="foot">${foot}</div>`;
 }
 function program(){
@@ -309,12 +337,33 @@ function program(){
 const plural=(n,a,b,c)=>{n%=100;if(n>10&&n<20) return c;n%=10;return n===1?a:n>1&&n<5?b:c};
 
 // ── отправка результатов в таблицу ─────────────────
+function payload(c){
+  return {id:S.id,block:c.B.n,week:c.W.n,letter:c.w.letter,kind:c.w.kind,
+    title:[S.plan.blocks.length>1?`Блок ${c.B.n}`:'',`Неделя ${c.W.n}`,`Тренировка ${c.w.letter}`+(c.w.sub?` ${c.w.sub}`:'')].filter(Boolean).join(' · ')};
+}
+function restAvg(row){
+  const ts=(row||[]).filter(x=>x&&x.t).map(x=>x.t).sort((a,b)=>a-b),g=[];
+  for(let j=1;j<ts.length;j++){const d=(ts[j]-ts[j-1])/1000;if(d>=15&&d<=900) g.push(d)}
+  return g.length?g.reduce((a,b)=>a+b)/g.length:0;
+}
 function queue(c){
-  if(!SYNC||!S.log[c.id]?.done) return;
-  const sets=S.log[c.id].sets||{};
-  (S.out??={})[c.id]={id:S.id,block:c.B.n,week:c.W.n,letter:c.w.letter,kind:c.w.kind,
-    items:c.w.ex.map((e,i)=>{const t=(sets[i]||[]).filter(Boolean).map(x=>x.w!==''&&x.w!=null?`${fmt(+x.w)}×${x.r}`:`×${x.r}`).join(', ');
-      return {name:e.name,text:t?`${t} · ${S.log[c.id].done}`:''}})};
+  const L=S.log[c.id];
+  if(!SYNC||!L?.done) return;
+  const sets=L.sets||{},notes=L.notes||{};
+  const ts=Object.values(sets).flat().filter(x=>x&&x.t).map(x=>x.t);
+  let dur=L.fin&&ts.length?Math.round((L.fin-Math.min(...ts))/60000):0;
+  if(dur<1||dur>240) dur=0;
+  (S.out??={})[c.id]={...payload(c),date:L.done,rpe:L.rpe||0,comment:L.wnote||'',dur,
+    items:c.w.ex.map((e,i)=>{
+      const t=(sets[i]||[]).filter(Boolean).map(x=>x.w!==''&&x.w!=null?`${fmt(+x.w)}×${x.r}`:`×${x.r}`).join(', ');
+      const r=restAvg(sets[i]),n=notes[i];
+      return {name:e.name,text:(t||n)?[t,L.done,r?`отдых ~${mmss(r)}`:'',n?`«${n}»`:''].filter(Boolean).join(' · '):''};
+    })};
+  save();flush();
+}
+function unqueue(c){
+  if(!SYNC) return;
+  (S.out??={})[c.id]={...payload(c),undo:true,items:c.w.ex.map(e=>({name:e.name,text:''}))};
   save();flush();
 }
 let flushing=false;
@@ -334,7 +383,11 @@ function bind(){
   document.querySelectorAll('[data-block]').forEach(b=>b.onclick=()=>{S.block=+b.dataset.block;render()});
   document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{S.cur=b.dataset.go;S.tab='today';save();render();scrollTo(0,0)});
   document.querySelectorAll('.set').forEach(b=>b.onclick=()=>tapSet(+b.dataset.ex,+b.dataset.set));
-  const f=$('#finish');if(f) f.onclick=()=>{const c=current();(S.log[c.id]??={}).done=new Date().toLocaleDateString('ru',{day:'numeric',month:'short'}).replace('.','');S.rest=null;save();render();queue(c)};
+  const f=$('#finish');if(f) f.onclick=()=>{const c=current(),L=S.log[c.id]??={};L.done=new Date().toLocaleDateString('ru',{day:'numeric',month:'short'}).replace('.','');L.fin=Date.now();S.rest=null;save();render();queue(c)};
+  const u=$('#undo');if(u) u.onclick=()=>{const c=current(),L=S.log[c.id];delete L.done;delete L.fin;save();render();unqueue(c)};
+  document.querySelectorAll('[data-rpe]').forEach(b=>b.onclick=()=>{const c=current(),L=S.log[c.id]??={},v=+b.dataset.rpe;L.rpe=L.rpe===v?0:v;S.cur=c.id;save();render();queue(c)});
+  const wn=$('#wnote');if(wn){wn.oninput=()=>{const c=current();(S.log[c.id]??={}).wnote=wn.value;S.cur=c.id;save()};wn.onchange=()=>queue(current())}
+  document.querySelectorAll('[data-note]').forEach(b=>b.onclick=()=>noteEdit(+b.dataset.note));
   const n=$('#next');if(n) n.onclick=()=>{const all=flat(),i=all.findIndex(x=>x.id===current().id);const nx=all.slice(i+1).find(x=>!isDone(x.id));if(nx){S.cur=nx.id;save();render();scrollTo(0,0)}};
 }
 function tapSet(i,k){
@@ -342,7 +395,7 @@ function tapSet(i,k){
   if(row[k]){edit(i,k);return}
   const pw=Number.isFinite(num(e.wt))&&/^[\d.,\s]+$/.test(e.wt)?num(e.wt):'';
   const prev=row.slice(0,k).reverse().find(Boolean);
-  row[k]=prev?{...prev}:{w:pw,r:Number.isFinite(num(e.rp))?num(e.rp):''};
+  row[k]=prev?{w:prev.w,r:prev.r,t:Date.now()}:{w:pw,r:Number.isFinite(num(e.rp))?num(e.rp):'',t:Date.now()};
   S.cur=c.id;
   const t=restSec(e.rest);S.rest={start:Date.now(),target:t,buzzed:false};
   save();render();queue(c);
@@ -364,8 +417,26 @@ function edit(i,k){
   box.querySelector('#eclr').onclick=()=>{S.log[c.id].sets[i][k]=null;save();close();render();queue(c)};
   box.querySelector('#eok').onclick=()=>{
     const w=num(box.querySelector('#ew').value),r=num(box.querySelector('#er').value);
-    S.log[c.id].sets[i][k]={w:Number.isFinite(w)?w:'',r:Number.isFinite(r)?r:''};save();close();render();queue(c);
+    S.log[c.id].sets[i][k]={w:Number.isFinite(w)?w:'',r:Number.isFinite(r)?r:'',t:s.t};save();close();render();queue(c);
   };
+}
+
+function noteEdit(i){
+  const c=current(),e=c.w.ex[i],L=S.log[c.id]??={};
+  const box=document.createElement('div');box.className='scrim';
+  box.innerHTML=`<div class="sheet"><h3>${h(e.name)}</h3>
+    <textarea class="field" id="nt" rows="3" placeholder="Комментарий">${h(L.notes?.[i]||'')}</textarea>
+    <div class="foot"><button class="btn sec" id="nx">Отмена</button><button class="btn pri" id="nok">Сохранить</button></div></div>`;
+  document.body.appendChild(box);
+  const close=()=>box.remove();
+  box.onclick=ev=>{if(ev.target===box) close()};
+  box.querySelector('#nx').onclick=close;
+  box.querySelector('#nok').onclick=()=>{
+    const v=box.querySelector('#nt').value.trim();
+    (L.notes??={})[i]=v;if(!v) delete L.notes[i];
+    S.cur=c.id;save();close();render();queue(c);
+  };
+  setTimeout(()=>box.querySelector('#nt').focus(),50);
 }
 
 // ── таймер отдыха ──────────────────────────────────
@@ -410,6 +481,7 @@ async function load(id,strict){
   const q=idFrom(location.search+location.hash);
   if(q&&q!==S.id){S.id=q;S.plan=null;S.log={};S.cur='';S.rest=null}
   if(q) history.replaceState(null,'',location.pathname+'?id='+q);
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
   render();
   if(S.id){
     load(S.id).catch(()=>{if(!S.plan){S.id='';$('#app').innerHTML=gate('Не удалось открыть программу');bindGate()}});
