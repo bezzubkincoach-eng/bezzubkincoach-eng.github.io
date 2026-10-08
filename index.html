@@ -114,6 +114,7 @@ body{background:var(--base);color:var(--hi);font-family:var(--B);font-size:14px;
 .tt td{padding:8px 9px;border-bottom:1px solid var(--border);font-size:12px;text-align:center;vertical-align:middle}
 .tt tr:nth-child(even) td{background:rgba(255,255,255,.02)}
 .tt tr:last-child td{border-bottom:none}
+.ex-note{display:none;font-size:10px;color:var(--lo);font-weight:400;margin-top:2px}
 .ex-name{font-weight:600;color:var(--hi);text-align:left;padding:8px 9px}
 .plan-wt{font-family:var(--M);font-weight:700;font-size:13px}
 .plan-wt.mk1{color:var(--ice)}.plan-wt.mk2{color:var(--teal)}.plan-wt.mk3{color:var(--amber)}.plan-wt.mk4{color:var(--red)}
@@ -203,7 +204,9 @@ td.inp{background:var(--ice-bg)!important;cursor:text}
   .ng{grid-template-columns:repeat(3,1fr)}
   .pg{padding:14px 10px 50px}
   .ph{font-size:20px}
-  .tt th:nth-child(n+5),.tt td:nth-child(n+5){display:none}
+  .tt th:nth-child(5),.tt td:nth-child(5){display:none}
+  .tt .ex-note{display:block}
+  .tt .res-ei{min-width:56px}
   .brand small{display:none}
 }
 @media(max-width:380px){
@@ -225,12 +228,12 @@ td.inp{background:var(--ice-bg)!important;cursor:text}
     <div class="wtitle">ТВОЯ<span>.</span><br>ПРОГРАММА<span>.</span></div>
   </div>
   <div class="wbody">
-    <label class="wlbl">Твоё имя</label>
+    <label class="wlbl">Твоё имя (необязательно)</label>
     <input class="winp" id="w-name" placeholder="Иван Иванов" oninput="validateW()">
 
-    <label class="wlbl">ID программы от тренера</label>
-    <input class="winp" id="w-id" placeholder="Вставь ID таблицы" oninput="validateW()">
-    <div class="whint">Тренер пришлёт тебе ID вместе с этим приложением</div>
+    <label class="wlbl">Ссылка на программу от тренера</label>
+    <input class="winp" id="w-id" placeholder="Вставь ссылку на таблицу" oninput="validateW()">
+    <div class="whint">Обычно тренер присылает готовую ссылку — тогда это окно не нужно</div>
 
     <button class="wbtn" id="w-go" onclick="connectAndStart()" disabled>
       Загрузить программу
@@ -411,11 +414,11 @@ td.inp{background:var(--ice-bg)!important;cursor:text}
     <div class="sh gold">Подключение к плану тренера</div>
     <div class="fr"><span class="fl">Твоё имя</span>
       <input type="text" class="fi p" id="cfg-name" placeholder="Иван Иванов" oninput="S.name=this.value;save()"></div>
-    <div class="fr"><span class="fl">ID таблицы</span>
-      <input type="text" class="fi wide" id="cfg-id" placeholder="1BxiMVs0XRA5..." oninput="S.sheetId=this.value.trim();save()"></div>
+    <div class="fr"><span class="fl">Таблица</span>
+      <input type="text" class="fi wide" id="cfg-id" placeholder="https://docs.google.com/spreadsheets/d/..." oninput="S.sheetId=sheetIdFrom(this.value);save()"></div>
     <div style="padding:8px 13px 13px">
       <div style="font-size:11px;color:var(--lo);line-height:1.8;margin-bottom:10px">
-        ID — длинная строка из URL Google Sheets между <code style="color:var(--mid)">/d/</code> и <code style="color:var(--mid)">/edit</code>
+        Ссылка на Google-таблицу от тренера. Таблица должна быть открыта: Настройки доступа → «Все, у кого есть ссылка» → Читатель
       </div>
       <button class="sbtn" onclick="syncNow()">⟳ Загрузить план</button>
       <button class="sbtn sec" onclick="clearPlan()">Очистить план</button>
@@ -424,29 +427,10 @@ td.inp{background:var(--ice-bg)!important;cursor:text}
   </div>
 
   <div class="s">
-    <div class="sh amber">Структура листа ПЛАН в Google Sheets</div>
+    <div class="sh amber">Откуда берётся план</div>
     <div style="padding:13px;font-size:12px;color:var(--mid);line-height:1.9">
-      Лист называется <strong style="color:var(--hi)">ПЛАН</strong> (заглавными)<br>
-      Колонки:
-      <div class="scode">МЦ | МК | Тренировка | № | Упражнение | Вес/RPE | Сеты | Повт | Заметка</div>
-      Пример данных:
-      <div class="scode">1 | 1 | А | 1 | Приседания со штангой | 80 | 3 | 8 | Темп 2-1-2<br>1 | 1 | А | 2 | Жим лёжа | 60 | 4 | 10 |<br>1 | 1 | Б | 1 | Тяга блока | 50 | 3 | 12 |<br>1 | 2 | А | 1 | Приседания со штангой | | 3 | 8 | авто +5%</div>
-      <span style="color:var(--lo)">МЦ = 1,2,3 · МК = 1,2,3,4 · Тренировка = А или Б · № = 1-8<br>МК2 вес пустой — тренер пишет только МК1, остальное считается авто</span>
-    </div>
-  </div>
-
-  <div class="s">
-    <div class="sh">Периодизация по Матвееву · Авто-расчёт</div>
-    <div style="padding:13px">
-      <table class="t">
-        <thead><tr><th>Неделя</th><th>Вес</th><th>Повт</th><th>Логика</th></tr></thead>
-        <tbody>
-          <tr><td style="color:var(--ice)">МК 1 · Базовый</td><td style="font-family:var(--M);color:var(--ice)">100%</td><td style="color:var(--mid)">база</td><td style="color:var(--lo);font-size:11px">Вводишь сам</td></tr>
-          <tr style="background:rgba(255,255,255,.02)"><td style="color:var(--teal)">МК 2 · Развивающий</td><td style="font-family:var(--M);color:var(--teal)">+5%</td><td style="color:var(--mid)">те же</td><td style="color:var(--lo);font-size:11px">Авто</td></tr>
-          <tr><td style="color:var(--amber)">МК 3 · Ударный</td><td style="font-family:var(--M);color:var(--amber)">+10%</td><td style="color:var(--mid)">−2</td><td style="color:var(--lo);font-size:11px">Авто</td></tr>
-          <tr style="background:rgba(255,255,255,.02)"><td style="color:var(--red)">МК 4 · Deload</td><td style="font-family:var(--M);color:var(--red)">70%</td><td style="color:var(--mid)">−3</td><td style="color:var(--lo);font-size:11px">Авто · Матвеев</td></tr>
-        </tbody>
-      </table>
+      Из листов <strong style="color:var(--hi)">МЕЗОЦИКЛ 1–3</strong> таблицы тренера. Все веса, повторы и разгрузку считает сама таблица —
+      приложение показывает ровно то, что в ней написано. План обновляется сам каждые 2 минуты.
     </div>
   </div>
 
@@ -464,6 +448,7 @@ td.inp{background:var(--ice-bg)!important;cursor:text}
 
 </div><!-- /main -->
 
+<script src="xlsx.full.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════
 // CONFIG
@@ -499,7 +484,7 @@ function resKey(mc,mk,tr,row){return`${mc}_${mk}_${tr}_${row}`}
 function validateW(){
   const n=document.getElementById('w-name').value.trim();
   const id=document.getElementById('w-id').value.trim();
-  document.getElementById('w-go').disabled=!(n&&id.length>10);
+  document.getElementById('w-go').disabled=!(sheetIdFrom(id).length>20);
 }
 
 async function connectAndStart(){
@@ -544,74 +529,104 @@ function launch(){
 }
 
 // ═══════════════════════════════════════════════════
-// GOOGLE SHEETS SYNC (JSONP — работает с любого домена)
+// GOOGLE SHEETS SYNC — читает таблицу тренера как есть (листы МЕЗОЦИКЛ 1–3)
 // ═══════════════════════════════════════════════════
+function sheetIdFrom(v){
+  v=(v||'').trim();
+  const m=v.match(/\/d\/([a-zA-Z0-9_-]{20,})/)||v.match(/[?&#]id=([a-zA-Z0-9_-]{20,})/);
+  return m?m[1]:v.replace(/[^a-zA-Z0-9_-]/g,'');
+}
+const cell=v=>(v==null?'':String(v)).trim();
+
+// "ТРЕНИРОВКА A  ·  НЕЧЁТНАЯ НЕДЕЛЯ" -> "А · нечётная"
+function trName(t){
+  t=cell(t).toUpperCase().replace(/^ТРЕНИРОВКА\s*/,'');
+  if(!t) return '';
+  let [letter,...rest]=t.split('·').map(x=>x.trim());
+  letter=letter.replace(/^A$/,'А').replace(/^B$/,'Б').replace(/^C$/,'В').replace(/^D$/,'Г');
+  const kind=rest.join(' ').toLowerCase().replace(/\s*неделя\s*/,'').trim();
+  return kind?`${letter} · ${kind}`:letter;
+}
+
+// Лист МЕЗОЦИКЛ: блоки «НЕДЕЛЯ n» → «ТРЕНИРОВКА …» (левый блок B–I, правый K–R) → строки до «ИТОГО»
+function parseMeso(grid){
+  const plan={},info={};
+  let wk=0,L='',R='',inRows=false,n=0;
+  for(const r of grid){
+    const b=cell(r[1]),up=b.toUpperCase();
+    const m=up.match(/^НЕДЕЛЯ\s*(\d+)/);
+    if(m){wk=+m[1];inRows=false;info[wk]=b.replace(/\s+/g,' ');continue}
+    if(up.startsWith('ТРЕНИРОВКА')){L=trName(b);R=trName(r[10]);inRows=false;continue}
+    if(up==='УПРАЖНЕНИЕ'){inRows=true;n=0;continue}
+    if(up==='ИТОГО'){inRows=false;continue}
+    if(!inRows||!wk) continue;
+    n++;
+    [[L,1],[R,10]].forEach(([tr,c])=>{
+      const ex=cell(r[c]);
+      if(!tr||!ex) return;
+      const rest=cell(r[c+4]),note=cell(r[c+5]);
+      ((plan[wk]??={})[tr]??={})[n]={
+        ex,wt:/^0+([.,]0*)?$/.test(cell(r[c+1]))?'':cell(r[c+1]),st:cell(r[c+2]),rp:cell(r[c+3]),
+        note:[rest&&('отдых '+rest),note].filter(Boolean).join(' · ')
+      };
+    });
+  }
+  return {plan,info};
+}
+
+function clientName(grid){
+  for(const r of grid){
+    const i=r.findIndex(v=>cell(v).toLowerCase()==='имя');
+    if(i>=0){const v=r.slice(i+1).map(cell).find(Boolean);if(v) return v;}
+  }
+  return '';
+}
+
 async function loadPlan(sheetId){
-  const id=sheetId||S.sheetId;
-  if(!id) throw new Error('ID не указан');
+  const id=sheetIdFrom(sheetId||S.sheetId);
+  if(!id) throw new Error('Нет ссылки на таблицу');
+  const NOT_OPEN='Таблица не открылась. Тренеру: в таблице нажми «Настройки доступа» → «Все, у кого есть ссылка» → Читатель.';
 
-  // opensheet.elk.sh — публичный прокси для Google Sheets, работает везде
-  const url=`https://opensheet.elk.sh/${id}/ПЛАН`;
-
-  let data;
+  let buf;
   try{
-    const resp=await fetch(url,{cache:'no-store'});
+    const resp=await fetch(`https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`,{cache:'no-store'});
     if(!resp.ok) throw new Error('HTTP '+resp.status);
-    data=await resp.json();
+    buf=await resp.arrayBuffer();
   }catch(e){
-    throw new Error('Не удалось загрузить таблицу. Убедись: 1) Таблица открыта «Читатель для всех» 2) Лист называется ПЛАН заглавными буквами 3) Есть интернет. Ошибка: '+e.message);
+    throw new Error(navigator.onLine===false?'Нет интернета':NOT_OPEN);
   }
+  const head=new Uint8Array(buf.slice(0,2));
+  if(head[0]!==0x50||head[1]!==0x4B) throw new Error(NOT_OPEN); // не xlsx — значит Google вернул страницу входа
 
-  if(!data||!data.length) throw new Error('Лист ПЛАН пуст или недоступен.');
+  const wb=XLSX.read(buf,{type:'array'});
+  // всегда читаем от A1: у выгрузки Google диапазон листа может начинаться со столбца B
+  const grid=name=>{
+    const ws=wb.Sheets[name],range=XLSX.utils.decode_range(ws['!ref']||'A1');
+    range.s.r=0;range.s.c=0;
+    return XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:'',blankrows:true,range});
+  };
 
-  // opensheet возвращает массив объектов с ключами = заголовки первой строки
-  // Нам нужно найти колонки МЦ, МК, Тренировка, №, Упражнение, Вес/RPE, Сеты, Повт, Заметка
-  // Пробуем разные варианты названий колонок
-  function getCol(row, ...keys){
-    for(const k of keys){
-      for(const key of Object.keys(row)){
-        if(key.trim().toUpperCase()===k.toUpperCase()) return (row[key]||'').toString().trim();
-      }
-    }
-    return '';
-  }
-
-  const rows=data;
-
-  // Парсим строки — opensheet возвращает объекты с ключами = заголовки
-  S.plan={};
+  const plan={},weekInfo={};
   let cnt=0;
-  for(let i=0;i<rows.length;i++){
-    const row=rows[i];
-    // Получаем значения по возможным именам колонок
-    const mcRaw=getCol(row,'МЦ','MC','мц');
-    const mkRaw=getCol(row,'МК','MK','мк');
-    const trRaw=getCol(row,'Тренировка','ТРЕНИРОВКА','Train','тренировка');
-    const numRaw=getCol(row,'№','Num','NUM','#','номер');
-    const ex=getCol(row,'Упражнение','УПРАЖНЕНИЕ','Exercise','упражнение');
-    const wt=getCol(row,'Вес/RPE','Вес','ВЕС','вес','Weight','RPE','вес/rpe');
-    const st=getCol(row,'Сеты','СЕТЫ','Sets','сеты','подходы','Подходы');
-    const rp=getCol(row,'Повт','ПОВТ','Reps','повт','повторения','Повторения');
-    const note=getCol(row,'Заметка','ЗАМЕТКА','Note','заметка','комментарий');
+  wb.SheetNames.forEach(name=>{
+    const m=name.toUpperCase().match(/^МЕЗОЦИКЛ\s*(\d+)/);
+    if(!m) return;
+    const mc=+m[1],res=parseMeso(grid(name));
+    if(!Object.keys(res.plan).length) return;
+    plan[mc]=res.plan; weekInfo[mc]=res.info;
+    Object.values(res.plan).forEach(w=>Object.values(w).forEach(t=>cnt+=Object.keys(t).length));
+  });
+  if(!cnt) throw new Error('В таблице нет заполненных упражнений (листы «МЕЗОЦИКЛ 1–3», колонка УПРАЖНЕНИЕ).');
 
-    const mc=parseInt(mcRaw)||0;
-    if(!mc||mc<1||mc>10) continue;
-    const mk=parseInt(mkRaw)||0;
-    if(!mk||mk<1||mk>4) continue;
-    const trNorm=trRaw.toUpperCase()==='A'?'А':trRaw.toUpperCase()==='B'?'Б':trRaw.toUpperCase();
-    if(!['А','Б'].includes(trNorm)) continue;
-    if(!ex) continue;
-    const num=parseInt(numRaw)||cnt+1;
+  const kl=wb.SheetNames.find(n=>n.toUpperCase()==='КЛИЕНТ');
+  const nm=kl?clientName(grid(kl)):'';
+  if(nm&&!S.name){S.name=nm;const nn=document.getElementById('nav-name');if(nn) nn.textContent=nm;}
 
-    if(!S.plan[mc]) S.plan[mc]={};
-    if(!S.plan[mc][mk]) S.plan[mc][mk]={};
-    if(!S.plan[mc][mk][trNorm]) S.plan[mc][mk][trNorm]={};
-    S.plan[mc][mk][trNorm][num]={ex,wt,st,rp,note};
-    cnt++;
-  }
-  S.sheetId=id;
+  if(S.sheetId!==id){S.results={};}
+  S.plan=plan; S.weekInfo=weekInfo; S.sheetId=id;
+  if(!S.plan[S.mc]) S.mc=+Object.keys(plan)[0];
+  if(!S.plan[S.mc][S.mk]) S.mk=+Object.keys(S.plan[S.mc])[0];
   save();
-  if(cnt===0) throw new Error('Не удалось распознать данные. Проверь структуру колонок.');
   return cnt;
 }
 
@@ -700,7 +715,7 @@ function initMKTabs(){
     const cfg=MK_CFG[mk]||MK_CFG[1];
     const b=document.createElement('button');
     b.className=`mk-tab ${cfg.cls}`+(mk===S.mk?' on':'');
-    b.textContent=cfg.label;
+    b.textContent='Неделя '+mk;
     b.onclick=()=>{S.mk=mk;document.querySelectorAll('.mk-tab').forEach((x,j)=>x.classList.toggle('on',mks[j]===mk));renderMkInfo();renderMeso();};
     mkRow.appendChild(b);
   });
@@ -711,7 +726,8 @@ function renderMkInfo(){
   const cfg=MK_CFG[S.mk]||MK_CFG[1];
   const el=document.getElementById('mk-info');
   el.className='mk-info '+cfg.cls;
-  el.innerHTML=`<span class="mk-badge">${cfg.label}</span><span>${cfg.info}</span>`;
+  const wi=((S.weekInfo&&S.weekInfo[S.mc]&&S.weekInfo[S.mc][S.mk])||'').replace(/^НЕДЕЛЯ\s*\d+\s*·\s*/i,'');
+  el.innerHTML=`<span class="mk-badge">Неделя ${S.mk}</span><span>${wi||cfg.info}</span>`;
 }
 
 function renderMeso(){
@@ -726,22 +742,18 @@ function renderMeso(){
   empty.style.display='none';
   body.innerHTML='';
 
-  // Получаем тренировки из МК1 (базовый)
-  const mk1=mcPlan[1]||{};
-  const trains=[...new Set([...Object.keys(mk1),...Object.keys(mcPlan[mk]||{})])].sort();
+  const weekPlan=mcPlan[mk]||{};
+  const trains=Object.keys(weekPlan).sort();
 
   trains.forEach(train=>{
-    // Данные из МК1 для авто-расчёта
-    const mk1rows=mk1[train]||{};
-    // Данные текущего МК (если тренер заполнил отдельно) или авто из МК1
-    const mkRows=(mcPlan[mk]&&mcPlan[mk][train])||{};
+    const mkRows=weekPlan[train]||{};
 
     const sec=document.createElement('div');
     sec.style.cssText='border-top:1px solid var(--border)';
 
     const hdr=document.createElement('div');
     hdr.className='block-hdr';
-    hdr.innerHTML=`<span>Тренировка ${train}</span><span class="block-tag">МЦ ${mc} · МК ${mk}</span>`;
+    hdr.innerHTML=`<span>Тренировка ${train}</span><span class="block-tag">МЦ ${mc} · Неделя ${mk}</span>`;
     sec.appendChild(hdr);
 
     const table=document.createElement('table');
@@ -749,58 +761,26 @@ function renderMeso(){
     table.innerHTML=`<thead><tr><th>Упражнение</th><th>Вес/RPE</th><th>Сеты</th><th>Повт</th><th>Заметка</th><th>Результат ✍</th></tr></thead>`;
     const tbody=document.createElement('tbody');
 
-    // Собираем все строки
-    const allRows={...mk1rows};
-    // Если в текущем МК есть данные — используем их, иначе берём из МК1 и считаем авто
-    const rowNums=[...new Set([...Object.keys(mk1rows),...Object.keys(mkRows)])].map(Number).sort((a,b)=>a-b);
-    if(!rowNums.length){for(let i=1;i<=8;i++) rowNums.push(i);}
-
+    const rowNums=Object.keys(mkRows).map(Number).sort((a,b)=>a-b);
     let totalTon=0;
 
     rowNums.forEach((row,ri)=>{
-      const mk1row=mk1rows[row]||{};
-      const mkRow=mkRows[row]||{};
-
-      // Упражнение — из МК1 или текущего МК
-      const ex=mk1row.ex||mkRow.ex||'';
-      if(!ex&&mk===1) return; // пустые строки только в МК1 пропускаем если нет плана
-
-      // Вес: из плана текущего МК или авто из МК1
-      const wt1=parseFloat(mk1row.wt)||0;
-      let wtDisplay,wtVal;
-      if(mkRow.wt&&!isNaN(parseFloat(mkRow.wt))){
-        // Тренер явно указал вес для этого МК
-        wtVal=parseFloat(mkRow.wt);
-        wtDisplay=wtVal.toString();
-      } else if(mk===1){
-        wtVal=wt1;
-        wtDisplay=wt1?wt1.toString():'—';
-      } else {
-        // Авто по Матвееву
-        wtVal=wt1?Math.round(wt1*cfg.coef/2.5)*2.5:0;
-        wtDisplay=wtVal?wtVal.toFixed(1):'—';
-      }
-
-      const st=mkRow.st||mk1row.st||'';
-      const rp1=parseFloat(mk1row.rp)||0;
-      let rpDisplay;
-      if(mkRow.rp) rpDisplay=mkRow.rp;
-      else if(mk===1) rpDisplay=mk1row.rp||'—';
-      else rpDisplay=rp1?Math.max(1,rp1+(cfg.rAdj||0)).toString():'—';
-
-      const note=mkRow.note||mk1row.note||'';
+      const r=mkRows[row];
+      const ex=r.ex;
+      const num=v=>parseFloat(String(v).replace(',','.'))||0;
+      const wtDisplay=r.wt||'—',wtVal=num(r.wt);
+      const st=r.st||'',rpDisplay=r.rp||'—';
+      const note=r.note||'';
       const rKey=resKey(mc,mk,train,row);
       const resVal=S.results[rKey]||'';
 
-      // Тоннаж
-      const stN=parseFloat(st)||0,rpN=parseFloat(rpDisplay)||0;
-      const ton=wtVal*stN*rpN;
+      const ton=wtVal*num(st)*num(rpDisplay);
       if(ton>0) totalTon+=ton;
 
       const tr=document.createElement('tr');
       if(ri%2===1) tr.style.background='rgba(255,255,255,.025)';
       tr.innerHTML=`
-        <td class="ex-name">${ex||'<span style="color:var(--lo)">—</span>'}</td>
+        <td class="ex-name">${ex||'<span style="color:var(--lo)">—</span>'}${note?`<span class="ex-note">${note}</span>`:''}</td>
         <td><span class="plan-wt ${cfg.cls}">${wtDisplay}</span></td>
         <td class="plan-mid">${st||'—'}</td>
         <td class="plan-mid">${rpDisplay}</td>
@@ -984,6 +964,11 @@ function calcNut(){
 // BOOT
 // ═══════════════════════════════════════════════════
 load();
+{
+  const q=new URLSearchParams(location.search).get('id')||(location.hash.match(/id=([^&]+)/)||[])[1];
+  const id=q&&sheetIdFrom(q);
+  if(id&&id!==S.sheetId){S.sheetId=id;S.plan={};S.results={};S.mc=1;S.mk=1;save();}
+}
 
 if(S.name||S.sheetId){
   // Уже был вход раньше — запускаем сразу
