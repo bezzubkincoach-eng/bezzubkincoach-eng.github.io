@@ -141,6 +141,20 @@ body.resting .wrap{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
 .rpe button{height:40px;border-radius:10px;border:1.5px solid var(--line);font-size:15px;font-weight:500;color:var(--mute);font-variant-numeric:tabular-nums}
 .rpe button.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 textarea.field{height:auto;min-height:84px;padding:12px 14px;resize:vertical;line-height:1.4;margin-top:12px;display:block}
+.cfoot{display:flex;align-items:baseline;gap:12px}
+.cfoot .cnote{flex:1}
+.warm{font-size:14px;color:var(--mute);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.calc{display:grid;gap:10px}
+.calc h2{font-size:17px;font-weight:600;margin:0 0 6px}
+.calc .step{padding:6px 0}
+.res{margin-top:10px;border-top:1px solid var(--line)}
+.res .r{display:flex;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.res .r:last-child{border-bottom:0}
+.res .r span{color:var(--mute);font-size:14px}
+.res .r b{margin-left:auto;font-weight:600}
+.res .r em{font-style:normal;color:var(--mute);font-size:14px;min-width:42px;text-align:right}
+.big{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:10px}
+.big small{font-size:14px;font-weight:400;color:var(--mute);letter-spacing:0;display:block}
 .undo{margin-left:auto;font-size:14px;color:var(--mute);text-decoration:underline;text-underline-offset:3px}
 </style>
 </head>
@@ -257,6 +271,7 @@ function restSec(t){
 // ── отрисовка ──────────────────────────────────────
 const ICON={
   today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>',
+  calc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg>',
   plan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>'
 };
 function shell(inner){
@@ -265,14 +280,15 @@ function shell(inner){
   <nav class="nav"><div class="in">
     <button data-tab="today" class="${S.tab==='today'?'on':''}">${ICON.today}Сегодня</button>
     <button data-tab="plan" class="${S.tab==='plan'?'on':''}">${ICON.plan}Программа</button>
+    <button data-tab="calc" class="${S.tab==='calc'?'on':''}">${ICON.calc}Калькулятор</button>
   </div></nav><div id="restbox"></div>`;
 }
 function render(){
   const app=$('#app');
   if(!S.id){app.innerHTML=gate();bindGate();return}
   if(!S.plan){app.innerHTML=shell('<div class="hero"><div class="skel" style="height:60px;width:60%"></div></div><div class="list"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>');return}
-  app.innerHTML=shell(S.tab==='plan'?program():today());
-  bind();restTick();
+  app.innerHTML=shell(S.tab==='plan'?program():S.tab==='calc'?calc():today());
+  bind();bindCalc();restTick();
 }
 function gate(err){
   return `<div class="wrap"><div class="gate">
@@ -300,7 +316,7 @@ function today(){
     return `<li class="card"><div class="name">${h(e.name)}</div>
       <div class="plan">${h(planText(e))}</div>${subl?`<div class="sub">${subl}</div>`:''}
       <div class="sets">${pills}</div>
-      <button class="cnote ${log.notes?.[i]?'':'empty'}" data-note="${i}">${log.notes?.[i]?'«'+h(log.notes[i])+'»':'+ Комментарий'}</button></li>`;
+      <div class="cfoot"><button class="cnote ${log.notes?.[i]?'':'empty'}" data-note="${i}">${log.notes?.[i]?'«'+h(log.notes[i])+'»':'+ Комментарий'}</button>${pw>0?`<button class="warm" data-warm="${pw}">Разминка</button>`:''}</div></li>`;
   }).join('');
   const all=flat(),idx=all.findIndex(x=>x.id===id),next=all.slice(idx+1).find(x=>!isDone(x.id));
   const box=`<div class="box"><div class="k">Тяжесть тренировки</div>
@@ -334,6 +350,57 @@ function program(){
     }).join('')}</div></section>`).join('');
   return `<section class="hero"><h1>Программа</h1></section>${seg}${weeks}`;
 }
+// ── калькулятор (формулы листа КАЛЬКУЛЯТОР) ───────
+const r25=v=>Math.round(v/2.5+1e-9)*2.5;
+const WARM=[[.35,'1–8'],[.5,'1–5'],[.65,'1–3'],[.75,'1–3'],[.85,'1–2'],[.95,'1']];
+const PCT=[.6,.65,.7,.75,.8];
+const RPE_T={10:[100,95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9],9.5:[97.8,93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3],
+  9:[95.5,92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4],8.5:[93.9,90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4],
+  8:[92.2,89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68],7.5:[90.7,87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7],
+  7:[89.2,86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3],6.5:[87.8,85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64],
+  6:[86.3,83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6],5.5:[85,82.4,79.9,77.4,75.1,72.3,69.4,66.7,64,61.3],
+  5:[83.7,81.1,78.6,76.2,73.9,71.4,68,65.3,62.6,59.9]};
+const C=()=>S.calc??={ww:'',wn:6,w:'',r:'',rpe:8,rr:5};
+const kg=v=>fmt(v)+' кг';
+function oneRM(){
+  const c=C(),w=num(c.w),r=num(c.r);
+  if(!(w>0&&r>0&&r<37)) return null;
+  const e=w*(1+r/30),b=w*(36/(37-r));
+  return {e,b,avg:(e+b)/2};
+}
+function stepRow(label,k,d,mode){
+  const v=C()[k];
+  return `<div class="step"><span>${label}</span><div class="c"><button data-cd="${k}:${-d}">−</button><input data-ck="${k}" inputmode="${mode||'decimal'}" value="${h(v===''?'':fmt(+v))}"><button data-cd="${k}:${d}">+</button></div></div>`;
+}
+function calc(){
+  return `<section class="hero"><h1>Калькулятор</h1></section><div class="calc">
+    <div class="card"><h2>Разминка</h2>${stepRow('Рабочий вес, кг','ww',2.5)}${stepRow('Подходов','wn',1,'numeric')}<div class="res" id="c-warm"></div></div>
+    <div class="card"><h2>Повторный максимум</h2>${stepRow('Вес, кг','w',2.5)}${stepRow('Повторы','r',1,'numeric')}<div id="c-rm"></div></div>
+    <div class="card"><h2>RPE</h2>${stepRow('RPE','rpe',.5)}${stepRow('Повторы','rr',1,'numeric')}<div id="c-rpe"></div></div>
+  </div>`;
+}
+function calcOut(){
+  const c=C(),ww=num(c.ww),n=Math.max(1,Math.min(6,Math.round(num(c.wn))||6));
+  const wb=$('#c-warm');if(!wb) return;
+  wb.innerHTML=ww>0?WARM.slice(0,n).map(([p,rp],i)=>`<div class="r"><span>Подход ${i+1}</span><em>${Math.round(p*100)}%</em><b>${kg(r25(ww*p))}</b><em>${rp}</em></div>`).join(''):'';
+  const m=oneRM();
+  $('#c-rm').innerHTML=m?`<div class="big">${kg(Math.round(m.avg*10)/10)}<small>Эпли ${fmt(Math.round(m.e*10)/10)} · Brzycki ${fmt(Math.round(m.b*10)/10)}</small></div>
+    <div class="res">${PCT.map(p=>`<div class="r"><span>${Math.round(p*100)}%</span><b>${kg(r25(m.avg*p))}</b></div>`).join('')}</div>`:'';
+  const rpe=Math.round(num(c.rpe)*2)/2,rr=Math.round(num(c.rr)),pct=RPE_T[rpe]?.[rr-1];
+  $('#c-rpe').innerHTML=pct?`<div class="big">${fmt(pct)}%<small>от 1RM</small></div>${m?`<div class="res"><div class="r"><span>При 1RM ${kg(Math.round(m.avg*10)/10)}</span><b>${kg(r25(m.avg*pct/100))}</b></div></div>`:''}`:'';
+}
+function bindCalc(){
+  if(S.tab!=='calc') return;
+  const lim={wn:[1,6],rpe:[5,10],rr:[1,10],r:[1,36]};
+  const clamp=(k,v)=>{const l=lim[k];return l?Math.max(l[0],Math.min(l[1],v)):Math.max(0,v)};
+  document.querySelectorAll('[data-ck]').forEach(inp=>inp.oninput=()=>{const v=num(inp.value);C()[inp.dataset.ck]=Number.isFinite(v)?v:'';save();calcOut()});
+  document.querySelectorAll('[data-cd]').forEach(b=>b.onclick=()=>{
+    const [k,d]=b.dataset.cd.split(':'),cur=num(C()[k]),v=clamp(k,(Number.isFinite(cur)?cur:0)+ +d);
+    C()[k]=v;$(`[data-ck="${k}"]`).value=fmt(v);save();calcOut();
+  });
+  calcOut();
+}
+
 const plural=(n,a,b,c)=>{n%=100;if(n>10&&n<20) return c;n%=10;return n===1?a:n>1&&n<5?b:c};
 
 // ── отправка результатов в таблицу ─────────────────
@@ -387,6 +454,7 @@ function bind(){
   const u=$('#undo');if(u) u.onclick=()=>{const c=current(),L=S.log[c.id];delete L.done;delete L.fin;save();render();unqueue(c)};
   document.querySelectorAll('[data-rpe]').forEach(b=>b.onclick=()=>{const c=current(),L=S.log[c.id]??={},v=+b.dataset.rpe;L.rpe=L.rpe===v?0:v;S.cur=c.id;save();render();queue(c)});
   const wn=$('#wnote');if(wn){wn.oninput=()=>{const c=current();(S.log[c.id]??={}).wnote=wn.value;S.cur=c.id;save()};wn.onchange=()=>queue(current())}
+  document.querySelectorAll('[data-warm]').forEach(b=>b.onclick=()=>{C().ww=+b.dataset.warm;S.tab='calc';save();render();scrollTo(0,0)});
   document.querySelectorAll('[data-note]').forEach(b=>b.onclick=()=>noteEdit(+b.dataset.note));
   const n=$('#next');if(n) n.onclick=()=>{const all=flat(),i=all.findIndex(x=>x.id===current().id);const nx=all.slice(i+1).find(x=>!isDone(x.id));if(nx){S.cur=nx.id;save();render();scrollTo(0,0)}};
 }
