@@ -1,4 +1,4 @@
-const CACHE='bz-v2';
+const CACHE='bz-v3';
 const SHELL=['./','./index.html','./xlsx.full.min.js','./manifest.webmanifest','./icon-192.png','./apple-touch-icon.png'];
 
 self.addEventListener('install',e=>{
