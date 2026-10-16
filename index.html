@@ -424,11 +424,6 @@ function parseFood(g){
   }
   return o;
 }
-function parseHelp(g){
-  const lines=g.map(r=>cell(r[1])).filter(Boolean);
-  if(!lines.length) return null;
-  return {title:lines[0],items:lines.slice(1).map(t=>({t,head:!/[a-zа-яё]/.test(t)}))};
-}
 async function fetchPlan(id){
   const src=DEV&&new URLSearchParams(location.search).get('src');
   const r=await fetch(src||`https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`,{cache:'no-store'});
@@ -439,7 +434,7 @@ async function fetchPlan(id){
   const grid=n=>{const ws=wb.Sheets[n],g=XLSX.utils.decode_range(ws['!ref']||'A1');g.s.r=0;g.s.c=0;
     return XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:'',blankrows:true,range:g})};
   const find=re=>wb.SheetNames.find(n=>re.test(n.toUpperCase().trim()));
-  const P={v:3,tpl:'old',blocks:[],client:{name:''},hr:{max:'',zones:[]},cardio:null,summ:{},over:null,vol:null,food:null,help:null};
+  const P={v:3,tpl:'old',blocks:[],client:{name:''},hr:{max:'',zones:[]},cardio:null,summ:{},over:null,vol:null,food:null};
   wb.SheetNames.forEach(n=>{
     const m=n.toUpperCase().match(/^МЕЗОЦИКЛ\s*(\d+)/);
     if(!m) return;
@@ -455,7 +450,6 @@ async function fetchPlan(id){
   if(n=find(/^ОБЗОР/)) P.over=parseOverview(grid(n));
   if(n=find(/^ОБЪ[ЁЕ]М/)) P.vol=parseVolume(grid(n));
   if(n=find(/^ПИТАНИЕ/)) P.food=parseFood(grid(n));
-  if(n=find(/ИНСТРУКЦ/)) P.help=parseHelp(grid(n));
   return P;
 }
 
@@ -678,7 +672,7 @@ function todayView(){
       if(ton>0) parts.push(`Тоннаж <b>${fmtI(ton)} кг</b>`);
       if(rpe) parts.push(`Нагрузка <b>${fmtI(rpe*exReps(row))}</b>`);
       if(nw) parts.push(`Следующий раз <b class="${nw.dir}">${fmt(nw.w)} кг ${nw.dir==='up'?'↑':nw.dir==='down'?'↓':'→'}</b>`+(isNum(e.next)&&num(e.next)!==nw.w?` <span>· в таблице ${fmt(num(e.next))}</span>`:''));
-      if(!rpe&&!nw) parts.push('Отметь RPE — посчитаю вес на следующий раз');
+      if(!rpe&&!nw) parts.push('Отметь RPE');
       met=parts.length?`<div class="metrics">${parts.join(' · ')}</div>`:'';
     }
     return `<li class="card"><div class="name">${h(e.name)}</div>
@@ -734,7 +728,7 @@ function cardioView(){
     <div class="tile"><div class="k">Средний пульс</div><div class="v">${t.hr?Math.round(t.hr):'—'} <small>${t.hr?'уд/мин':''}</small></div></div>
     <div class="tile"><div class="k">Калории</div><div class="v">${t.kcal?fmtI(t.kcal):'—'} <small>${t.kcal?'ккал':''}</small></div></div></div>`:'';
   const list=items.length?`<div class="rows">${items.map((x,i)=>`<button class="crow" data-crd="${x.local?x.uid:'s'+i}"><span class="d">${h(dShort(x.d)||x.date)}</span><span class="m"><b>${x.km>0?fmt(x.km)+' км':''}${x.km>0&&x.sec?' · ':''}${x.sec?hms(x.sec):''}${x.paceS>0?` · ${mmss(x.paceS)}/км`:''}</b><small>${[num(x.hrAvg)>0?`пульс ${num(x.hrAvg)}`:'',num(x.kcal)>0?`${num(x.kcal)} ккал`:'',x.note].filter(Boolean).map(h).join(' · ')||'&nbsp;'}</small></span>${typePill(x.type)}${x.pending?'<span class="pending">⟳</span>':''}</button>`).join('')}</div>`
-    :`<div class="empty">Пока нет записей. Запиши первую пробежку.</div>`;
+    :`<div class="empty">Пока нет записей</div>`;
   const zones=z?`<div class="card" style="margin-top:10px"><h2>Зоны пульса</h2><table class="tbl"><tr><th>Зона</th><th>уд/мин</th><th></th></tr>${z.zones.map(q=>`<tr><td><b>${q.z}</b> ${h(q.name)}</td><td>${q.from}–${q.to}</td><td class="mute" style="white-space:normal">${h(q.label)}</td></tr>`).join('')}</table>
     <div class="note">Максимум ${z.max} уд/мин (220 − возраст${z.age?` ${z.age}`:''})${z.tanaka?`; по формуле Танаки около ${z.tanaka}`:''}.</div></div>`:'';
   return `<section class="hero"><h1>Кардио</h1></section>${blockSeg(B?.n,'cb')}${tiles}
@@ -765,9 +759,9 @@ function progress(){
   const names=(S.plan.over?.strength||[]).map(x=>x.name).filter(Boolean);
   const list=names.length?names.map(nm=>({name:nm,re:nameRe(nm),row:S.plan.over.strength.find(x=>x.name===nm)})):
     [...new Set(blocks[0].weeks[0]?.workouts.flatMap(w=>w.ex.map(e=>e.name))||[])].slice(0,10).map(nm=>({name:nm,re:nameRe(nm),row:null}));
-  const strength=list.length?`<div class="card"><h2>Силовые · лучший вес</h2><table class="tbl"><tr><th>Упражнение</th>${list[0].row?'<th>Старт</th>':''}${blocks.map(b=>`<th>МЦ ${b.n}</th>`).join('')}${list[0].row?'<th>Цель</th>':''}</tr>
+  const strength=list.length?`<div class="card"><h2>Силовые · лучший вес</h2><table class="tbl"><tr><th>Упражнение</th>${list[0].row?'<th>Старт</th>':''}${blocks.map(b=>`<th>Блок ${b.n}</th>`).join('')}${list[0].row?'<th>Цель</th>':''}</tr>
     ${list.map(x=>`<tr><td>${h(x.name)}</td>${x.row?`<td>${h(x.row.start)||'—'}</td>`:''}${blocks.map(b=>{const l=bestLogged(x.re,b.n),p=bestPlanned(x.re,b.n);return `<td>${l?`<b>${fmt(l)}</b>`:p?`<span class="mute">${fmt(p)}</span>`:'—'}</td>`}).join('')}${x.row?`<td>${h(x.row.goal)||'—'}</td>`:''}</tr>`).join('')}</table>
-    <div class="note">Жирным — выполнено в приложении, серым — вес по плану.</div></div>`:'';
+    <div class="note">Жирным — сделано, серым — план.</div></div>`:'';
   // weekly charts
   const ws=weekStats(B),curW=cur&&cur.B.n===n?B.weeks.findIndex(W=>W.n===cur.W.n):-1,lbl=ws.map(x=>`Нед ${x.n}`);
   const anyTon=ws.some(x=>x.ton>0),anyAu=ws.some(x=>x.au>0);
@@ -776,7 +770,7 @@ function progress(){
   // cardio per block
   const items=S.plan.cardio?cardioItems():[];
   const cardio=S.plan.cardio?`<div class="card"><h2>Кардио по блокам</h2><table class="tbl"><tr><th>Блок</th><th>Сессий</th><th>км</th><th>Макс км</th><th>Пульс</th><th>ккал</th></tr>
-    ${blocks.map(b=>{const t=cardioTotals(items,b.n);return `<tr><td>МЦ ${b.n}</td><td>${t.n||'—'}</td><td>${t.km?fmt(Math.round(t.km*10)/10):'—'}</td><td>${t.max?fmt(t.max):'—'}</td><td>${t.hr?Math.round(t.hr):'—'}</td><td>${t.kcal?fmtI(t.kcal):'—'}</td></tr>`}).join('')}</table></div>`:'';
+    ${blocks.map(b=>{const t=cardioTotals(items,b.n);return `<tr><td>${b.n}</td><td>${t.n||'—'}</td><td>${t.km?fmt(Math.round(t.km*10)/10):'—'}</td><td>${t.max?fmt(t.max):'—'}</td><td>${t.hr?Math.round(t.hr):'—'}</td><td>${t.kcal?fmtI(t.kcal):'—'}</td></tr>`}).join('')}</table></div>`:'';
   // anthropometry
   const labels=['Вес тела, кг','Обхват груди, см','Обхват талии, см','Обхват бёдер, см','Обхват бедра, см','Обхват руки, см','% жира'];
   const sa=S.plan.summ[n]?.anthro||[],m=S.meas?.[n]||{};
@@ -788,17 +782,28 @@ function progress(){
   const ve=volumeEstimate(B);
   const vol=ve?`<div class="card"><h2>Объём · сетов в неделю</h2><table class="tbl"><tr><th>Группа</th><th>Сетов</th><th>Норма</th><th>Статус</th></tr>
     ${ve.rows.map(r=>`<tr><td>${h(r.g)}</td><td>${r.n||'—'}</td><td class="mute">${r.a}–${r.b}</td><td class="${r.st}">${r.st==='low'?'⬇ Мало':r.st==='ok'?'✓ Норма':r.st==='high'?'⬆ Много':'—'}</td></tr>`).join('')}</table>
-    <div class="note">Оценка по названиям упражнений недели 1 (все тренировки блока). Нормы MEV–MRV из листа ОБЪЁМ.${ve.un.length?` Не распознано: ${ve.un.map(h).join(', ')}.`:''}</div></div>`:'';
+    ${ve.un.length?`<div class="note">Не распознано: ${ve.un.map(h).join(', ')}</div>`:''}</div>`:'';
   return `<section class="hero"><h1>Прогресс</h1></section>${blockSeg(n,'pb')}${tiles}<div class="stack">${strength}${charts}${cardio}${anthro}${vol}</div>`;
 }
 function more(){
-  const rows=[['calc','Калькулятор','Разминка, 1RM, RPE, беговой темп'],['food','Питание','Калории и БЖУ под твой вес'],...(S.plan.help?[['help','Инструкция','Как работать с планом']]:[])];
+  const rows=[['calc','Калькулятор','Разминка, 1RM, RPE, беговой темп'],['food','Питание','Калории и БЖУ под твой вес'],['help','Инструкция','Как работать с планом']];
   return `<section class="hero"><h1>Ещё</h1></section><div class="rows menu">${rows.map(([t,l,d])=>`<button class="row" data-tab="${t}"><span class="t"><b>${l}</b><small>${d}</small></span><span class="chev">›</span></button>`).join('')}</div>
     <div class="note" style="margin-top:18px">Программа: <span style="word-break:break-all">${h(S.id)}</span><br><button class="lnk" id="relink">Открыть другую программу</button></div>`;
 }
+const HELP=[
+  ['Тренировка',['Нажми на подход — он засчитан с весом из плана, пойдёт отдых. Нажми ещё раз, чтобы поправить вес или повторы.',
+    'После упражнения отметь RPE. В конце — тяжесть тренировки и «Завершить тренировку».',
+    'Пропустил тренировку — делай следующую по плану.']],
+  ['RPE',['6 — легко, в запасе 4 повтора','7 — в запасе 3','8 — в запасе 2','9 — в запасе 1','10 — больше ни одного','Рабочие подходы — на 7–8.']],
+  ['Вес на следующий раз',['Все повторы сделаны и RPE не выше 8 — плюс 2,5 кг (в изоляции 1,25). Если в плане диапазон, например 8–12, нужна верхняя граница.',
+    'RPE 9–10 или не добрал повторы — вес снижается. В остальных случаях вес тот же.']],
+  ['Готовность',['Перед тренировкой: сон, энергия, мотивация от 1 до 5.','12–15 — по плану.','8–11 — веса на 10 % меньше.','Меньше 8 — лёгкая тренировка или отдых.']],
+  ['Кардио',['Вкладка «Кардио», зоны пульса там же.'],()=>S.plan.cardio],
+  ['Замеры',['«Прогресс» → «Внести замеры», в начале и в конце блока.'],()=>S.plan.tpl==='new'],
+  ['Если болит',['Пропусти упражнение и напиши тренеру.']]
+];
 function help(){
-  const H=S.plan.help;if(!H) return more();
-  return `<section class="hero"><button class="back" data-tab="more">‹ Ещё</button><h1>${h(H.title)}</h1></section><div class="card help">${H.items.map(x=>x.head?`<h2>${h(x.t)}</h2>`:`<p>${h(x.t)}</p>`).join('')}</div>`;
+  return `<section class="hero"><button class="back" data-tab="more">‹ Ещё</button><h1>Как работать с планом</h1></section><div class="card help">${HELP.filter(x=>!x[2]||x[2]()).map(([t,ps])=>`<h2>${h(t)}</h2>${ps.map(x=>`<p>${h(x)}</p>`).join('')}`).join('')}</div>`;
 }
 
 // ── калькулятор (формулы листа КАЛЬКУЛЯТОР) ───────
@@ -882,7 +887,7 @@ function food(){
       <div class="note" style="margin-top:4px">${COEF.map(([c,l])=>`${c} — ${l}`).join(' · ')}</div>
       ${sr('Дефицит / профицит, %','def',5,'numeric')}</div>
     <div class="card"><h2>Нормы</h2>${sr('Белок, г/кг','prot',.1)}${sr('Жиры, г/кг','fat',.1)}${sr('Вода, мл/кг','water',1,'numeric')}
-      <div class="note">Белок 1,6–2,2 г/кг для роста мышц · жиры минимум 0,8, оптимум 1,0–1,2 · вода 35–40 мл/кг</div></div>
+      <div class="note">Белок 1,6–2,2 г/кг · жиры 0,8–1,2 г/кг · вода 35–40 мл/кг</div></div>
     <div class="card"><h2>Итог</h2><div id="f-out"></div></div></div>`;
 }
 function foodOut(){
@@ -1135,7 +1140,7 @@ function dbg(){
   return {tpl:S.plan.tpl,client:S.plan.client,hr:S.plan.hr,zones:hrZones(),cur:c?.id,tab:S.tab,
     blocks:S.plan.blocks.map(B=>({n:B.n,ready:B.ready,weeks:B.weeks.map(W=>({n:W.n,label:W.label,w:W.workouts.map(w=>({l:w.letter,k:w.kind,sub:w.sub,tot:w.tot,ex:w.ex}))}))})),
     cardio:S.plan.cardio,items:S.plan.cardio?cardioItems().map(x=>({date:x.date,type:x.type,km:x.km,sec:x.sec,paceS:x.paceS,spd:x.spd,local:!!x.local,block:x.block})):null,
-    summ:S.plan.summ,over:S.plan.over,vol:S.plan.vol,food:S.plan.food,help:S.plan.help&&S.plan.help.items.length,
+    summ:S.plan.summ,over:S.plan.over,vol:S.plan.vol,food:S.plan.food,help:HELP.length,
     eff:c?c.w.ex.map((e,i)=>effWeight(c,e,i)):null,vol_est:c?volumeEstimate(c.B):null,week:c?weekStats(c.B):null,out:S.out,log:S.log,meas:S.meas,cardioLocal:S.cardio};
 }
 function seed(){
